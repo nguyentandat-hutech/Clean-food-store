@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProfilePage from './pages/ProfilePage';
+import AdminCategoryPage from './pages/AdminCategoryPage';
 
 // ── App Component ─────────────────────────────────────────────
 function App() {
@@ -35,6 +36,16 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <ProfilePage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* --- Routes Admin (cần đăng nhập + quyền admin) --- */}
+                    <Route
+                        path="/admin/categories"
+                        element={
+                            <ProtectedRoute>
+                                <AdminCategoryPage />
                             </ProtectedRoute>
                         }
                     />
