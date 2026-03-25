@@ -15,6 +15,9 @@ import InventoryReportPage from './pages/InventoryReportPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import ProductListPage from './pages/ProductListPage';
 import ProductDetailPage from './pages/ProductDetailPage';
+import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import OrderListPage from './pages/OrderListPage';
 
 // ── App Component ─────────────────────────────────────────────
 function App() {
@@ -44,6 +47,32 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <ProfilePage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* --- Routes Giỏ hàng & Đặt hàng (cần đăng nhập) --- */}
+                    <Route
+                        path="/cart"
+                        element={
+                            <ProtectedRoute>
+                                <CartPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/checkout"
+                        element={
+                            <ProtectedRoute>
+                                <CheckoutPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/orders"
+                        element={
+                            <ProtectedRoute>
+                                <OrderListPage />
                             </ProtectedRoute>
                         }
                     />

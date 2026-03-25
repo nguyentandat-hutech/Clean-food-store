@@ -23,6 +23,8 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const productRoutes = require('./routes/productRoutes');
 const batchRoutes = require('./routes/batchRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
+const cartRoutes = require('./routes/cartRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 const { startExpiryChecker } = require('./cron/expiryChecker');
 
 // ── Khởi tạo app ────────────────────────────────────────────
@@ -65,6 +67,8 @@ app.use('/api/categories', categoryRoutes); // Quản lý danh mục sản phẩ
 app.use('/api/products', productRoutes);     // Quản lý sản phẩm
 app.use('/api/batches', batchRoutes);         // Quản lý lô hàng & tồn kho
 app.use('/api/inventory', inventoryRoutes);   // Cảnh báo & thống kê tồn kho
+app.use('/api/cart', cartRoutes);               // Giỏ hàng
+app.use('/api/orders', orderRoutes);           // Đơn hàng & Checkout
 
 // Bắt route không tồn tại (404) - phải đặt SAU tất cả routes
 app.use((req, res) => {
