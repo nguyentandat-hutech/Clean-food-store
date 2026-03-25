@@ -1,0 +1,13 @@
+# Bỏ qua file .env chứa thông tin nhạy cảm
+.env
+.env.local
+.env.*.local
+
+# Bỏ qua thư mục dependencies và build output
+node_modules/
+dist/
+
+# Bỏ qua log files và OS files
+*.log
+.DS_Store
+Thumbs.db
