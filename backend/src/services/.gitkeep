@@ -1,0 +1,2 @@
+# Thư mục này chứa Business Logic (Services)
+# Service xử lý toàn bộ logic nghiệp vụ, gọi DB qua Models
