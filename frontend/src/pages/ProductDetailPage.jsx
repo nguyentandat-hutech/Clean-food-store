@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getProductByIdAPI } from '../api/productService';
+import ProductReviews from '../components/ProductReviews';
 
 // ── Trang Chi tiết Sản phẩm + Truy xuất nguồn gốc ─────────────
 function ProductDetailPage() {
@@ -232,6 +233,11 @@ function ProductDetailPage() {
                     </div>
                 </div>
             )}
+
+            {/* ═══════════════════════════════════════════════════ */}
+            {/* ĐÁNH GIÁ SẢN PHẨM                                  */}
+            {/* ═══════════════════════════════════════════════════ */}
+            <ProductReviews productId={id} />
         </div>
     );
 }

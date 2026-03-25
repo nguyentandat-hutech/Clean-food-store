@@ -20,6 +20,7 @@ import CheckoutPage from './pages/CheckoutPage';
 import OrderListPage from './pages/OrderListPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
 import AdminOrderPage from './pages/AdminOrderPage';
+import FreshnessScanner from './pages/FreshnessScanner';
 
 // ── App Component ─────────────────────────────────────────────
 function App() {
@@ -33,6 +34,7 @@ function App() {
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/products" element={<ProductListPage />} />
                     <Route path="/products/:id" element={<ProductDetailPage />} />
+                    <Route path="/freshness-scanner" element={<FreshnessScanner />} />
 
                     {/* --- Routes bảo vệ (cần đăng nhập) --- */}
                     <Route
