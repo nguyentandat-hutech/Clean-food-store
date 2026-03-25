@@ -25,6 +25,7 @@ const batchRoutes = require('./routes/batchRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 const { startExpiryChecker } = require('./cron/expiryChecker');
 
 // ── Khởi tạo app ────────────────────────────────────────────
@@ -69,6 +70,7 @@ app.use('/api/batches', batchRoutes);         // Quản lý lô hàng & tồn kh
 app.use('/api/inventory', inventoryRoutes);   // Cảnh báo & thống kê tồn kho
 app.use('/api/cart', cartRoutes);               // Giỏ hàng
 app.use('/api/orders', orderRoutes);           // Đơn hàng & Checkout
+app.use('/api/ai', aiRoutes);                   // Quét AI kiểm tra độ tươi
 
 // Bắt route không tồn tại (404) - phải đặt SAU tất cả routes
 app.use((req, res) => {
