@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const authController  = require('../controllers/authController');
-const { protect }     = require('../middlewares/authMiddleware');
+const authController = require('../controllers/authController');
+const { protect } = require('../middlewares/authMiddleware');
 
 // POST /api/auth/register → Đăng ký tài khoản mới (public)
 router.post('/register', authController.register);

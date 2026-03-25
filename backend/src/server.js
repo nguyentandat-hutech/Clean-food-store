@@ -12,10 +12,10 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 
-const connectDB    = require('./config/db');
+const connectDB = require('./config/db');
 const errorHandler = require('./middlewares/errorHandler');
-const indexRouter  = require('./routes/index');
-const authRoutes   = require('./routes/authRoutes');
+const indexRouter = require('./routes/index');
+const authRoutes = require('./routes/authRoutes');
 
 // ── Khởi tạo app ────────────────────────────────────────────
 const app = express();

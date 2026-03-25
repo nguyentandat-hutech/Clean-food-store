@@ -1,18 +1,12 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Import các trang
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import NotFoundPage from './pages/NotFoundPage';
-
-// ── Protected Route: chặn trang yêu cầu đăng nhập ────────────
-const ProtectedRoute = ({ children }) => {
-    const { user } = useAuth();
-    // Nếu chưa đăng nhập, chuyển hướng về /login
-    return user ? children : <Navigate to="/login" replace />;
-};
 
 // ── App Component ─────────────────────────────────────────────
 function App() {

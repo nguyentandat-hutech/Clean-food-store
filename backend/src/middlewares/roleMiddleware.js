@@ -11,24 +11,24 @@ const { createError } = require('../utils/responseHelper');
  * @param {...string} roles - Danh sách roles được phép truy cập
  */
 const authorize = (...roles) => {
-  return (req, res, next) => {
-    // req.user được gán bởi authMiddleware (protect) trước đó
-    if (!req.user) {
-      return next(createError(401, 'Bạn chưa xác thực. Hãy dùng middleware protect trước'));
-    }
+    return (req, res, next) => {
+        // req.user được gán bởi authMiddleware (protect) trước đó
+        if (!req.user) {
+            return next(createError(401, 'Bạn chưa xác thực. Hãy dùng middleware protect trước'));
+        }
 
-    // Kiểm tra role của user có nằm trong danh sách cho phép không
-    if (!roles.includes(req.user.role)) {
-      return next(
-        createError(
-          403,
-          `Bạn không có quyền thực hiện hành động này. Yêu cầu quyền: [${roles.join(', ')}]`
-        )
-      );
-    }
+        // Kiểm tra role của user có nằm trong danh sách cho phép không
+        if (!roles.includes(req.user.role)) {
+            return next(
+                createError(
+                    403,
+                    `Bạn không có quyền thực hiện hành động này. Yêu cầu quyền: [${roles.join(', ')}]`
+                )
+            );
+        }
 
-    next();
-  };
+        next();
+    };
 };
 
 module.exports = { authorize };
