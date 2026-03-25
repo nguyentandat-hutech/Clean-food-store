@@ -16,6 +16,8 @@ const connectDB = require('./config/db');
 const errorHandler = require('./middlewares/errorHandler');
 const indexRouter = require('./routes/index');
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+const farmRoutes = require('./routes/farmRoutes');
 
 // ── Khởi tạo app ────────────────────────────────────────────
 const app = express();
@@ -44,7 +46,9 @@ app.use(express.urlencoded({ extended: true })); // Đọc body dạng URL-encod
 // ── Routes ──────────────────────────────────────────────────
 // Tất cả API endpoints bắt đầu bằng /api
 app.use('/api', indexRouter);
-app.use('/api/auth', authRoutes); // Đăng ký, Đăng nhập, Thông tin người dùng
+app.use('/api/auth', authRoutes);   // Đăng ký, Đăng nhập, Thông tin người dùng
+app.use('/api/users', userRoutes);  // Quản lý profile người dùng
+app.use('/api/farms', farmRoutes);  // Quản lý đối tác trang trại
 
 // Bắt route không tồn tại (404) - phải đặt SAU tất cả routes
 app.use((req, res) => {

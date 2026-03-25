@@ -34,6 +34,12 @@ const userSchema = new mongoose.Schema(
             },
             default: 'user',
         },
+        phone: {
+            type: String,
+            trim: true,
+            default: '',
+            match: [/^(\+?\d{9,15})?$/, 'Số điện thoại không hợp lệ'],
+        },
         isActive: {
             type: Boolean,
             default: true,
