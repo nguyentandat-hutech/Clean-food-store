@@ -8,6 +8,10 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProfilePage from './pages/ProfilePage';
+import AdminCategoryPage from './pages/AdminCategoryPage';
+import AdminProductPage from './pages/AdminProductPage';
+import ProductListPage from './pages/ProductListPage';
+import ProductDetailPage from './pages/ProductDetailPage';
 
 // ── App Component ─────────────────────────────────────────────
 function App() {
@@ -19,6 +23,8 @@ function App() {
                     {/* --- Routes công khai (không cần đăng nhập) --- */}
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/products" element={<ProductListPage />} />
+                    <Route path="/products/:id" element={<ProductDetailPage />} />
 
                     {/* --- Routes bảo vệ (cần đăng nhập) --- */}
                     <Route
@@ -39,6 +45,25 @@ function App() {
                         }
                     />
 
+                    {/* --- Routes Admin (cần đăng nhập + quyền admin) --- */}
+                    <Route
+                        path="/admin/categories"
+                        element={
+                            <ProtectedRoute>
+                                <AdminCategoryPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/admin/products"
+                        element={
+                            <ProtectedRoute>
+                                <AdminProductPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
                     {/* --- Bắt mọi route không tồn tại --- */}
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>
@@ -48,3 +73,4 @@ function App() {
 }
 
 export default App;
+
