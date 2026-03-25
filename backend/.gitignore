@@ -1,0 +1,13 @@
+# Bỏ qua file .env chứa thông tin nhạy cảm
+.env
+
+# Bỏ qua thư mục dependencies
+node_modules/
+
+# Bỏ qua log files
+*.log
+npm-debug.log*
+
+# Bỏ qua OS files
+.DS_Store
+Thumbs.db
