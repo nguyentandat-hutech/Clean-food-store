@@ -40,6 +40,12 @@ const batchSchema = new mongoose.Schema(
             type: Date,
             required: [true, 'Ngày hết hạn không được để trống'],
         },
+        // Trạng thái lô hàng (cron job tự động cập nhật khi hết hạn)
+        status: {
+            type: String,
+            enum: ['active', 'expired'],
+            default: 'active',
+        },
     },
     {
         timestamps: true, // Tự động thêm createdAt, updatedAt

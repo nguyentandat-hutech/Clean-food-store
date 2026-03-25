@@ -75,6 +75,12 @@ const productSchema = new mongoose.Schema(
             type: Boolean,
             default: true,
         },
+        // Trạng thái kinh doanh (cron job tự động cập nhật dựa trên tồn kho)
+        status: {
+            type: String,
+            enum: ['Đang bán', 'Khuyến mãi', 'Ngừng kinh doanh'],
+            default: 'Đang bán',
+        },
         // Người tạo (admin) — lưu để audit trail
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,

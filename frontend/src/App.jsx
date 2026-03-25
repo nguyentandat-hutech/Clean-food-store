@@ -12,6 +12,7 @@ import AdminCategoryPage from './pages/AdminCategoryPage';
 import AdminProductPage from './pages/AdminProductPage';
 import AdminBatchPage from './pages/AdminBatchPage';
 import InventoryReportPage from './pages/InventoryReportPage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
 import ProductListPage from './pages/ProductListPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 
@@ -82,6 +83,16 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <InventoryReportPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* Dashboard Admin — Cảnh báo kho hàng */}
+                    <Route
+                        path="/admin/dashboard"
+                        element={
+                            <ProtectedRoute>
+                                <AdminDashboardPage />
                             </ProtectedRoute>
                         }
                     />
