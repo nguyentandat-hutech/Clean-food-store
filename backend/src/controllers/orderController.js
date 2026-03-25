@@ -11,7 +11,50 @@ const { successResponse } = require('../utils/responseHelper');
 const checkout = async (req, res) => {
     const { shippingAddress, note } = req.body;
     const order = await orderService.createOrderCOD(req.user._id, shippingAddress, note);
-    return successResponse(res, 201, 'Đặt hàng thành công', order);
+    return successResponse(res, 201, 'Đặt hàng COD thành công', order);
+};
+
+// POST /api/orders/checkout-vnpay — Đặt hàng VNPay (trả URL thanh toán)
+const checkoutVNPay = async (req, res) => {
+    const { shippingAddress, bankCode, note } = req.body;
+
+    // Lấy IP client (hỗ trợ proxy/nginx)
+    const ipAddr =
+        req.headers['x-forwarded-for'] ||
+        req.connection.remoteAddress ||
+        req.socket.remoteAddress ||
+        '127.0.0.1';
+
+    const result = await orderService.createOrderVNPay(
+        req.user._id,
+        shippingAddress,
+        ipAddr,
+        bankCode,
+        note
+    );
+
+    return successResponse(res, 200, 'Tạo URL thanh toán VNPay thành công', {
+        order: result.order,
+        paymentUrl: result.paymentUrl,
+    });
+};
+
+// GET /api/orders/vnpay-return — VNPay redirect user về đây sau thanh toán
+const vnpayReturn = async (req, res) => {
+    const result = await orderService.handleVnpayReturn(req.query);
+    return successResponse(
+        res,
+        200,
+        result.success ? 'Thanh toán VNPay thành công' : 'Thanh toán VNPay thất bại',
+        result
+    );
+};
+
+// GET /api/orders/vnpay-ipn — VNPay gọi server-to-server (IPN)
+const vnpayIPN = async (req, res) => {
+    const result = await orderService.handleVnpayIPN(req.query);
+    // VNPay yêu cầu trả đúng format này
+    return res.status(200).json(result);
 };
 
 // GET /api/orders — Danh sách đơn hàng của user
@@ -51,6 +94,9 @@ const getAllOrders = async (req, res) => {
 
 module.exports = {
     checkout,
+    checkoutVNPay,
+    vnpayReturn,
+    vnpayIPN,
     getMyOrders,
     getOrderById,
     cancelOrder,

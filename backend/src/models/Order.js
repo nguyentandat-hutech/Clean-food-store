@@ -46,9 +46,13 @@ const orderSchema = new mongoose.Schema(
         // Trạng thái đơn hàng
         status: {
             type: String,
-            enum: ['Pending', 'Processing', 'Shipping', 'Delivered', 'Cancelled'],
+            enum: ['Pending', 'Paid', 'Processing', 'Shipping', 'Delivered', 'Cancelled'],
             default: 'Pending',
         },
+        // ── Thông tin VNPay (chỉ có khi paymentMethod = 'VNPay') ──
+        vnpayTransactionNo: { type: String, default: '' }, // Mã giao dịch VNPay
+        vnpayBankCode: { type: String, default: '' },      // Ngân hàng thanh toán
+        paidAt: { type: Date, default: null },              // Thời điểm thanh toán thành công
         // Ghi chú đơn hàng (tùy chọn)
         note: {
             type: String,

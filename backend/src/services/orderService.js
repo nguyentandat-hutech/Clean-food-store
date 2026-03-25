@@ -4,6 +4,7 @@ const Cart = require('../models/Cart');
 const Product = require('../models/Product');
 const Batch = require('../models/Batch');
 const { getEffectiveStock } = require('./batchService');
+const { createPaymentUrl, verifyReturnUrl } = require('./vnpayService');
 const { createError } = require('../utils/responseHelper');
 
 /**
@@ -214,6 +215,192 @@ const createOrderCOD = async (userId, shippingAddress, note = '') => {
 };
 
 /**
+ * Tạo đơn hàng VNPay.
+ * Flow: Validate giỏ → Check tồn kho → Tạo Order (Pending) → Tạo URL VNPay → Trả URL
+ * LƯU Ý: CHƯA trừ kho ở bước này — chỉ trừ khi IPN xác nhận thanh toán thành công.
+ * Điều này tránh lỗi double-spending và lock kho khi user chưa thanh toán.
+ *
+ * @param {string} userId
+ * @param {object} shippingAddress
+ * @param {string} ipAddr - IP client (bắt buộc bởi VNPay)
+ * @param {string} bankCode - Mã ngân hàng (tùy chọn)
+ * @param {string} note
+ * @returns {{ order: object, paymentUrl: string }}
+ */
+const createOrderVNPay = async (userId, shippingAddress, ipAddr, bankCode = '', note = '') => {
+    // ── 1. Validate địa chỉ giao hàng ────────────────────────────
+    if (!shippingAddress || !shippingAddress.fullName || !shippingAddress.phone || !shippingAddress.address) {
+        throw createError(400, 'Vui lòng cung cấp đầy đủ thông tin giao hàng (fullName, phone, address)');
+    }
+    const phoneRegex = /^[0-9]{10,11}$/;
+    if (!phoneRegex.test(shippingAddress.phone)) {
+        throw createError(400, 'Số điện thoại không hợp lệ (10-11 chữ số)');
+    }
+
+    // ── 2. Lấy giỏ hàng + validate ───────────────────────────────
+    const cart = await Cart.findOne({ userId }).populate(
+        'products.productId',
+        'name price unit isActive'
+    );
+    if (!cart || cart.products.length === 0) {
+        throw createError(400, 'Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi đặt hàng');
+    }
+
+    // ── 3. Kiểm tra tồn kho lần cuối ─────────────────────────────
+    const orderProducts = [];
+    let totalPrice = 0;
+
+    for (const item of cart.products) {
+        const product = item.productId;
+        if (!product) throw createError(400, 'Một sản phẩm trong giỏ đã bị xóa khỏi hệ thống');
+        if (!product.isActive) {
+            throw createError(400, `Sản phẩm "${product.name}" đã ngừng kinh doanh`);
+        }
+
+        const stockInfo = await getEffectiveStock(product._id);
+        if (item.quantity > stockInfo.effectiveStock) {
+            throw createError(
+                400,
+                `Sản phẩm "${product.name}" chỉ còn ${stockInfo.effectiveStock} ${product.unit}`
+            );
+        }
+
+        const subtotal = product.price * item.quantity;
+        totalPrice += subtotal;
+
+        orderProducts.push({
+            productId: product._id,
+            name: product.name,
+            price: product.price,
+            unit: product.unit,
+            quantity: item.quantity,
+            subtotal,
+        });
+    }
+
+    // ── 4. Tạo đơn hàng (status = Pending, chưa thanh toán) ──────
+    const order = await Order.create({
+        userId,
+        products: orderProducts,
+        totalPrice,
+        shippingAddress,
+        paymentMethod: 'VNPay',
+        status: 'Pending',
+        note: note || '',
+    });
+
+    // ── 5. Tạo URL thanh toán VNPay ──────────────────────────────
+    const paymentUrl = createPaymentUrl(order, ipAddr, bankCode);
+
+    return { order, paymentUrl };
+};
+
+/**
+ * Xử lý IPN (Instant Payment Notification) từ VNPay.
+ * VNPay gọi URL này (server-to-server) để thông báo kết quả thanh toán.
+ * PHẢI trả đúng format {RspCode: '00', Message: 'success'} nếu OK.
+ *
+ * Logic:
+ * 1. Verify checksum
+ * 2. Tìm đơn hàng theo vnp_TxnRef
+ * 3. Kiểm tra số tiền khớp
+ * 4. Kiểm tra đơn chưa xử lý (tránh double-spending)
+ * 5. Nếu thanh toán thành công → trừ kho + cập nhật trạng thái 'Paid'
+ */
+const handleVnpayIPN = async (vnpParams) => {
+    // ── 1. Verify chữ ký ──────────────────────────────────────────
+    const result = verifyReturnUrl(vnpParams);
+
+    if (!result.isValid) {
+        return { RspCode: '97', Message: 'Invalid checksum' };
+    }
+
+    // ── 2. Tìm đơn hàng ──────────────────────────────────────────
+    const order = await Order.findById(result.txnRef);
+    if (!order) {
+        return { RspCode: '01', Message: 'Order not found' };
+    }
+
+    // ── 3. Kiểm tra số tiền khớp ─────────────────────────────────
+    if (result.amount !== order.totalPrice) {
+        return { RspCode: '04', Message: 'Invalid amount' };
+    }
+
+    // ── 4. Kiểm tra đơn chưa xử lý (tránh double-spending) ──────
+    if (order.status !== 'Pending') {
+        return { RspCode: '02', Message: 'Order already processed' };
+    }
+
+    // ── 5. Xử lý theo kết quả thanh toán ─────────────────────────
+    if (result.responseCode === '00') {
+        // Thanh toán THÀNH CÔNG → trừ kho + cập nhật trạng thái
+        const allDeductions = [];
+        try {
+            for (const item of order.products) {
+                const deductions = await deductStockFIFO(item.productId, item.quantity);
+                allDeductions.push({ productId: item.productId, deductions });
+            }
+        } catch (err) {
+            // Rollback nếu trừ kho lỗi
+            for (const record of allDeductions) {
+                const totalDeducted = record.deductions.reduce((sum, d) => sum + d.deducted, 0);
+                if (totalDeducted > 0) {
+                    await restoreStock(record.productId, totalDeducted);
+                }
+            }
+            console.error('[VNPAY IPN] Trừ kho lỗi:', err.message);
+            return { RspCode: '99', Message: 'Stock deduction failed' };
+        }
+
+        // Cập nhật đơn hàng
+        order.status = 'Paid';
+        order.vnpayTransactionNo = result.transactionNo || '';
+        order.vnpayBankCode = result.bankCode || '';
+        order.paidAt = new Date();
+        await order.save();
+
+        // Xóa giỏ hàng
+        await Cart.findOneAndUpdate({ userId: order.userId }, { products: [] });
+
+        return { RspCode: '00', Message: 'success' };
+    } else {
+        // Thanh toán THẤT BẠI → hủy đơn
+        order.status = 'Cancelled';
+        await order.save();
+
+        return { RspCode: '00', Message: 'success' };
+    }
+};
+
+/**
+ * Xử lý Return URL — User được redirect về FE sau khi thanh toán.
+ * Verify checksum và trả kết quả cho frontend hiển thị.
+ *
+ * @param {object} vnpParams - Query params từ VNPay
+ * @returns {object} Kết quả để frontend hiển thị
+ */
+const handleVnpayReturn = async (vnpParams) => {
+    const result = verifyReturnUrl(vnpParams);
+
+    if (!result.isValid) {
+        throw createError(400, 'Chữ ký không hợp lệ. Kết quả thanh toán có thể bị giả mạo');
+    }
+
+    const order = await Order.findById(result.txnRef).populate('userId', 'name email');
+    if (!order) {
+        throw createError(404, 'Không tìm thấy đơn hàng');
+    }
+
+    return {
+        success: result.responseCode === '00',
+        order,
+        transactionNo: result.transactionNo,
+        bankCode: result.bankCode,
+        payDate: result.payDate,
+    };
+};
+
+/**
  * Lấy danh sách đơn hàng của user.
  * @param {string} userId
  * @param {object} query - { page, limit, status }
@@ -227,7 +414,7 @@ const getMyOrders = async (userId, query = {}) => {
 
     // Xây filter
     const filter = { userId };
-    if (status && ['Pending', 'Processing', 'Shipping', 'Delivered', 'Cancelled'].includes(status)) {
+    if (status && ['Pending', 'Paid', 'Processing', 'Shipping', 'Delivered', 'Cancelled'].includes(status)) {
         filter.status = status;
     }
 
@@ -321,6 +508,7 @@ const updateOrderStatus = async (orderId, newStatus) => {
     // Validate luồng trạng thái hợp lệ
     const validTransitions = {
         Pending: ['Processing', 'Cancelled'],
+        Paid: ['Processing', 'Cancelled'],       // VNPay đã thanh toán → xử lý
         Processing: ['Shipping', 'Cancelled'],
         Shipping: ['Delivered'],
         Delivered: [],    // Không thể chuyển tiếp
@@ -360,7 +548,7 @@ const getAllOrders = async (query = {}) => {
     const skip = (pageNum - 1) * limitNum;
 
     const filter = {};
-    if (status && ['Pending', 'Processing', 'Shipping', 'Delivered', 'Cancelled'].includes(status)) {
+    if (status && ['Pending', 'Paid', 'Processing', 'Shipping', 'Delivered', 'Cancelled'].includes(status)) {
         filter.status = status;
     }
 
@@ -386,6 +574,9 @@ const getAllOrders = async (query = {}) => {
 
 module.exports = {
     createOrderCOD,
+    createOrderVNPay,
+    handleVnpayIPN,
+    handleVnpayReturn,
     getMyOrders,
     getOrderById,
     cancelOrder,

@@ -18,6 +18,8 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderListPage from './pages/OrderListPage';
+import OrderSuccessPage from './pages/OrderSuccessPage';
+import AdminOrderPage from './pages/AdminOrderPage';
 
 // ── App Component ─────────────────────────────────────────────
 function App() {
@@ -76,6 +78,14 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+                    <Route
+                        path="/order-success"
+                        element={
+                            <ProtectedRoute>
+                                <OrderSuccessPage />
+                            </ProtectedRoute>
+                        }
+                    />
 
                     {/* --- Routes Admin (cần đăng nhập + quyền admin) --- */}
                     <Route
@@ -122,6 +132,16 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <AdminDashboardPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* Quản lý Đơn hàng (Admin) */}
+                    <Route
+                        path="/admin/orders"
+                        element={
+                            <ProtectedRoute>
+                                <AdminOrderPage />
                             </ProtectedRoute>
                         }
                     />
