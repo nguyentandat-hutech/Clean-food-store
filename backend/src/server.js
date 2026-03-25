@@ -21,13 +21,19 @@ const userRoutes = require('./routes/userRoutes');
 const farmRoutes = require('./routes/farmRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const productRoutes = require('./routes/productRoutes');
+const batchRoutes = require('./routes/batchRoutes');
+const inventoryRoutes = require('./routes/inventoryRoutes');
+const { startExpiryChecker } = require('./cron/expiryChecker');
 
 // ── Khởi tạo app ────────────────────────────────────────────
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ── Kết nối Database ────────────────────────────────────────
-connectDB();
+connectDB().then(() => {
+    // Khởi động Cron Job SAU khi kết nối DB thành công
+    startExpiryChecker();
+});
 
 // ── Bảo mật & Logging Middlewares ───────────────────────────
 app.use(helmet());           // Thiết lập các HTTP security headers
@@ -57,6 +63,8 @@ app.use('/api/users', userRoutes);  // Quản lý profile người dùng
 app.use('/api/farms', farmRoutes);           // Quản lý đối tác trang trại
 app.use('/api/categories', categoryRoutes); // Quản lý danh mục sản phẩm
 app.use('/api/products', productRoutes);     // Quản lý sản phẩm
+app.use('/api/batches', batchRoutes);         // Quản lý lô hàng & tồn kho
+app.use('/api/inventory', inventoryRoutes);   // Cảnh báo & thống kê tồn kho
 
 // Bắt route không tồn tại (404) - phải đặt SAU tất cả routes
 app.use((req, res) => {
