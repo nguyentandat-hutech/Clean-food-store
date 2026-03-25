@@ -192,8 +192,8 @@ const getAllProducts = async (query) => {
  */
 const getProductById = async (productId) => {
     const product = await Product.findById(productId)
-        .populate('category', 'name slug description')
-        .populate('farm', 'name location contact certificate')
+        .populate('category', 'name slug description image')
+        .populate('farm', 'name location contact certificate description isActive')
         .populate('createdBy', 'name email');
 
     if (!product) {

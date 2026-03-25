@@ -23,9 +23,21 @@ const getProductById = async (req, res) => {
 /**
  * POST /api/products
  * Tạo sản phẩm mới (Admin only).
- * Body: { name, description?, price, unit, category, farm, standards, harvestDate, expiryDate, images? }
+ * Hỗ trợ FormData (multipart/form-data) để upload ảnh qua Multer.
+ * Body: { name, description?, price, unit, category, farm, standards, harvestDate, expiryDate }
+ * Files: images (tối đa 5 file ảnh)
  */
 const createProduct = async (req, res) => {
+    // Multer đã lưu file vào uploads/products/ → lấy đường dẫn URL
+    if (req.files && req.files.length > 0) {
+        req.body.images = req.files.map((file) => `/uploads/products/${file.filename}`);
+    }
+
+    // Chuyển price từ string (FormData) sang number
+    if (req.body.price !== undefined) {
+        req.body.price = Number(req.body.price);
+    }
+
     const product = await productService.createProduct(req.body, req.user._id);
     return successResponse(res, 201, 'Tạo sản phẩm thành công', { product });
 };
@@ -33,9 +45,19 @@ const createProduct = async (req, res) => {
 /**
  * PUT /api/products/:id
  * Cập nhật thông tin sản phẩm (Admin only).
- * Body: bất kỳ field nào muốn update
+ * Hỗ trợ FormData để upload ảnh mới.
  */
 const updateProduct = async (req, res) => {
+    // Nếu có upload ảnh mới → thêm vào mảng images
+    if (req.files && req.files.length > 0) {
+        req.body.images = req.files.map((file) => `/uploads/products/${file.filename}`);
+    }
+
+    // Chuyển price từ string (FormData) sang number
+    if (req.body.price !== undefined) {
+        req.body.price = Number(req.body.price);
+    }
+
     const product = await productService.updateProduct(req.params.id, req.body);
     return successResponse(res, 200, 'Cập nhật sản phẩm thành công', { product });
 };

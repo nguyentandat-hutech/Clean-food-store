@@ -8,6 +8,7 @@ require('express-async-errors');
 require('dotenv').config();
 
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
@@ -44,6 +45,9 @@ app.use(cors(corsOptions));
 // ── Body Parser Middlewares ──────────────────────────────────
 app.use(express.json());                        // Đọc body dạng JSON
 app.use(express.urlencoded({ extended: true })); // Đọc body dạng URL-encoded
+
+// ── Serve Static Files (ảnh sản phẩm upload) ────────────────
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // ── Routes ──────────────────────────────────────────────────
 // Tất cả API endpoints bắt đầu bằng /api
