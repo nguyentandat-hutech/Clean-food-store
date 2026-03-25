@@ -81,6 +81,19 @@ const productSchema = new mongoose.Schema(
             enum: ['Đang bán', 'Khuyến mãi', 'Ngừng kinh doanh'],
             default: 'Đang bán',
         },
+        // Điểm đánh giá trung bình (tự động tính từ Reviews)
+        averageRating: {
+            type: Number,
+            default: 0,
+            min: [0, 'Điểm đánh giá không được âm'],
+            max: [5, 'Điểm đánh giá tối đa là 5'],
+        },
+        // Tổng số lượt đánh giá
+        reviewCount: {
+            type: Number,
+            default: 0,
+            min: [0, 'Số lượt đánh giá không được âm'],
+        },
         // Người tạo (admin) — lưu để audit trail
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,
