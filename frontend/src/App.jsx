@@ -10,6 +10,8 @@ import NotFoundPage from './pages/NotFoundPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminCategoryPage from './pages/AdminCategoryPage';
 import AdminProductPage from './pages/AdminProductPage';
+import AdminBatchPage from './pages/AdminBatchPage';
+import InventoryReportPage from './pages/InventoryReportPage';
 import ProductListPage from './pages/ProductListPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 
@@ -60,6 +62,26 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <AdminProductPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* Quản lý Lô hàng */}
+                    <Route
+                        path="/admin/batches"
+                        element={
+                            <ProtectedRoute>
+                                <AdminBatchPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* Báo cáo Tồn kho */}
+                    <Route
+                        path="/admin/inventory"
+                        element={
+                            <ProtectedRoute>
+                                <InventoryReportPage />
                             </ProtectedRoute>
                         }
                     />

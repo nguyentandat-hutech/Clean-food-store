@@ -21,6 +21,7 @@ const userRoutes = require('./routes/userRoutes');
 const farmRoutes = require('./routes/farmRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const productRoutes = require('./routes/productRoutes');
+const batchRoutes = require('./routes/batchRoutes');
 
 // ── Khởi tạo app ────────────────────────────────────────────
 const app = express();
@@ -57,6 +58,7 @@ app.use('/api/users', userRoutes);  // Quản lý profile người dùng
 app.use('/api/farms', farmRoutes);           // Quản lý đối tác trang trại
 app.use('/api/categories', categoryRoutes); // Quản lý danh mục sản phẩm
 app.use('/api/products', productRoutes);     // Quản lý sản phẩm
+app.use('/api/batches', batchRoutes);         // Quản lý lô hàng & tồn kho
 
 // Bắt route không tồn tại (404) - phải đặt SAU tất cả routes
 app.use((req, res) => {
