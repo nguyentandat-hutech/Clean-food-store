@@ -15,6 +15,11 @@ import InventoryReportPage from './pages/InventoryReportPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import ProductListPage from './pages/ProductListPage';
 import ProductDetailPage from './pages/ProductDetailPage';
+import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import OrderListPage from './pages/OrderListPage';
+import OrderSuccessPage from './pages/OrderSuccessPage';
+import AdminOrderPage from './pages/AdminOrderPage';
 
 // ── App Component ─────────────────────────────────────────────
 function App() {
@@ -44,6 +49,40 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <ProfilePage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* --- Routes Giỏ hàng & Đặt hàng (cần đăng nhập) --- */}
+                    <Route
+                        path="/cart"
+                        element={
+                            <ProtectedRoute>
+                                <CartPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/checkout"
+                        element={
+                            <ProtectedRoute>
+                                <CheckoutPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/orders"
+                        element={
+                            <ProtectedRoute>
+                                <OrderListPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/order-success"
+                        element={
+                            <ProtectedRoute>
+                                <OrderSuccessPage />
                             </ProtectedRoute>
                         }
                     />
@@ -93,6 +132,16 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <AdminDashboardPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* Quản lý Đơn hàng (Admin) */}
+                    <Route
+                        path="/admin/orders"
+                        element={
+                            <ProtectedRoute>
+                                <AdminOrderPage />
                             </ProtectedRoute>
                         }
                     />
