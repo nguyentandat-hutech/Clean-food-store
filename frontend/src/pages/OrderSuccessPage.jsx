@@ -102,7 +102,7 @@ const OrderSuccessPage = () => {
                     {result.order && (
                         <div style={{ textAlign: 'left', marginTop: 20, padding: 15, background: '#fff', borderRadius: 8, border: '1px solid #ddd' }}>
                             <p><strong>Mã đơn hàng:</strong> {result.order._id}</p>
-                            <p><strong>Tổng tiền:</strong> <span style={{ color: '#c00', fontWeight: 'bold' }}>{formatPrice(result.order.totalPrice)}</span></p>
+                            <p><strong>Tổng tiền:</strong> <span style={{ color: '#c00', fontWeight: 'bold' }}>{formatPrice(result.order.finalPrice)}</span></p>
                             <p><strong>Phương thức:</strong> {result.paymentMethod === 'VNPay' ? '💳 VNPay' : '💵 COD'}</p>
                             <p><strong>Trạng thái:</strong> {result.order.status === 'Paid' ? '✅ Đã thanh toán' : result.order.status === 'Pending' ? '⏳ Chờ xử lý' : result.order.status}</p>
 
@@ -116,7 +116,7 @@ const OrderSuccessPage = () => {
 
                             {/* Sản phẩm */}
                             <h4 style={{ margin: '15px 0 8px' }}>Sản phẩm đã đặt:</h4>
-                            {result.order.products?.map((p, idx) => (
+                            {result.order.items?.map((p, idx) => (
                                 <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', fontSize: 14 }}>
                                     <span>{p.name} x{p.quantity}</span>
                                     <span>{formatPrice(p.subtotal)}</span>

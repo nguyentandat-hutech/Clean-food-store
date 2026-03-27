@@ -2,6 +2,7 @@ const cron = require('node-cron');
 const mongoose = require('mongoose');
 const Batch = require('../models/Batch');
 const Product = require('../models/Product');
+const { syncInventory } = require('../services/inventoryService');
 
 /**
  * ── CRON JOB: Kiểm tra hạn sử dụng lô hàng ────────────────────
@@ -102,6 +103,9 @@ const runExpiryCheck = async () => {
             if (product.status !== newStatus) {
                 await Product.findByIdAndUpdate(productId, { status: newStatus });
             }
+
+            // Đồng bộ Inventory cho sản phẩm này (batch có thể vừa hết hạn)
+            await syncInventory(productId);
         }
 
         const duration = Date.now() - startTime;

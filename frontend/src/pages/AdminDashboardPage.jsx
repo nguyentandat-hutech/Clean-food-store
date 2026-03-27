@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {
     LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
@@ -96,7 +97,27 @@ function AdminDashboardPage() {
 
     return (
         <div style={{ maxWidth: 1200, margin: '0 auto', padding: 20 }}>
-            <h1 style={{ marginBottom: 24, color: '#1b5e20' }}>📊 Dashboard Admin</h1>
+            <h1 style={{ marginBottom: 16, color: '#1b5e20' }}>📊 Dashboard Admin</h1>
+
+            {/* ── Điều hướng nhanh ──────────────────────────── */}
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 24 }}>
+                {[
+                    { to: '/admin/products', label: '🥦 Sản phẩm', color: '#1b5e20' },
+                    { to: '/admin/categories', label: '🏷️ Danh mục', color: '#f57c00' },
+                    { to: '/admin/farms', label: '🌱 Trang trại', color: '#2e7d32' },
+                    { to: '/admin/batches', label: '📋 Lô hàng', color: '#0277bd' },
+                    { to: '/admin/orders', label: '🧾 Đơn hàng', color: '#6a1b9a' },
+                    { to: '/admin/inventory', label: '📊 Tồn kho', color: '#4e342e' },
+                    { to: '/admin/discounts', label: '🏷️ Mã giảm giá', color: '#e65100' },
+                ].map(({ to, label, color }) => (
+                    <Link key={to} to={to} style={{
+                        padding: '7px 16px', background: color, color: '#fff',
+                        borderRadius: 6, textDecoration: 'none', fontWeight: 600, fontSize: 13,
+                    }}>
+                        {label}
+                    </Link>
+                ))}
+            </div>
 
             {loading ? (
                 <p style={{ textAlign: 'center', color: '#757575', padding: 40 }}>Đang tải dữ liệu thống kê...</p>

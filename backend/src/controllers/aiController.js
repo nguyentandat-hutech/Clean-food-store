@@ -20,8 +20,13 @@ const scanFreshness = async (req, res) => {
 
     const { path: filePath, mimetype } = req.file;
 
-    // Gọi AI Service để phân tích ảnh
-    const result = await aiService.analyzeImageFreshness(filePath, mimetype);
+    // Gọi AI Service để phân tích ảnh (truyền userId và IP để ghi log)
+    const result = await aiService.analyzeImageFreshness(
+        filePath,
+        mimetype,
+        req.user?._id ?? null,
+        req.ip || ''
+    );
 
     return successResponse(res, 200, 'Phân tích AI hoàn tất.', {
         status: result.status,

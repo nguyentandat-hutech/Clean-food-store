@@ -9,14 +9,14 @@ const { successResponse } = require('../utils/responseHelper');
 
 // POST /api/orders/checkout — Đặt hàng COD
 const checkout = async (req, res) => {
-    const { shippingAddress, note } = req.body;
-    const order = await orderService.createOrderCOD(req.user._id, shippingAddress, note);
+    const { shippingAddress, note, discountCode } = req.body;
+    const order = await orderService.createOrderCOD(req.user._id, shippingAddress, note, discountCode);
     return successResponse(res, 201, 'Đặt hàng COD thành công', order);
 };
 
 // POST /api/orders/checkout-vnpay — Đặt hàng VNPay (trả URL thanh toán)
 const checkoutVNPay = async (req, res) => {
-    const { shippingAddress, bankCode, note } = req.body;
+    const { shippingAddress, bankCode, note, discountCode } = req.body;
 
     // Lấy IP client (hỗ trợ proxy/nginx)
     const ipAddr =
@@ -30,7 +30,8 @@ const checkoutVNPay = async (req, res) => {
         shippingAddress,
         ipAddr,
         bankCode,
-        note
+        note,
+        discountCode
     );
 
     return successResponse(res, 200, 'Tạo URL thanh toán VNPay thành công', {

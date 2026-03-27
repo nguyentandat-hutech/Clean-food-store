@@ -6,14 +6,14 @@ import apiClient from '../services/apiClient';
  */
 
 // Đặt hàng COD
-export const checkoutCODAPI = async (shippingAddress, note = '') => {
-    const res = await apiClient.post('/orders/checkout', { shippingAddress, note });
+export const checkoutCODAPI = async (shippingAddress, note = '', discountCode = '') => {
+    const res = await apiClient.post('/orders/checkout', { shippingAddress, note, discountCode });
     return res.data.data;
 };
 
 // Đặt hàng VNPay — trả về { order, paymentUrl }
-export const checkoutVNPayAPI = async (shippingAddress, bankCode = '', note = '') => {
-    const res = await apiClient.post('/orders/checkout-vnpay', { shippingAddress, bankCode, note });
+export const checkoutVNPayAPI = async (shippingAddress, bankCode = '', note = '', discountCode = '') => {
+    const res = await apiClient.post('/orders/checkout-vnpay', { shippingAddress, bankCode, note, discountCode });
     return res.data.data;
 };
 

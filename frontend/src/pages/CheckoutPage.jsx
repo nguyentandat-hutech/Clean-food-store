@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCartAPI } from '../api/cartService';
 import { checkoutCODAPI, checkoutVNPayAPI } from '../api/orderService';
+import { validateDiscountAPI } from '../api/discountService';
 
 /**
  * ── CheckoutPage ─────────────────────────────────────────────────
@@ -15,6 +16,12 @@ const CheckoutPage = () => {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
+
+    // Discount code state
+    const [discountCode, setDiscountCode] = useState('');
+    const [discountInfo, setDiscountInfo] = useState(null);  // { discountAmount, finalPrice, discount }
+    const [discountError, setDiscountError] = useState('');
+    const [validatingDiscount, setValidatingDiscount] = useState(false);
 
     // Form dữ liệu
     const [formData, setFormData] = useState({
@@ -50,6 +57,31 @@ const CheckoutPage = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    // Validate mã giảm giá
+    const handleValidateDiscount = async () => {
+        setDiscountError('');
+        setDiscountInfo(null);
+        if (!discountCode.trim()) return setDiscountError('Vui lòng nhập mã giảm giá');
+        const cartTotal = cart?.products?.reduce(
+            (sum, item) => sum + item.productId.price * item.quantity, 0
+        ) || 0;
+        try {
+            setValidatingDiscount(true);
+            const data = await validateDiscountAPI(discountCode.trim(), cartTotal);
+            setDiscountInfo(data);
+        } catch (err) {
+            setDiscountError(err.response?.data?.message || 'Mã giảm giá không hợp lệ');
+        } finally {
+            setValidatingDiscount(false);
+        }
+    };
+
+    const handleRemoveDiscount = () => {
+        setDiscountCode('');
+        setDiscountInfo(null);
+        setDiscountError('');
+    };
+
     // Gửi đặt hàng
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -72,7 +104,7 @@ const CheckoutPage = () => {
 
             if (formData.paymentMethod === 'COD') {
                 // ── COD: Tạo đơn → chuyển trang thành công ───────────
-                const order = await checkoutCODAPI(shippingAddress, formData.note.trim());
+                const order = await checkoutCODAPI(shippingAddress, formData.note.trim(), discountInfo ? discountCode.trim() : '');
                 navigate('/order-success', {
                     state: {
                         success: true,
@@ -81,11 +113,12 @@ const CheckoutPage = () => {
                     },
                 });
             } else {
-                // ── VNPay: Tạo đơn → redirect sang VNPay ────────────
+                // ── VNPay: Tạo đơn → redirect sang VNPay ────────────────
                 const result = await checkoutVNPayAPI(
                     shippingAddress,
                     formData.bankCode,
-                    formData.note.trim()
+                    formData.note.trim(),
+                    discountInfo ? discountCode.trim() : ''
                 );
                 // Redirect trình duyệt sang trang VNPay
                 window.location.href = result.paymentUrl;
@@ -150,6 +183,37 @@ const CheckoutPage = () => {
                                 placeholder="Giao giờ hành chính..." rows={2}
                                 style={{ width: '100%', padding: 10, border: '1px solid #ccc', borderRadius: 4, boxSizing: 'border-box', resize: 'vertical' }}
                             />
+                        </div>
+
+                        {/* Mã giảm giá */}
+                        <div style={{ marginBottom: 15, padding: 12, background: '#f0fff4', border: '1px solid #c3e6cb', borderRadius: 6 }}>
+                            <strong style={{ display: 'block', marginBottom: 8 }}>🏷️ Mã giảm giá</strong>
+                            {!discountInfo ? (
+                                <div style={{ display: 'flex', gap: 8 }}>
+                                    <input
+                                        type="text"
+                                        value={discountCode}
+                                        onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+                                        placeholder="Nhập mã giảm giá"
+                                        style={{ flex: 1, padding: '8px 10px', border: '1px solid #ccc', borderRadius: 4 }}
+                                    />
+                                    <button type="button" onClick={handleValidateDiscount} disabled={validatingDiscount}
+                                        style={{ padding: '8px 14px', background: '#28a745', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                                    >
+                                        {validatingDiscount ? '...' : 'Áp dụng'}
+                                    </button>
+                                </div>
+                            ) : (
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span style={{ color: '#155724' }}>
+                                        ✅ <strong>{discountInfo.discount.code}</strong> — Giảm {formatPrice(discountInfo.discountAmount)}
+                                    </span>
+                                    <button type="button" onClick={handleRemoveDiscount}
+                                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#c00', fontWeight: 'bold', fontSize: 18 }}
+                                    >×</button>
+                                </div>
+                            )}
+                            {discountError && <p style={{ color: '#c00', fontSize: 13, marginTop: 6 }}>{discountError}</p>}
                         </div>
 
                         {/* Chọn phương thức thanh toán */}
@@ -225,11 +289,32 @@ const CheckoutPage = () => {
                                     </div>
                                 </div>
                             ))}
-                            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0 0', marginTop: 8, borderTop: '2px solid #333' }}>
-                                <strong>Tổng cộng:</strong>
-                                <span style={{ fontSize: 20, fontWeight: 'bold', color: '#c00' }}>
-                                    {formatPrice(cart.totalPrice)}
-                                </span>
+                            <div style={{ paddingTop: 8, marginTop: 8, borderTop: '2px solid #333' }}>
+                                {discountInfo ? (
+                                    <>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}>
+                                            <span>Tạm tính:</span>
+                                            <span>{formatPrice(cart.totalPrice)}</span>
+                                        </div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', color: '#28a745' }}>
+                                            <span>Giảm giá ({discountInfo.discount.code}):</span>
+                                            <span>-{formatPrice(discountInfo.discountAmount)}</span>
+                                        </div>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0 0', borderTop: '1px solid #ccc', marginTop: 4 }}>
+                                            <strong>Thành tiền:</strong>
+                                            <span style={{ fontSize: 20, fontWeight: 'bold', color: '#c00' }}>
+                                                {formatPrice(discountInfo.finalPrice)}
+                                            </span>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <strong>Tổng cộng:</strong>
+                                        <span style={{ fontSize: 20, fontWeight: 'bold', color: '#c00' }}>
+                                            {formatPrice(cart.totalPrice)}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <button onClick={() => navigate('/cart')} style={{ marginTop: 10, padding: '8px 16px', cursor: 'pointer' }}>

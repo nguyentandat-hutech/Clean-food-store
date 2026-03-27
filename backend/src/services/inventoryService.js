@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Batch = require('../models/Batch');
 const Product = require('../models/Product');
+const Inventory = require('../models/Inventory');
 
 /**
  * ── Inventory Service ───────────────────────────────────────────
@@ -83,4 +84,51 @@ const getInventoryAlerts = async (warningDays = 3) => {
     };
 };
 
-module.exports = { getInventoryAlerts };
+/**
+ * Đồng bộ số lượng tồn kho thực tế cho 1 sản phẩm vào collection Inventory.
+ * Được gọi sau khi tạo / cập nhật / xóa Batch.
+ *
+ * Logic: Tính tổng quantity của các lô còn hạn + còn hàng,
+ * sau đó upsert vào Inventory (tạo mới nếu chưa có, cập nhật nếu đã có).
+ *
+ * @param {string|ObjectId} productId
+ * @returns {object} Inventory document đã cập nhật
+ */
+const syncInventory = async (productId) => {
+    const now = new Date();
+
+    // Tính tổng tồn kho thực tế từ Batch
+    const result = await Batch.aggregate([
+        {
+            $match: {
+                product: new mongoose.Types.ObjectId(productId),
+                expiryDate: { $gt: now },
+                quantity: { $gt: 0 },
+            },
+        },
+        {
+            $group: {
+                _id: '$product',
+                totalQuantity: { $sum: '$quantity' },
+            },
+        },
+    ]);
+
+    const quantity = result.length > 0 ? result[0].totalQuantity : 0;
+
+    // Upsert: tạo mới hoặc cập nhật document Inventory cho sản phẩm này
+    const inventory = await Inventory.findOneAndUpdate(
+        { product: productId },
+        {
+            $set: {
+                quantity,
+                lastSynced: new Date(),
+            },
+        },
+        { upsert: true, new: true }
+    );
+
+    return inventory;
+};
+
+module.exports = { getInventoryAlerts, syncInventory };

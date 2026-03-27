@@ -27,7 +27,7 @@ const sortObject = (obj) => {
  * Tạo URL thanh toán VNPay.
  * User sẽ được redirect tới URL này để thanh toán trên cổng VNPay.
  *
- * @param {object} order - Đơn hàng đã tạo (cần _id, totalPrice)
+ * @param {object} order - Đơn hàng đã tạo (cần _id, finalPrice)
  * @param {string} ipAddr - Địa chỉ IP của client
  * @param {string} bankCode - Mã ngân hàng (tùy chọn, '' = chọn trên VNPay)
  * @returns {string} URL thanh toán VNPay
@@ -38,11 +38,11 @@ const createPaymentUrl = (order, ipAddr, bankCode = '') => {
     // Format ngày giờ: yyyyMMddHHmmss
     const createDate = formatDate(date);
 
-    // Mã giao dịch duy nhất (dùng OrderId + timestamp để tránh trùng)
+    // Mã giao dịch duy nhất (dùng OrderId)
     const txnRef = order._id.toString();
 
-    // Số tiền × 100 (VNPay yêu cầu đơn vị nhỏ nhất = đồng × 100)
-    const amount = Math.round(order.totalPrice * 100);
+    // Dùng finalPrice (sau giảm giá) — số tiền × 100 (VNPay yêu cầu đơn vị nhỏ nhất)
+    const amount = Math.round(order.finalPrice * 100);
 
     // Xây dựng các tham số yêu cầu
     let vnpParams = {

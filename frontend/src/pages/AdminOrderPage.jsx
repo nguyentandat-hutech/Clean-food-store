@@ -152,14 +152,14 @@ const AdminOrderPage = () => {
 
                                     {/* Sản phẩm */}
                                     <td style={{ padding: 10, fontSize: 13 }}>
-                                        {order.products.map((p, idx) => (
+                                        {(order.items || []).map((p, idx) => (
                                             <div key={idx}>{p.name} x{p.quantity}</div>
                                         ))}
                                     </td>
 
                                     {/* Tổng tiền */}
                                     <td style={{ padding: 10, textAlign: 'right', fontWeight: 'bold' }}>
-                                        {formatPrice(order.totalPrice)}
+                                        {formatPrice(order.finalPrice)}
                                     </td>
 
                                     {/* Phương thức */}

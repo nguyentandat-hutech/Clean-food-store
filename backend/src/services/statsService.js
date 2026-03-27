@@ -5,6 +5,7 @@
 
 const mongoose = require('mongoose');
 const Order = require('../models/Order');
+const OrderItem = require('../models/OrderItem');
 const Batch = require('../models/Batch');
 const { createError } = require('../utils/responseHelper');
 
@@ -36,7 +37,7 @@ const getRevenue = async (period = 'monthly') => {
         {
             $group: {
                 _id: dateGroupExpression,
-                totalRevenue: { $sum: '$totalPrice' },
+                totalRevenue: { $sum: '$finalPrice' },
                 orderCount: { $sum: 1 },
             },
         },
@@ -59,18 +60,26 @@ const getRevenue = async (period = 'monthly') => {
 const getTopSellers = async (limit = 5) => {
     const limitNum = Math.min(20, Math.max(1, parseInt(limit, 10) || 5));
 
+    // Dùng OrderItem collection vì Order không còn embed products[]
     const pipeline = [
-        // Chỉ lấy đơn hàng đã giao thành công
-        { $match: { status: 'Delivered' } },
-        // Tách mảng products thành từng document riêng
-        { $unwind: '$products' },
+        // Chỉ lấy các item thuộc đơn hàng đã giao thành công
+        {
+            $lookup: {
+                from: 'orders',
+                localField: 'orderId',
+                foreignField: '_id',
+                as: 'order',
+            },
+        },
+        { $unwind: '$order' },
+        { $match: { 'order.status': 'Delivered' } },
         // Nhóm theo productId, tính tổng quantity và revenue
         {
             $group: {
-                _id: '$products.productId',
-                productName: { $first: '$products.name' },
-                totalQuantity: { $sum: '$products.quantity' },
-                totalRevenue: { $sum: '$products.subtotal' },
+                _id: '$productId',
+                productName: { $first: '$name' },
+                totalQuantity: { $sum: '$quantity' },
+                totalRevenue: { $sum: '$subtotal' },
             },
         },
         // Sắp xếp theo số lượng bán ra giảm dần
@@ -98,7 +107,7 @@ const getTopSellers = async (limit = 5) => {
         },
     ];
 
-    const result = await Order.aggregate(pipeline);
+    const result = await OrderItem.aggregate(pipeline);
 
     return result;
 };

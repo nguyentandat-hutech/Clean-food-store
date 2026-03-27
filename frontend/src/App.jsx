@@ -20,6 +20,8 @@ import CheckoutPage from './pages/CheckoutPage';
 import OrderListPage from './pages/OrderListPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
 import AdminOrderPage from './pages/AdminOrderPage';
+import AdminFarmPage from './pages/AdminFarmPage';
+import AdminDiscountPage from './pages/AdminDiscountPage';
 import FreshnessScanner from './pages/FreshnessScanner';
 
 // ── App Component ─────────────────────────────────────────────
@@ -93,8 +95,17 @@ function App() {
                     <Route
                         path="/admin/categories"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute roles={['admin']}>
                                 <AdminCategoryPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/admin/farms"
+                        element={
+                            <ProtectedRoute roles={['admin']}>
+                                <AdminFarmPage />
                             </ProtectedRoute>
                         }
                     />
@@ -102,7 +113,7 @@ function App() {
                     <Route
                         path="/admin/products"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute roles={['admin']}>
                                 <AdminProductPage />
                             </ProtectedRoute>
                         }
@@ -112,7 +123,7 @@ function App() {
                     <Route
                         path="/admin/batches"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute roles={['admin']}>
                                 <AdminBatchPage />
                             </ProtectedRoute>
                         }
@@ -122,7 +133,7 @@ function App() {
                     <Route
                         path="/admin/inventory"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute roles={['admin']}>
                                 <InventoryReportPage />
                             </ProtectedRoute>
                         }
@@ -132,7 +143,7 @@ function App() {
                     <Route
                         path="/admin/dashboard"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute roles={['admin']}>
                                 <AdminDashboardPage />
                             </ProtectedRoute>
                         }
@@ -142,8 +153,18 @@ function App() {
                     <Route
                         path="/admin/orders"
                         element={
-                            <ProtectedRoute>
+                            <ProtectedRoute roles={['admin']}>
                                 <AdminOrderPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* Quản lý Mã giảm giá (Admin) */}
+                    <Route
+                        path="/admin/discounts"
+                        element={
+                            <ProtectedRoute roles={['admin']}>
+                                <AdminDiscountPage />
                             </ProtectedRoute>
                         }
                     />

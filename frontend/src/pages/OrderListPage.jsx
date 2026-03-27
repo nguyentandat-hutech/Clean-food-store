@@ -60,6 +60,7 @@ const OrderListPage = () => {
     // Màu sắc trạng thái
     const statusColor = {
         Pending: '#ff9800',
+        Paid: '#00bcd4',
         Processing: '#2196f3',
         Shipping: '#9c27b0',
         Delivered: '#4caf50',
@@ -69,6 +70,7 @@ const OrderListPage = () => {
     // Label trạng thái tiếng Việt
     const statusLabel = {
         Pending: 'Chờ xử lý',
+        Paid: 'Đã thanh toán',
         Processing: 'Đang xử lý',
         Shipping: 'Đang giao',
         Delivered: 'Đã giao',
@@ -112,7 +114,7 @@ const OrderListPage = () => {
                                     }}>
                                         {statusLabel[order.status] || order.status}
                                     </span>
-                                    <strong>{formatPrice(order.totalPrice)}</strong>
+                                    <strong>{formatPrice(order.finalPrice)}</strong>
                                     <span>{expandedId === order._id ? '▲' : '▼'}</span>
                                 </div>
                             </div>
@@ -132,7 +134,7 @@ const OrderListPage = () => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {order.products.map((p, idx) => (
+                                            {(order.items || []).map((p, idx) => (
                                                 <tr key={idx} style={{ borderBottom: '1px solid #eee' }}>
                                                     <td style={{ padding: 6 }}>{p.name} ({p.unit})</td>
                                                     <td style={{ padding: 6, textAlign: 'center' }}>{p.quantity}</td>
