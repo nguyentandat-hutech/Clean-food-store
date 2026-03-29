@@ -9,10 +9,9 @@ const fs = require('fs');
 const { createError } = require('../utils/responseHelper');
 
 // Đảm bảo thư mục uploads/ai-temp/ tồn tại
+// mkdirSync với recursive:true không throw nếu đã có — không cần existsSync check
 const uploadDir = path.join(__dirname, '../../uploads/ai-temp');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
+fs.mkdirSync(uploadDir, { recursive: true });
 
 // ── Cấu hình lưu trữ ảnh tạm ─────────────────────────────────
 const storage = multer.diskStorage({

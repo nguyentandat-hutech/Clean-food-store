@@ -1,6 +1,6 @@
 @echo off
 REM ============================================================
-REM start_yolo_server.bat — Khởi động Python YOLO Inference Server
+REM start_yolo_server.bat  Khởi động Python YOLO Inference Server
 REM Chạy file này trước khi start Node.js backend
 REM ============================================================
 

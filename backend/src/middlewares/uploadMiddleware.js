@@ -1,12 +1,18 @@
+const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
 const { createError } = require('../utils/responseHelper');
+
+// ── Tạo thư mục một lần khi module được tải ───────────────────────────
+// mkdirSync với recursive:true không throw nếu thư mục đã tồn tại — an toàn khi gọi nhiều lần
+const UPLOAD_DIR = path.join(__dirname, '../../uploads/products');
+fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 // ── Cấu hình nơi lưu file upload ──────────────────────────────
 const storage = multer.diskStorage({
     // Thư mục đích: backend/uploads/products/
     destination: function (req, file, cb) {
-        cb(null, path.join(__dirname, '../../uploads/products'));
+        cb(null, UPLOAD_DIR);
     },
     // Đặt tên file: timestamp + random + extension gốc
     filename: function (req, file, cb) {

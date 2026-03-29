@@ -8,13 +8,14 @@
 fastapi==0.115.5
 uvicorn[standard]==0.32.1
 
-# ── Roboflow Inference SDK (tải model YOLOv8 local) ─────────
-# Inference SDK - tự động tải weights YOLOv8 từ Roboflow lần đầu chạy
-inference-sdk==0.26.0
+# ── Roboflow Inference SDK (HTTP client gọi Roboflow API) ───────
+# inference-sdk: gọi API Roboflow để chạy model từ xa (nhẹ, ít dependency)
+# Cung cấp: from inference_sdk import InferenceHTTPClient
+inference-sdk>=1.0.0
 
 # ── Xử lý ảnh ───────────────────────────────────────────────
 Pillow==11.0.0
-numpy>=1.24.0,<2.0.0
+numpy>=2.0.0
 
 # ── Hỗ trợ multipart form / file upload ─────────────────────
 python-multipart==0.0.12

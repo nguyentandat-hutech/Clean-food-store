@@ -42,8 +42,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Model được load 1 lần khi server khởi động
-_model = None
+# Client được khởi tạo lazy khi request đầu tiên đến /predict
+_client = None
 
 
 def get_loaded_model():
@@ -53,8 +53,12 @@ def get_loaded_model():
         if not ROBOFLOW_API_KEY:
             raise RuntimeError("Biến môi trường ROBOFLOW_API_KEY chưa được đặt.")
         logger.info(f"Đang tải model: {MODEL_ID} …")
-        _model = get_model(model_id=MODEL_ID, api_key=ROBOFLOW_API_KEY)
-        logger.info("Model sẵn sàng!")
+        try:
+            _model = get_model(model_id=MODEL_ID, api_key=ROBOFLOW_API_KEY)
+            logger.info("Model sẵn sàng!")
+        except Exception as e:
+            # Bao gồm: API key hết hạn (403), không có quyền, lỗi mạng, v.v.
+            raise RuntimeError(f"Không thể tải model từ Roboflow: {e}")
     return _model
 
 
@@ -206,6 +210,9 @@ async def predict(file: UploadFile = File(...)):
         model = get_loaded_model()
     except RuntimeError as e:
         raise HTTPException(status_code=503, detail=str(e))
+    except Exception as e:
+        logger.error(f"Lỗi khởi tạo model: {e}")
+        raise HTTPException(status_code=503, detail="Model YOLO chưa sẵn sàng.")
 
     contents = await file.read()
     if len(contents) > 10 * 1024 * 1024:  # 10 MB
@@ -238,6 +245,9 @@ async def predict_base64(image_b64: str = Form(...)):
         model = get_loaded_model()
     except RuntimeError as e:
         raise HTTPException(status_code=503, detail=str(e))
+    except Exception as e:
+        logger.error(f"Lỗi khởi tạo model: {e}")
+        raise HTTPException(status_code=503, detail="Model YOLO chưa sẵn sàng.")
 
     try:
         # Bỏ prefix "data:image/jpeg;base64," nếu có

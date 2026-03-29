@@ -1,0 +1,153 @@
+# ================================================================
+# docker-compose.yml — Clean Food Store
+# Bao gồm: MongoDB · Backend (Node.js) · Frontend (React/Nginx)
+#           · YOLO Freshness Server (Python/FastAPI)
+#
+# Cách dùng:
+#   1. Sao chép .env.example → .env và điền giá trị thực
+#   2. docker compose up --build -d
+#   3. Truy cập http://localhost:3000
+# ================================================================
+
+services:
+
+  # ──────────────────────────────────────────────
+  # 1. MongoDB
+  # ──────────────────────────────────────────────
+  mongo:
+    image: mongo:7.0
+    container_name: cleanfood_mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASS:-secret}
+      MONGO_INITDB_DATABASE: cleanfoodstore
+    ports:
+      - "27017:27017"          # Expose để dùng Compass / MongoSH từ host
+    volumes:
+      - mongo_data:/data/db    # Dữ liệu persistent
+      - mongo_config:/data/configdb
+    networks:
+      - cleanfood_net
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # ──────────────────────────────────────────────
+  # 2. YOLO Freshness Detection Server (Python)
+  # ──────────────────────────────────────────────
+  yolo-server:
+    build:
+      context: ./backend/python
+      dockerfile: Dockerfile
+    container_name: cleanfood_yolo
+    restart: unless-stopped
+    environment:
+      ROBOFLOW_API_KEY: ${ROBOFLOW_API_KEY}
+      YOLO_SERVER_PORT: 8001
+    ports:
+      - "8001:8001"
+    volumes:
+      - yolo_cache:/root/.inference  # Cache model weights, tránh tải lại mỗi lần restart
+    networks:
+      - cleanfood_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s             # Model cần thời gian tải lần đầu
+
+  # ──────────────────────────────────────────────
+  # 3. Backend — Node.js / Express (port 5000)
+  # ──────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cleanfood_backend
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+      yolo-server:
+        condition: service_started  # Backend tự fallback Gemini nếu YOLO chưa sẵn sàng
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 5000
+      # MongoDB — trỏ vào service mongo nội bộ
+      MONGO_URI: mongodb://${MONGO_ROOT_USER:-admin}:${MONGO_ROOT_PASS:-secret}@mongo:27017/cleanfoodstore?authSource=admin
+      # JWT
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      # CORS
+      CLIENT_URL: ${CLIENT_URL:-http://localhost:3000}
+      # Email
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      MAIL_FROM: ${MAIL_FROM}
+      # Gemini AI
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      # YOLO server — trỏ vào service yolo-server nội bộ
+      YOLO_SERVER_URL: http://yolo-server:8001
+      # VNPay
+      VNP_TMN_CODE: ${VNP_TMN_CODE}
+      VNP_HASH_SECRET: ${VNP_HASH_SECRET}
+      VNP_URL: ${VNP_URL:-https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}
+      VNP_RETURN_URL: ${VNP_RETURN_URL:-http://localhost:3000/order-success}
+      VNP_IPN_URL: ${VNP_IPN_URL:-http://localhost:5000/api/orders/vnpay-ipn}
+    ports:
+      - "5000:5000"
+    volumes:
+      - uploads:/app/uploads      # File ảnh upload (multer)
+    networks:
+      - cleanfood_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # ──────────────────────────────────────────────
+  # 4. Frontend — React (build) + Nginx (port 3000)
+  # ──────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:5000}
+    container_name: cleanfood_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"               # Nginx lắng nghe 80, map ra 3000
+    networks:
+      - cleanfood_net
+
+# ──────────────────────────────────────────────
+# Volumes
+# ──────────────────────────────────────────────
+volumes:
+  mongo_data:
+    driver: local
+  mongo_config:
+    driver: local
+  yolo_cache:
+    driver: local
+  uploads:
+    driver: local
+
+# ──────────────────────────────────────────────
+# Network nội bộ
+# ──────────────────────────────────────────────
+networks:
+  cleanfood_net:
+    driver: bridge
