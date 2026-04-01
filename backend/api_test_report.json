@@ -6,7 +6,7 @@
     "url": "http://localhost:5000/api/health",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Server is running 🚀\",\"timestamp\":\"2026-03-29T08:48:05.089Z\"}"
+    "note": "{\"success\":true,\"message\":\"Server is running 🚀\",\"timestamp\":\"2026-03-29T09:26:43.422Z\"}"
   },
   {
     "group": "Auth",
@@ -15,7 +15,7 @@
     "url": "http://localhost:5000/api/auth/register",
     "status": 201,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Đăng ký tài khoản thành công\",\"data\":{\"user\":{\"name\":\"Test Admin\",\"email\":\"testadmin_e9e9f35a"
+    "note": "{\"success\":true,\"message\":\"Đăng ký tài khoản thành công\",\"data\":{\"user\":{\"name\":\"Test Admin\",\"email\":\"testadmin_adc2a532"
   },
   {
     "group": "Auth",
@@ -24,7 +24,7 @@
     "url": "http://localhost:5000/api/auth/register",
     "status": 201,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Đăng ký tài khoản thành công\",\"data\":{\"user\":{\"name\":\"Test User\",\"email\":\"testuser_e9e9f35a@c"
+    "note": "{\"success\":true,\"message\":\"Đăng ký tài khoản thành công\",\"data\":{\"user\":{\"name\":\"Test User\",\"email\":\"testuser_adc2a532@c"
   },
   {
     "group": "Auth",
@@ -51,7 +51,7 @@
     "url": "http://localhost:5000/api/auth/login",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Đăng nhập thành công\",\"data\":{\"user\":{\"_id\":\"69c8e745b3c7196ec602b161\",\"name\":\"Test Admin\",\"e"
+    "note": "{\"success\":true,\"message\":\"Đăng nhập thành công\",\"data\":{\"user\":{\"_id\":\"69c8f0534604949aac9d7c9a\",\"name\":\"Test Admin\",\"e"
   },
   {
     "group": "Auth",
@@ -60,7 +60,7 @@
     "url": "http://localhost:5000/api/auth/login",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Đăng nhập thành công\",\"data\":{\"user\":{\"_id\":\"69c8e745b3c7196ec602b164\",\"name\":\"Test User\",\"em"
+    "note": "{\"success\":true,\"message\":\"Đăng nhập thành công\",\"data\":{\"user\":{\"_id\":\"69c8f0534604949aac9d7c9d\",\"name\":\"Test User\",\"em"
   },
   {
     "group": "Auth",
@@ -78,7 +78,7 @@
     "url": "http://localhost:5000/api/auth/me",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Lấy thông tin thành công\",\"data\":{\"user\":{\"_id\":\"69c8e745b3c7196ec602b161\",\"name\":\"Test Admin"
+    "note": "{\"success\":true,\"message\":\"Lấy thông tin thành công\",\"data\":{\"user\":{\"_id\":\"69c8f0534604949aac9d7c9a\",\"name\":\"Test Admin"
   },
   {
     "group": "Auth",
@@ -96,7 +96,7 @@
     "url": "http://localhost:5000/api/users/profile",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Lấy thông tin profile thành công\",\"data\":{\"user\":{\"_id\":\"69c8e745b3c7196ec602b164\",\"name\":\"Te"
+    "note": "{\"success\":true,\"message\":\"Lấy thông tin profile thành công\",\"data\":{\"user\":{\"_id\":\"69c8f0534604949aac9d7c9d\",\"name\":\"Te"
   },
   {
     "group": "Users",
@@ -105,7 +105,7 @@
     "url": "http://localhost:5000/api/users/profile",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Cập nhật thông tin thành công\",\"data\":{\"user\":{\"_id\":\"69c8e745b3c7196ec602b164\",\"name\":\"Test "
+    "note": "{\"success\":true,\"message\":\"Cập nhật thông tin thành công\",\"data\":{\"user\":{\"_id\":\"69c8f0534604949aac9d7c9d\",\"name\":\"Test "
   },
   {
     "group": "Users",
@@ -141,7 +141,7 @@
     "url": "http://localhost:5000/api/farms",
     "status": 201,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Tạo trang trại thành công\",\"data\":{\"farm\":{\"name\":\"Farm Test e9e9f35a\",\"location\":\"Đà Lạt, Lâ"
+    "note": "{\"success\":true,\"message\":\"Tạo trang trại thành công\",\"data\":{\"farm\":{\"name\":\"Farm Test adc2a532\",\"location\":\"Đà Lạt, Lâ"
   },
   {
     "group": "Farms",
@@ -150,7 +150,7 @@
     "url": "http://localhost:5000/api/farms/:id",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Lấy thông tin trang trại thành công\",\"data\":{\"farm\":{\"_id\":\"69c8e747b3c7196ec602b176\",\"name\":"
+    "note": "{\"success\":true,\"message\":\"Lấy thông tin trang trại thành công\",\"data\":{\"farm\":{\"_id\":\"69c8f0554604949aac9d7caf\",\"name\":"
   },
   {
     "group": "Farms",
@@ -159,7 +159,7 @@
     "url": "http://localhost:5000/api/farms/:id",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Cập nhật trang trại thành công\",\"data\":{\"farm\":{\"_id\":\"69c8e747b3c7196ec602b176\",\"name\":\"Farm"
+    "note": "{\"success\":true,\"message\":\"Cập nhật trang trại thành công\",\"data\":{\"farm\":{\"_id\":\"69c8f0554604949aac9d7caf\",\"name\":\"Farm"
   },
   {
     "group": "Farms",
@@ -195,7 +195,7 @@
     "url": "http://localhost:5000/api/categories",
     "status": 201,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Tạo danh mục thành công\",\"data\":{\"category\":{\"name\":\"Rau củ Test e9e9f35a\",\"description\":\"Dan"
+    "note": "{\"success\":true,\"message\":\"Tạo danh mục thành công\",\"data\":{\"category\":{\"name\":\"Rau củ Test adc2a532\",\"description\":\"Dan"
   },
   {
     "group": "Categories",
@@ -204,7 +204,7 @@
     "url": "http://localhost:5000/api/categories/:id",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Lấy thông tin danh mục thành công\",\"data\":{\"category\":{\"_id\":\"69c8e747b3c7196ec602b184\",\"name"
+    "note": "{\"success\":true,\"message\":\"Lấy thông tin danh mục thành công\",\"data\":{\"category\":{\"_id\":\"69c8f0554604949aac9d7cbd\",\"name"
   },
   {
     "group": "Categories",
@@ -213,7 +213,7 @@
     "url": "http://localhost:5000/api/categories/:id",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Cập nhật danh mục thành công\",\"data\":{\"category\":{\"_id\":\"69c8e747b3c7196ec602b184\",\"name\":\"Ra"
+    "note": "{\"success\":true,\"message\":\"Cập nhật danh mục thành công\",\"data\":{\"category\":{\"_id\":\"69c8f0554604949aac9d7cbd\",\"name\":\"Ra"
   },
   {
     "group": "Categories",
@@ -249,7 +249,7 @@
     "url": "http://localhost:5000/api/products",
     "status": 201,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Tạo sản phẩm thành công\",\"data\":{\"product\":{\"_id\":\"69c8e747b3c7196ec602b194\",\"name\":\"Chuối Te"
+    "note": "{\"success\":true,\"message\":\"Tạo sản phẩm thành công\",\"data\":{\"product\":{\"_id\":\"69c8f0564604949aac9d7ccd\",\"name\":\"Chuối Te"
   },
   {
     "group": "Products",
@@ -258,7 +258,7 @@
     "url": "http://localhost:5000/api/products/:id",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Lấy thông tin sản phẩm thành công\",\"data\":{\"product\":{\"_id\":\"69c8e747b3c7196ec602b194\",\"name\""
+    "note": "{\"success\":true,\"message\":\"Lấy thông tin sản phẩm thành công\",\"data\":{\"product\":{\"_id\":\"69c8f0564604949aac9d7ccd\",\"name\""
   },
   {
     "group": "Products",
@@ -267,7 +267,7 @@
     "url": "http://localhost:5000/api/products",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Lấy danh sách sản phẩm thành công\",\"data\":{\"products\":[{\"_id\":\"69c8e747b3c7196ec602b194\",\"nam"
+    "note": "{\"success\":true,\"message\":\"Lấy danh sách sản phẩm thành công\",\"data\":{\"products\":[{\"_id\":\"69c8f0564604949aac9d7ccd\",\"nam"
   },
   {
     "group": "Products",
@@ -276,7 +276,7 @@
     "url": "http://localhost:5000/api/products/:id",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Cập nhật sản phẩm thành công\",\"data\":{\"product\":{\"_id\":\"69c8e747b3c7196ec602b194\",\"name\":\"Chu"
+    "note": "{\"success\":true,\"message\":\"Cập nhật sản phẩm thành công\",\"data\":{\"product\":{\"_id\":\"69c8f0564604949aac9d7ccd\",\"name\":\"Chu"
   },
   {
     "group": "Products",
@@ -294,7 +294,7 @@
     "url": "http://localhost:5000/api/batches",
     "status": 201,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Tạo lô hàng thành công\",\"data\":{\"batch\":{\"_id\":\"69c8e747b3c7196ec602b1ad\",\"product\":{\"_id\":\"6"
+    "note": "{\"success\":true,\"message\":\"Tạo lô hàng thành công\",\"data\":{\"batch\":{\"_id\":\"69c8f0564604949aac9d7ce6\",\"product\":{\"_id\":\"6"
   },
   {
     "group": "Batches",
@@ -303,7 +303,7 @@
     "url": "http://localhost:5000/api/batches",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Lấy danh sách lô hàng thành công\",\"data\":{\"batches\":[{\"_id\":\"69c8e747b3c7196ec602b1ad\",\"produ"
+    "note": "{\"success\":true,\"message\":\"Lấy danh sách lô hàng thành công\",\"data\":{\"batches\":[{\"_id\":\"69c8f0564604949aac9d7ce6\",\"produ"
   },
   {
     "group": "Batches",
@@ -312,7 +312,7 @@
     "url": "http://localhost:5000/api/batches/:id",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Lấy thông tin lô hàng thành công\",\"data\":{\"batch\":{\"_id\":\"69c8e747b3c7196ec602b1ad\",\"product\""
+    "note": "{\"success\":true,\"message\":\"Lấy thông tin lô hàng thành công\",\"data\":{\"batch\":{\"_id\":\"69c8f0564604949aac9d7ce6\",\"product\""
   },
   {
     "group": "Batches",
@@ -321,7 +321,7 @@
     "url": "http://localhost:5000/api/batches/inventory-report",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Lấy báo cáo tồn kho thành công\",\"data\":{\"report\":[{\"product\":{\"_id\":\"69c8e747b3c7196ec602b194"
+    "note": "{\"success\":true,\"message\":\"Lấy báo cáo tồn kho thành công\",\"data\":{\"report\":[{\"product\":{\"_id\":\"69c8f0564604949aac9d7ccd"
   },
   {
     "group": "Batches",
@@ -330,7 +330,7 @@
     "url": "http://localhost:5000/api/batches/expiring",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Lấy danh sách lô sắp hết hạn thành công\",\"data\":{\"batches\":[{\"_id\":\"69c8e747b3c7196ec602b1ad\""
+    "note": "{\"success\":true,\"message\":\"Lấy danh sách lô sắp hết hạn thành công\",\"data\":{\"batches\":[{\"_id\":\"69c8f0564604949aac9d7ce6\""
   },
   {
     "group": "Batches",
@@ -339,7 +339,7 @@
     "url": "http://localhost:5000/api/batches/stock/:productId",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Lấy tồn kho thực tế thành công\",\"data\":{\"product\":{\"_id\":\"69c8e747b3c7196ec602b194\",\"name\":\"C"
+    "note": "{\"success\":true,\"message\":\"Lấy tồn kho thực tế thành công\",\"data\":{\"product\":{\"_id\":\"69c8f0564604949aac9d7ccd\",\"name\":\"C"
   },
   {
     "group": "Batches",
@@ -348,7 +348,7 @@
     "url": "http://localhost:5000/api/batches/:id",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Cập nhật lô hàng thành công\",\"data\":{\"batch\":{\"_id\":\"69c8e747b3c7196ec602b1ad\",\"product\":{\"_i"
+    "note": "{\"success\":true,\"message\":\"Cập nhật lô hàng thành công\",\"data\":{\"batch\":{\"_id\":\"69c8f0564604949aac9d7ce6\",\"product\":{\"_i"
   },
   {
     "group": "Batches",
@@ -384,7 +384,7 @@
     "url": "http://localhost:5000/api/cart",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Lấy giỏ hàng thành công\",\"data\":{\"_id\":\"69c8e748b3c7196ec602b1d5\",\"userId\":\"69c8e745b3c7196ec"
+    "note": "{\"success\":true,\"message\":\"Lấy giỏ hàng thành công\",\"data\":{\"_id\":\"69c8f0564604949aac9d7d0e\",\"userId\":\"69c8f0534604949aa"
   },
   {
     "group": "Cart",
@@ -393,7 +393,7 @@
     "url": "http://localhost:5000/api/cart",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Thêm vào giỏ hàng thành công\",\"data\":{\"_id\":\"69c8e748b3c7196ec602b1d5\",\"userId\":\"69c8e745b3c7"
+    "note": "{\"success\":true,\"message\":\"Thêm vào giỏ hàng thành công\",\"data\":{\"_id\":\"69c8f0564604949aac9d7d0e\",\"userId\":\"69c8f0534604"
   },
   {
     "group": "Cart",
@@ -402,7 +402,7 @@
     "url": "http://localhost:5000/api/cart",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Lấy giỏ hàng thành công\",\"data\":{\"_id\":\"69c8e748b3c7196ec602b1d5\",\"userId\":\"69c8e745b3c7196ec"
+    "note": "{\"success\":true,\"message\":\"Lấy giỏ hàng thành công\",\"data\":{\"_id\":\"69c8f0564604949aac9d7d0e\",\"userId\":\"69c8f0534604949aa"
   },
   {
     "group": "Cart",
@@ -411,7 +411,7 @@
     "url": "http://localhost:5000/api/cart/:productId",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Cập nhật giỏ hàng thành công\",\"data\":{\"_id\":\"69c8e748b3c7196ec602b1d5\",\"userId\":\"69c8e745b3c7"
+    "note": "{\"success\":true,\"message\":\"Cập nhật giỏ hàng thành công\",\"data\":{\"_id\":\"69c8f0564604949aac9d7d0e\",\"userId\":\"69c8f0534604"
   },
   {
     "group": "Cart",
@@ -420,7 +420,7 @@
     "url": "http://localhost:5000/api/cart/:productId",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Đã xóa sản phẩm khỏi giỏ hàng\",\"data\":{\"_id\":\"69c8e748b3c7196ec602b1d5\",\"userId\":\"69c8e745b3c"
+    "note": "{\"success\":true,\"message\":\"Đã xóa sản phẩm khỏi giỏ hàng\",\"data\":{\"_id\":\"69c8f0564604949aac9d7d0e\",\"userId\":\"69c8f053460"
   },
   {
     "group": "Cart",
@@ -456,7 +456,7 @@
     "url": "http://localhost:5000/api/discounts",
     "status": 201,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Tạo mã giảm giá thành công\",\"data\":{\"code\":\"TESTAUTOE9E9F3\",\"type\":\"percentage\",\"value\":10,\"m"
+    "note": "{\"success\":true,\"message\":\"Tạo mã giảm giá thành công\",\"data\":{\"code\":\"TESTAUTOADC2A5\",\"type\":\"percentage\",\"value\":10,\"m"
   },
   {
     "group": "Discounts",
@@ -465,7 +465,7 @@
     "url": "http://localhost:5000/api/discounts/:id",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Lấy chi tiết mã giảm giá thành công\",\"data\":{\"_id\":\"69c8e748b3c7196ec602b210\",\"code\":\"TESTAUT"
+    "note": "{\"success\":true,\"message\":\"Lấy chi tiết mã giảm giá thành công\",\"data\":{\"_id\":\"69c8f0564604949aac9d7d49\",\"code\":\"TESTAUT"
   },
   {
     "group": "Discounts",
@@ -474,7 +474,7 @@
     "url": "http://localhost:5000/api/discounts/:id",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Cập nhật mã giảm giá thành công\",\"data\":{\"_id\":\"69c8e748b3c7196ec602b210\",\"code\":\"TESTAUTOE9E"
+    "note": "{\"success\":true,\"message\":\"Cập nhật mã giảm giá thành công\",\"data\":{\"_id\":\"69c8f0564604949aac9d7d49\",\"code\":\"TESTAUTOADC"
   },
   {
     "group": "Discounts",
@@ -483,7 +483,7 @@
     "url": "http://localhost:5000/api/discounts/validate",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Mã giảm giá hợp lệ\",\"data\":{\"code\":\"TESTAUTOE9E9F3\",\"type\":\"percentage\",\"value\":15,\"discountA"
+    "note": "{\"success\":true,\"message\":\"Mã giảm giá hợp lệ\",\"data\":{\"code\":\"TESTAUTOADC2A5\",\"type\":\"percentage\",\"value\":15,\"discountA"
   },
   {
     "group": "Discounts",
@@ -528,7 +528,7 @@
     "url": "http://localhost:5000/api/orders/checkout-vnpay",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Tạo URL thanh toán VNPay thành công\",\"data\":{\"order\":{\"userId\":\"69c8e745b3c7196ec602b164\",\"to"
+    "note": "{\"success\":true,\"message\":\"Tạo URL thanh toán VNPay thành công\",\"data\":{\"order\":{\"userId\":\"69c8f0534604949aac9d7c9d\",\"to"
   },
   {
     "group": "Orders",
@@ -609,7 +609,7 @@
     "url": "http://localhost:5000/api/reviews",
     "status": 201,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Đánh giá đã được tạo thành công.\",\"data\":{\"review\":{\"_id\":\"69c8e74bb3c7196ec602b27d\",\"product"
+    "note": "{\"success\":true,\"message\":\"Đánh giá đã được tạo thành công.\",\"data\":{\"review\":{\"_id\":\"69c8f05b4604949aac9d7db6\",\"product"
   },
   {
     "group": "Reviews",
@@ -618,7 +618,7 @@
     "url": "http://localhost:5000/api/reviews/:id",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Đánh giá đã được cập nhật.\",\"data\":{\"review\":{\"_id\":\"69c8e74bb3c7196ec602b27d\",\"productId\":\"6"
+    "note": "{\"success\":true,\"message\":\"Đánh giá đã được cập nhật.\",\"data\":{\"review\":{\"_id\":\"69c8f05b4604949aac9d7db6\",\"productId\":\"6"
   },
   {
     "group": "Reviews",
@@ -699,7 +699,7 @@
     "url": "http://localhost:5000/api/reviews/:id",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Đã xóa đánh giá thành công.\",\"data\":{\"id\":\"69c8e74bb3c7196ec602b27d\"}}"
+    "note": "{\"success\":true,\"message\":\"Đã xóa đánh giá thành công.\",\"data\":{\"id\":\"69c8f05b4604949aac9d7db6\"}}"
   },
   {
     "group": "Cleanup",
@@ -708,7 +708,7 @@
     "url": "http://localhost:5000/api/discounts/:id",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Xóa mã giảm giá thành công\",\"data\":{\"id\":\"69c8e748b3c7196ec602b210\",\"code\":\"TESTAUTOE9E9F3\"}}"
+    "note": "{\"success\":true,\"message\":\"Xóa mã giảm giá thành công\",\"data\":{\"id\":\"69c8f0564604949aac9d7d49\",\"code\":\"TESTAUTOADC2A5\"}}"
   },
   {
     "group": "Cleanup",
@@ -717,7 +717,7 @@
     "url": "http://localhost:5000/api/batches/:id",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Xóa lô hàng thành công\",\"data\":{\"id\":\"69c8e747b3c7196ec602b1ad\",\"batchNumber\":\"BATCH-e9e9f35a"
+    "note": "{\"success\":true,\"message\":\"Xóa lô hàng thành công\",\"data\":{\"id\":\"69c8f0564604949aac9d7ce6\",\"batchNumber\":\"BATCH-adc2a532"
   },
   {
     "group": "Cleanup",
@@ -726,7 +726,7 @@
     "url": "http://localhost:5000/api/products/:id",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Xóa sản phẩm thành công\",\"data\":{\"id\":\"69c8e747b3c7196ec602b194\",\"name\":\"Chuối Test e9e9f35a\""
+    "note": "{\"success\":true,\"message\":\"Xóa sản phẩm thành công\",\"data\":{\"id\":\"69c8f0564604949aac9d7ccd\",\"name\":\"Chuối Test adc2a532\""
   },
   {
     "group": "Cleanup",
@@ -735,7 +735,7 @@
     "url": "http://localhost:5000/api/categories/:id",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Xóa danh mục thành công\",\"data\":{\"id\":\"69c8e747b3c7196ec602b184\",\"name\":\"Rau củ Test e9e9f35a"
+    "note": "{\"success\":true,\"message\":\"Xóa danh mục thành công\",\"data\":{\"id\":\"69c8f0554604949aac9d7cbd\",\"name\":\"Rau củ Test adc2a532"
   },
   {
     "group": "Cleanup",
@@ -744,6 +744,6 @@
     "url": "http://localhost:5000/api/farms/:id",
     "status": 200,
     "passed": true,
-    "note": "{\"success\":true,\"message\":\"Xóa trang trại thành công\",\"data\":{\"id\":\"69c8e747b3c7196ec602b176\",\"name\":\"Farm Test e9e9f35a"
+    "note": "{\"success\":true,\"message\":\"Xóa trang trại thành công\",\"data\":{\"id\":\"69c8f0554604949aac9d7caf\",\"name\":\"Farm Test adc2a532"
   }
 ]

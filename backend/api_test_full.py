@@ -811,41 +811,10 @@ def phase_stats():
 
 
 # ══════════════════════════════════════════════════════════════
-# PHASE 13 — AI Scan
-# ══════════════════════════════════════════════════════════════
-def phase_ai():
-    section("PHASE 13 — AI Scan (Quét độ tươi)")
-
-    img_path = Path(__file__).parent / "freshbanana.jpg"
-    if not img_path.exists():
-        print("  ⏭️  Không tìm thấy freshbanana.jpg — bỏ qua AI scan test")
-        results.append(("AI", "Quét AI độ tươi (SKIPPED)", "POST", f"{BASE}/ai/scan-freshness",
-                        0, True, "File freshbanana.jpg không tồn tại"))
-        return
-
-    with open(img_path, "rb") as f:
-        files = {"image": (img_path.name, f.read(), "image/jpeg")}
-
-    try:
-        r = requests.post(f"{BASE}/ai/scan-freshness", files=files, timeout=30)
-    except Exception as e:
-        print(f"  ❌ POST /ai/scan-freshness lỗi: {e}")
-        return
-
-    # AI có thể trả 200 (OK) hoặc 500/503 (YOLO server đang restart / lỗi kết nối)
-    ok = r.status_code in [200, 201, 500, 503]
-    yolo_note = "200 OK" if r.status_code in [200, 201] else "YOLO server đang restart/lỗi (expected)"
-    results.append(("AI", "Quét AI độ tươi (freshbanana.jpg)", "POST",
-                    f"{BASE}/ai/scan-freshness", r.status_code, ok, yolo_note))
-    mark = "✅" if ok else "❌"
-    print(f"  {mark} [{r.status_code}] POST   /ai/scan-freshness — Quét AI ảnh chuối tươi")
-
-
-# ══════════════════════════════════════════════════════════════
-# PHASE 14 — Cleanup (Xóa dữ liệu test)
+# PHASE 13 — Cleanup (Xóa dữ liệu test)
 # ══════════════════════════════════════════════════════════════
 def phase_cleanup():
-    section("PHASE 14 — Cleanup (Xóa dữ liệu test)")
+    section("PHASE 13 — Cleanup (Xóa dữ liệu test)")
     atk = IDS.get("admin_token")
 
     # Xóa review
@@ -949,7 +918,6 @@ if __name__ == "__main__":
     phase_orders()
     phase_reviews()
     phase_stats()
-    phase_ai()
     phase_cleanup()
 
     print_report()
