@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCartAPI, updateCartItemAPI, removeCartItemAPI, clearCartAPI } from '../api/cartService';
 
@@ -19,7 +19,7 @@ const CartPage = () => {
             const data = await getCartAPI();
             setCart(data);
         } catch (err) {
-            setError(err.response?.data?.message || 'KhĂ´ng thá»ƒ táº£i giá» hĂ ng');
+            setError(err.response?.data?.message || 'Không thể tải giỏ hàng');
         } finally {
             setLoading(false);
         }
@@ -35,35 +35,35 @@ const CartPage = () => {
             const data = await updateCartItemAPI(productId, newQuantity);
             setCart(data);
         } catch (err) {
-            setError(err.response?.data?.message || 'KhĂ´ng thá»ƒ cáº­p nháº­t sá»‘ lÆ°á»£ng');
+            setError(err.response?.data?.message || 'Không thể cập nhật số lượng');
         } finally {
             setActionLoading('');
         }
     };
 
     const handleRemoveItem = async (productId) => {
-        if (!window.confirm('Báº¡n cĂ³ cháº¯c muá»‘n xĂ³a sáº£n pháº©m nĂ y khá»i giá» hĂ ng?')) return;
+        if (!window.confirm('Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?')) return;
         try {
             setActionLoading(productId);
             setError('');
             const data = await removeCartItemAPI(productId);
             setCart(data);
         } catch (err) {
-            setError(err.response?.data?.message || 'KhĂ´ng thá»ƒ xĂ³a sáº£n pháº©m');
+            setError(err.response?.data?.message || 'Không thể xóa sản phẩm');
         } finally {
             setActionLoading('');
         }
     };
 
     const handleClearCart = async () => {
-        if (!window.confirm('Báº¡n cĂ³ cháº¯c muá»‘n xĂ³a toĂ n bá»™ giá» hĂ ng?')) return;
+        if (!window.confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?')) return;
         try {
             setLoading(true);
             setError('');
             await clearCartAPI();
             await fetchCart();
         } catch (err) {
-            setError(err.response?.data?.message || 'KhĂ´ng thá»ƒ xĂ³a giá» hĂ ng');
+            setError(err.response?.data?.message || 'Không thể xóa giỏ hàng');
             setLoading(false);
         }
     };
@@ -71,7 +71,7 @@ const CartPage = () => {
     if (loading) return (
         <div className="loading-wrap">
             <div className="spinner" />
-            <p className="loading-text">Äang táº£i giá» hĂ ng...</p>
+            <p className="loading-text">Đang tải giỏ hàng...</p>
         </div>
     );
 
@@ -80,10 +80,10 @@ const CartPage = () => {
             {/* Page Header */}
             <div className="page-header">
                 <div className="page-header-inner">
-                    <div className="page-header-icon">đŸ§º</div>
+                    <div className="page-header-icon">🛒</div>
                     <div>
-                        <h1>Giá» hĂ ng</h1>
-                        <p>Xem láº¡i sáº£n pháº©m trÆ°á»›c khi Ä‘áº·t hĂ ng</p>
+                        <h1>Giỏ hàng</h1>
+                        <p>Xem lại sản phẩm trước khi đặt hàng</p>
                     </div>
                 </div>
             </div>
@@ -91,31 +91,31 @@ const CartPage = () => {
             <div className="container" style={{ paddingBottom: 40 }}>
                 {error && (
                     <div className="alert alert-danger" style={{ marginBottom: 20 }}>
-                        â ï¸ {error}
+                        ⚠️ {error}
                     </div>
                 )}
 
                 {!cart || cart.products.length === 0 ? (
                     <div className="empty-state">
-                        <div className="empty-icon">đŸ§º</div>
-                        <div className="empty-title">Giá» hĂ ng cá»§a báº¡n Ä‘ang trá»‘ng</div>
-                        <div className="empty-desc">HĂ£y thĂªm sáº£n pháº©m vĂ o giá» hĂ ng Ä‘á»ƒ tiáº¿p tá»¥c mua sáº¯m</div>
+                        <div className="empty-icon">🛒</div>
+                        <div className="empty-title">Giỏ hàng của bạn đang trống</div>
+                        <div className="empty-desc">Hãy thêm sản phẩm vào giỏ hàng để tiếp tục mua sắm</div>
                         <button className="btn btn-primary" onClick={() => navigate('/products')}>
-                            đŸ›’ Tiáº¿p tá»¥c mua sáº¯m
+                            🛒 Tiếp tục mua sắm
                         </button>
                     </div>
                 ) : (
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24, alignItems: 'start' }}>
-                        {/* â”€â”€ Product list â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                        {/* ── Product list ─────────────────────────── */}
                         <div className="card">
                             <div className="card-header" style={{ justifyContent: 'space-between' }}>
-                                <h3>đŸ›ï¸ Sáº£n pháº©m trong giá» ({cart.totalItems})</h3>
+                                <h3>🛍️ Sản phẩm trong giỏ ({cart.totalItems})</h3>
                                 <button
                                     className="btn btn-ghost btn-sm"
                                     onClick={handleClearCart}
                                     style={{ color: 'var(--c-danger)', borderColor: 'var(--c-danger-border)' }}
                                 >
-                                    đŸ—‘ï¸ XĂ³a táº¥t cáº£
+                                    🗑️ Xóa tất cả
                                 </button>
                             </div>
                             <div>
@@ -138,7 +138,7 @@ const CartPage = () => {
                                             <div style={{ width: 72, height: 72, borderRadius: 10, overflow: 'hidden', background: 'var(--c-50)', flexShrink: 0 }}>
                                                 {img
                                                     ? <img src={img} alt={item.productId.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                                    : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>đŸ¥¦</div>
+                                                    : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>🥦</div>
                                                 }
                                             </div>
 
@@ -151,7 +151,7 @@ const CartPage = () => {
                                                     {item.productId.unit}
                                                     {item.effectiveStock <= 5 && (
                                                         <span className="badge badge-red" style={{ marginLeft: 8 }}>
-                                                            Chá»‰ cĂ²n {item.effectiveStock}
+                                                            Chỉ còn {item.effectiveStock}
                                                         </span>
                                                     )}
                                                 </div>
@@ -160,7 +160,7 @@ const CartPage = () => {
                                                     <button className="qty-btn"
                                                         onClick={() => handleUpdateQuantity(pid, item.quantity - 1)}
                                                         disabled={item.quantity <= 1 || busy}
-                                                    >âˆ’</button>
+                                                    >−</button>
                                                     <input className="qty-input" readOnly value={item.quantity} />
                                                     <button className="qty-btn"
                                                         onClick={() => handleUpdateQuantity(pid, item.quantity + 1)}
@@ -183,7 +183,7 @@ const CartPage = () => {
                                                     disabled={busy}
                                                     style={{ fontSize: 12, color: 'var(--c-danger)', borderColor: 'var(--c-danger-border)' }}
                                                 >
-                                                    {busy ? '...' : 'đŸ—‘ï¸ XĂ³a'}
+                                                    {busy ? '...' : '🗑️ Xóa'}
                                                 </button>
                                             </div>
                                         </div>
@@ -192,24 +192,24 @@ const CartPage = () => {
                             </div>
                         </div>
 
-                        {/* â”€â”€ Order summary â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+                        {/* ── Order summary ─────────────────────────── */}
                         <div style={{ position: 'sticky', top: 84 }}>
                             <div className="card">
                                 <div className="card-header">
-                                    <h3>đŸ“‹ TĂ³m táº¯t Ä‘Æ¡n hĂ ng</h3>
+                                    <h3>📋 Tóm tắt đơn hàng</h3>
                                 </div>
                                 <div className="card-body">
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10, fontSize: 14, color: 'var(--t-secondary)' }}>
-                                        <span>Táº¡m tĂ­nh ({cart.totalItems} sp)</span>
+                                        <span>Tạm tính ({cart.totalItems} sp)</span>
                                         <span>{fmt(cart.totalPrice)}</span>
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10, fontSize: 14, color: 'var(--t-secondary)' }}>
-                                        <span>PhĂ­ váº­n chuyá»ƒn</span>
-                                        <span className="text-green">Miá»…n phĂ­</span>
+                                        <span>Phí vận chuyển</span>
+                                        <span className="text-green">Miễn phí</span>
                                     </div>
                                     <hr className="divider" style={{ margin: '14px 0' }} />
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                                        <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--t-heading)' }}>Tá»•ng cá»™ng</span>
+                                        <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--t-heading)' }}>Tổng cộng</span>
                                         <span style={{ fontWeight: 800, fontSize: 22, color: 'var(--c-primary)' }}>
                                             {fmt(cart.totalPrice)}
                                         </span>
@@ -218,14 +218,14 @@ const CartPage = () => {
                                         className="btn btn-primary btn-full btn-lg"
                                         onClick={() => navigate('/checkout')}
                                     >
-                                        Äáº·t hĂ ng ngay â†’
+                                        Đặt hàng ngay →
                                     </button>
                                     <button
                                         className="btn btn-ghost btn-full"
                                         style={{ marginTop: 10 }}
                                         onClick={() => navigate('/products')}
                                     >
-                                        â† Tiáº¿p tá»¥c mua sáº¯m
+                                        ← Tiếp tục mua sắm
                                     </button>
                                 </div>
                             </div>
