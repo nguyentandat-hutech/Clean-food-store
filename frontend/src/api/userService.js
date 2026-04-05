@@ -18,3 +18,25 @@ export const updateProfileAPI = async (data) => {
     const res = await apiClient.put('/users/profile', data);
     return res.data.data;
 };
+
+/**
+ * [Admin] Lấy danh sách tất cả người dùng với phân trang và tìm kiếm.
+ * @param {{ page?, limit?, search?, role? }} params
+ * @returns {{ users: object[], pagination: object }}
+ */
+export const getAllUsersAPI = async (params = {}) => {
+    const res = await apiClient.get('/users', { params });
+    return res.data.data;
+};
+
+/**
+ * [Admin] Thay đổi role của người dùng.
+ * Business rule: Admin không thể thay đổi role của Admin khác.
+ * @param {string} userId
+ * @param {'user'|'admin'} role
+ * @returns {{ user: object }}
+ */
+export const updateUserRoleAPI = async (userId, role) => {
+    const res = await apiClient.patch(`/users/${userId}/role`, { role });
+    return res.data.data;
+};

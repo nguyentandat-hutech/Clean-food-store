@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "🥬 Clean Food Store API — Full Test Suite",
-    "description": "Bộ test 100% API endpoints cho dự án Clean Food Store.\n\n## Hướng dẫn sử dụng\n1. Import file này vào Postman\n2. Chạy **01. Register** rồi **02. Login** để tự động lưu token\n3. Chạy lần lượt theo thứ tự folder để tạo dữ liệu phụ thuộc\n4. Các biến `{{farmId}}`, `{{categoryId}}`, `{{productId}}` ... được tự động set từ response\n\n## Authentication\n- Bearer Token tự động lưu vào biến `{{token}}` sau khi Login\n- Tất cả request protected sẽ dùng `{{token}}` từ collection variables",
+    "name": "đŸ¥¬ Clean Food Store API â€” Full Test Suite",
+    "description": "Bá»™ test 100% API endpoints cho dá»± Ă¡n Clean Food Store.\n\n## HÆ°á»›ng dáº«n sá»­ dá»¥ng\n1. Import file nĂ y vĂ o Postman\n2. Cháº¡y **01. Register** rá»“i **02. Login** Ä‘á»ƒ tá»± Ä‘á»™ng lÆ°u token\n3. Cháº¡y láº§n lÆ°á»£t theo thá»© tá»± folder Ä‘á»ƒ táº¡o dá»¯ liá»‡u phá»¥ thuá»™c\n4. CĂ¡c biáº¿n `{{farmId}}`, `{{categoryId}}`, `{{productId}}` ... Ä‘Æ°á»£c tá»± Ä‘á»™ng set tá»« response\n\n## Authentication\n- Bearer Token tá»± Ä‘á»™ng lÆ°u vĂ o biáº¿n `{{token}}` sau khi Login\n- Táº¥t cáº£ request protected sáº½ dĂ¹ng `{{token}}` tá»« collection variables",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -56,6 +56,14 @@
     {
       "key": "vnpayOrderId",
       "value": ""
+    },
+    {
+      "key": "testUserId",
+      "value": ""
+    },
+    {
+      "key": "adminUserId",
+      "value": ""
     }
   ],
   "auth": {
@@ -70,7 +78,7 @@
   },
   "item": [
     {
-      "name": "🏥 Health Check",
+      "name": "đŸ¥ Health Check",
       "item": [
         {
           "name": "Health Check",
@@ -108,7 +116,7 @@
       ]
     },
     {
-      "name": "🔐 Auth",
+      "name": "đŸ” Auth",
       "item": [
         {
           "name": "01. Register (User)",
@@ -135,7 +143,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Nguyễn Văn Test\",\n  \"email\": \"testuser@cleanfood.vn\",\n  \"password\": \"Test@123456\"\n}",
+              "raw": "{\n  \"name\": \"Nguyá»…n VÄƒn Test\",\n  \"email\": \"testuser@cleanfood.vn\",\n  \"password\": \"Test@123456\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -149,7 +157,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Register success (201) hoặc đã tồn tại (409)', function () {",
+                  "pm.test('Register success (201) hoáº·c Ä‘Ă£ tá»“n táº¡i (409)', function () {",
                   "    pm.expect(pm.response.code).to.be.oneOf([201, 409]);",
                   "});",
                   "const json = pm.response.json();",
@@ -168,7 +176,7 @@
           ]
         },
         {
-          "name": "02. Register (Admin — manual role set in DB)",
+          "name": "02. Register (Admin â€” manual role set in DB)",
           "request": {
             "method": "POST",
             "header": [
@@ -207,10 +215,10 @@
                 "type": "text/javascript",
                 "exec": [
                   "const res = pm.response.json();",
-                  "pm.test('Register Admin (201) hoặc đã tồn tại (409)', () => pm.expect(pm.response.code).to.be.oneOf([201, 409]));",
+                  "pm.test('Register Admin (201) hoáº·c Ä‘Ă£ tá»“n táº¡i (409)', () => pm.expect(pm.response.code).to.be.oneOf([201, 409]));",
                   "if (pm.response.code === 201 && res.data) {",
-                  "    pm.test('data.token tồn tại', () => pm.expect(res.data.token).to.be.a('string').and.not.empty);",
-                  "    pm.test('data.user._id tồn tại', () => pm.expect(res.data.user._id).to.be.a('string').and.not.empty);",
+                  "    pm.test('data.token tá»“n táº¡i', () => pm.expect(res.data.token).to.be.a('string').and.not.empty);",
+                  "    pm.test('data.user._id tá»“n táº¡i', () => pm.expect(res.data.user._id).to.be.a('string').and.not.empty);",
                   "    pm.collectionVariables.set('adminToken', res.data.token);",
                   "}"
                 ]
@@ -358,7 +366,7 @@
           ]
         },
         {
-          "name": "06. Login — Wrong Password (Negative)",
+          "name": "06. Login â€” Wrong Password (Negative)",
           "request": {
             "method": "POST",
             "header": [
@@ -405,7 +413,7 @@
           ]
         },
         {
-          "name": "07. Get Me — No Token (Negative)",
+          "name": "07. Get Me â€” No Token (Negative)",
           "request": {
             "method": "GET",
             "header": [],
@@ -438,7 +446,7 @@
           ]
         },
         {
-          "name": "08. Register — Thiếu fields (Negative)",
+          "name": "08. Register â€” Thiáº¿u fields (Negative)",
           "request": {
             "method": "POST",
             "header": [
@@ -476,14 +484,14 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('400 khi thiếu fields bắt buộc', function () { pm.response.to.have.status(400); });"
+                  "pm.test('400 khi thiáº¿u fields báº¯t buá»™c', function () { pm.response.to.have.status(400); });"
                 ]
               }
             }
           ]
         },
         {
-          "name": "09. Register — Email trùng (Negative)",
+          "name": "09. Register â€” Email trĂ¹ng (Negative)",
           "request": {
             "method": "POST",
             "header": [
@@ -521,7 +529,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('409 khi email đã tồn tại', function () { pm.response.to.have.status(409); });"
+                  "pm.test('409 khi email Ä‘Ă£ tá»“n táº¡i', function () { pm.response.to.have.status(409); });"
                 ]
               }
             }
@@ -530,7 +538,7 @@
       ]
     },
     {
-      "name": "👤 Users",
+      "name": "đŸ‘¤ Users",
       "item": [
         {
           "name": "Get Profile",
@@ -585,7 +593,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Nguyễn Văn Updated\",\n  \"phone\": \"0901234567\"\n}",
+              "raw": "{\n  \"name\": \"Nguyá»…n VÄƒn Updated\",\n  \"phone\": \"0901234567\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -608,7 +616,7 @@
           ]
         },
         {
-          "name": "Get Profile — No Token (Negative)",
+          "name": "Get Profile â€” No Token (Negative)",
           "request": {
             "method": "GET",
             "header": [],
@@ -632,7 +640,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('401 khi không có token', function () { pm.response.to.have.status(401); });"
+                  "pm.test('401 khi khĂ´ng cĂ³ token', function () { pm.response.to.have.status(401); });"
                 ]
               }
             }
@@ -641,7 +649,7 @@
       ]
     },
     {
-      "name": "🌾 Farms",
+      "name": "đŸŒ¾ Farms",
       "item": [
         {
           "name": "Create Farm (Admin)",
@@ -664,7 +672,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Nông trại Đà Lạt Xanh\",\n  \"location\": \"Đà Lạt, Lâm Đồng\",\n  \"description\": \"Chuyên cung cấp rau hữu cơ, trồng theo tiêu chuẩn VietGAP\",\n  \"contact\": \"0909 123 456 — dalat.xanh@gmail.com\",\n  \"certificate\": \"VietGAP\"\n}",
+              "raw": "{\n  \"name\": \"NĂ´ng tráº¡i ÄĂ  Láº¡t Xanh\",\n  \"location\": \"ÄĂ  Láº¡t, LĂ¢m Äá»“ng\",\n  \"description\": \"ChuyĂªn cung cáº¥p rau há»¯u cÆ¡, trá»“ng theo tiĂªu chuáº©n VietGAP\",\n  \"contact\": \"0909 123 456 â€” dalat.xanh@gmail.com\",\n  \"certificate\": \"VietGAP\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -758,8 +766,8 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.farm._id tồn tại\", () => pm.expect(res.data.farm._id).to.be.a('string').and.not.empty);",
-                  "pm.test(\"data.farm._id khớp farmId\", () => pm.expect(res.data.farm._id).to.equal(pm.collectionVariables.get(\"farmId\")));"
+                  "pm.test(\"data.farm._id tá»“n táº¡i\", () => pm.expect(res.data.farm._id).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data.farm._id khá»›p farmId\", () => pm.expect(res.data.farm._id).to.equal(pm.collectionVariables.get(\"farmId\")));"
                 ]
               }
             }
@@ -787,7 +795,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Nông trại Đà Lạt Xanh (Updated)\",\n  \"certificate\": \"Organic\"\n}",
+              "raw": "{\n  \"name\": \"NĂ´ng tráº¡i ÄĂ  Láº¡t Xanh (Updated)\",\n  \"certificate\": \"Organic\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -804,15 +812,15 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.farm tồn tại\", () => pm.expect(res.data.farm).to.be.an('object'));",
-                  "pm.test(\"data.farm._id tồn tại\", () => pm.expect(res.data.farm._id).to.be.a('string').and.not.empty);"
+                  "pm.test(\"data.farm tá»“n táº¡i\", () => pm.expect(res.data.farm).to.be.an('object'));",
+                  "pm.test(\"data.farm._id tá»“n táº¡i\", () => pm.expect(res.data.farm._id).to.be.a('string').and.not.empty);"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Get All Farms — Filter VietGAP (Public)",
+          "name": "Get All Farms â€” Filter VietGAP (Public)",
           "request": {
             "method": "GET",
             "header": [],
@@ -848,7 +856,7 @@
           ]
         },
         {
-          "name": "Create Farm — Unauthorized User (Negative)",
+          "name": "Create Farm â€” Unauthorized User (Negative)",
           "request": {
             "method": "POST",
             "header": [
@@ -892,7 +900,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('403 khi user thường tạo farm', function () { pm.response.to.have.status(403); });"
+                  "pm.test('403 khi user thÆ°á»ng táº¡o farm', function () { pm.response.to.have.status(403); });"
                 ]
               }
             }
@@ -923,7 +931,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('404 farm không tồn tại', function () { pm.response.to.have.status(404); });"
+                  "pm.test('404 farm khĂ´ng tá»“n táº¡i', function () { pm.response.to.have.status(404); });"
                 ]
               }
             }
@@ -932,7 +940,7 @@
       ]
     },
     {
-      "name": "📂 Categories",
+      "name": "đŸ“‚ Categories",
       "item": [
         {
           "name": "Create Category (Admin)",
@@ -955,7 +963,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Rau Củ Quả\",\n  \"description\": \"Rau xanh, củ quả tươi sạch từ nông trại\",\n  \"image\": \"https://example.com/rau-cu.jpg\"\n}",
+              "raw": "{\n  \"name\": \"Rau Cá»§ Quáº£\",\n  \"description\": \"Rau xanh, cá»§ quáº£ tÆ°Æ¡i sáº¡ch tá»« nĂ´ng tráº¡i\",\n  \"image\": \"https://example.com/rau-cu.jpg\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1018,8 +1026,8 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.categories là mảng\", () => pm.expect(res.data.categories).to.be.an('array'));",
-                  "pm.test(\"data.pagination tồn tại\", () => pm.expect(res.data.pagination).to.be.an('object'));"
+                  "pm.test(\"data.categories lĂ  máº£ng\", () => pm.expect(res.data.categories).to.be.an('array'));",
+                  "pm.test(\"data.pagination tá»“n táº¡i\", () => pm.expect(res.data.pagination).to.be.an('object'));"
                 ]
               }
             }
@@ -1053,8 +1061,8 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.category._id tồn tại\", () => pm.expect(res.data.category._id).to.be.a('string').and.not.empty);",
-                  "pm.test(\"data.category._id khớp categoryId\", () => pm.expect(res.data.category._id).to.equal(pm.collectionVariables.get(\"categoryId\")));"
+                  "pm.test(\"data.category._id tá»“n táº¡i\", () => pm.expect(res.data.category._id).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data.category._id khá»›p categoryId\", () => pm.expect(res.data.category._id).to.equal(pm.collectionVariables.get(\"categoryId\")));"
                 ]
               }
             }
@@ -1082,7 +1090,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Rau Củ Hữu Cơ\",\n  \"description\": \"Updated description\",\n  \"isActive\": true\n}",
+              "raw": "{\n  \"name\": \"Rau Cá»§ Há»¯u CÆ¡\",\n  \"description\": \"Updated description\",\n  \"isActive\": true\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1099,15 +1107,15 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.category tồn tại\", () => pm.expect(res.data.category).to.be.an('object'));",
-                  "pm.test(\"data.category._id tồn tại\", () => pm.expect(res.data.category._id).to.be.a('string').and.not.empty);"
+                  "pm.test(\"data.category tá»“n táº¡i\", () => pm.expect(res.data.category).to.be.an('object'));",
+                  "pm.test(\"data.category._id tá»“n táº¡i\", () => pm.expect(res.data.category._id).to.be.a('string').and.not.empty);"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Create Category — Unauthorized User (Negative)",
+          "name": "Create Category â€” Unauthorized User (Negative)",
           "request": {
             "method": "POST",
             "header": [
@@ -1151,7 +1159,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('403 khi user thường tạo category', function () { pm.response.to.have.status(403); });"
+                  "pm.test('403 khi user thÆ°á»ng táº¡o category', function () { pm.response.to.have.status(403); });"
                 ]
               }
             }
@@ -1160,10 +1168,10 @@
       ]
     },
     {
-      "name": "🍅 Products",
+      "name": "đŸ… Products",
       "item": [
         {
-          "name": "Create Product (Admin — FormData)",
+          "name": "Create Product (Admin â€” FormData)",
           "request": {
             "method": "POST",
             "header": [],
@@ -1181,12 +1189,12 @@
               "formdata": [
                 {
                   "key": "name",
-                  "value": "Cà chua hữu cơ Đà Lạt",
+                  "value": "CĂ  chua há»¯u cÆ¡ ÄĂ  Láº¡t",
                   "type": "text"
                 },
                 {
                   "key": "description",
-                  "value": "Cà chua trồng theo tiêu chuẩn VietGAP, không thuốc trừ sâu",
+                  "value": "CĂ  chua trá»“ng theo tiĂªu chuáº©n VietGAP, khĂ´ng thuá»‘c trá»« sĂ¢u",
                   "type": "text"
                 },
                 {
@@ -1287,8 +1295,8 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.products là mảng\", () => pm.expect(res.data.products).to.be.an('array'));",
-                  "pm.test(\"data.pagination tồn tại\", () => pm.expect(res.data.pagination).to.be.an('object'));"
+                  "pm.test(\"data.products lĂ  máº£ng\", () => pm.expect(res.data.products).to.be.an('array'));",
+                  "pm.test(\"data.pagination tá»“n táº¡i\", () => pm.expect(res.data.pagination).to.be.an('object'));"
                 ]
               }
             }
@@ -1300,7 +1308,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/products/search?search=cà chua&minPrice=10000&maxPrice=100000&standards=VietGAP",
+              "raw": "{{baseUrl}}/products/search?search=cĂ  chua&minPrice=10000&maxPrice=100000&standards=VietGAP",
               "host": [
                 "{{baseUrl}}"
               ],
@@ -1311,7 +1319,7 @@
               "query": [
                 {
                   "key": "search",
-                  "value": "cà chua"
+                  "value": "cĂ  chua"
                 },
                 {
                   "key": "minPrice",
@@ -1340,7 +1348,7 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.products là mảng\", () => pm.expect(res.data.products).to.be.an('array'));"
+                  "pm.test(\"data.products lĂ  máº£ng\", () => pm.expect(res.data.products).to.be.an('array'));"
                 ]
               }
             }
@@ -1374,15 +1382,15 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.product._id tồn tại\", () => pm.expect(res.data.product._id).to.be.a('string').and.not.empty);",
-                  "pm.test(\"data.product._id khớp productId\", () => pm.expect(res.data.product._id).to.equal(pm.collectionVariables.get(\"productId\")));"
+                  "pm.test(\"data.product._id tá»“n táº¡i\", () => pm.expect(res.data.product._id).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data.product._id khá»›p productId\", () => pm.expect(res.data.product._id).to.equal(pm.collectionVariables.get(\"productId\")));"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Update Product (Admin — FormData)",
+          "name": "Update Product (Admin â€” FormData)",
           "request": {
             "method": "PUT",
             "header": [],
@@ -1401,7 +1409,7 @@
               "formdata": [
                 {
                   "key": "name",
-                  "value": "Cà chua hữu cơ Đà Lạt (Updated)",
+                  "value": "CĂ  chua há»¯u cÆ¡ ÄĂ  Láº¡t (Updated)",
                   "type": "text"
                 },
                 {
@@ -1426,8 +1434,8 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.product tồn tại\", () => pm.expect(res.data.product).to.be.an('object'));",
-                  "pm.test(\"data.product._id tồn tại\", () => pm.expect(res.data.product._id).to.be.a('string').and.not.empty);"
+                  "pm.test(\"data.product tá»“n táº¡i\", () => pm.expect(res.data.product).to.be.an('object'));",
+                  "pm.test(\"data.product._id tá»“n táº¡i\", () => pm.expect(res.data.product._id).to.be.a('string').and.not.empty);"
                 ]
               }
             }
@@ -1458,7 +1466,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('404 product không tồn tại', function () { pm.response.to.have.status(404); });"
+                  "pm.test('404 product khĂ´ng tá»“n táº¡i', function () { pm.response.to.have.status(404); });"
                 ]
               }
             }
@@ -1467,7 +1475,7 @@
       ]
     },
     {
-      "name": "📦 Batches",
+      "name": "đŸ“¦ Batches",
       "item": [
         {
           "name": "Create Batch (Admin)",
@@ -1550,8 +1558,8 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.batches là mảng\", () => pm.expect(res.data.batches).to.be.an('array'));",
-                  "pm.test(\"data.pagination tồn tại\", () => pm.expect(res.data.pagination).to.be.an('object'));"
+                  "pm.test(\"data.batches lĂ  máº£ng\", () => pm.expect(res.data.batches).to.be.an('array'));",
+                  "pm.test(\"data.pagination tá»“n táº¡i\", () => pm.expect(res.data.pagination).to.be.an('object'));"
                 ]
               }
             }
@@ -1582,8 +1590,8 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.batch._id tồn tại\", () => pm.expect(res.data.batch._id).to.be.a('string').and.not.empty);",
-                  "pm.test(\"data.batch._id khớp batchId\", () => pm.expect(res.data.batch._id).to.equal(pm.collectionVariables.get(\"batchId\")));"
+                  "pm.test(\"data.batch._id tá»“n táº¡i\", () => pm.expect(res.data.batch._id).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data.batch._id khá»›p batchId\", () => pm.expect(res.data.batch._id).to.equal(pm.collectionVariables.get(\"batchId\")));"
                 ]
               }
             }
@@ -1614,7 +1622,7 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.report là mảng\", () => pm.expect(res.data.report).to.be.an('array'));"
+                  "pm.test(\"data.report lĂ  máº£ng\", () => pm.expect(res.data.report).to.be.an('array'));"
                 ]
               }
             }
@@ -1651,7 +1659,7 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.batches là mảng\", () => pm.expect(res.data.batches).to.be.an('array'));"
+                  "pm.test(\"data.batches lĂ  máº£ng\", () => pm.expect(res.data.batches).to.be.an('array'));"
                 ]
               }
             }
@@ -1683,8 +1691,8 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.product tồn tại\", () => pm.expect(res.data.product).to.be.an('object'));",
-                  "pm.test(\"data.effectiveStock là số\", () => pm.expect(res.data.effectiveStock).to.be.a('number'));"
+                  "pm.test(\"data.product tá»“n táº¡i\", () => pm.expect(res.data.product).to.be.an('object'));",
+                  "pm.test(\"data.effectiveStock lĂ  sá»‘\", () => pm.expect(res.data.effectiveStock).to.be.a('number'));"
                 ]
               }
             }
@@ -1729,15 +1737,15 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.batch tồn tại\", () => pm.expect(res.data.batch).to.be.an('object'));",
-                  "pm.test(\"data.batch._id tồn tại\", () => pm.expect(res.data.batch._id).to.be.a('string').and.not.empty);"
+                  "pm.test(\"data.batch tá»“n táº¡i\", () => pm.expect(res.data.batch).to.be.an('object'));",
+                  "pm.test(\"data.batch._id tá»“n táº¡i\", () => pm.expect(res.data.batch._id).to.be.a('string').and.not.empty);"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Create Batch — Số Lô Trùng (Negative)",
+          "name": "Create Batch â€” Sá»‘ LĂ´ TrĂ¹ng (Negative)",
           "request": {
             "method": "POST",
             "header": [
@@ -1757,7 +1765,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"batchNumber\": \"BATCH-2024-001\",\n  \"quantity\": 50,\n  \"importDate\": \"2024-01-01\",\n  \"expiryDate\": \"2024-12-31\",\n  \"supplier\": \"Nhà cung cấp Test\",\n  \"importPrice\": 15000\n}",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"batchNumber\": \"BATCH-2024-001\",\n  \"quantity\": 50,\n  \"importDate\": \"2024-01-01\",\n  \"expiryDate\": \"2024-12-31\",\n  \"supplier\": \"NhĂ  cung cáº¥p Test\",\n  \"importPrice\": 15000\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1771,7 +1779,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('400 khi số lô bị trùng', function () { pm.response.to.have.status(400); });"
+                  "pm.test('400 khi sá»‘ lĂ´ bá»‹ trĂ¹ng', function () { pm.response.to.have.status(400); });"
                 ]
               }
             }
@@ -1780,7 +1788,7 @@
       ]
     },
     {
-      "name": "⚠️ Inventory Alerts",
+      "name": "â ï¸ Inventory Alerts",
       "item": [
         {
           "name": "Get Inventory Alerts (Admin)",
@@ -1813,14 +1821,14 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test('data có cấu trúc cảnh báo kho', () => { pm.expect(res.data).to.have.property('expiredBatches'); pm.expect(res.data).to.have.property('expiringBatches'); pm.expect(res.data).to.have.property('outOfStockProducts'); });"
+                  "pm.test('data cĂ³ cáº¥u trĂºc cáº£nh bĂ¡o kho', () => { pm.expect(res.data).to.have.property('expiredBatches'); pm.expect(res.data).to.have.property('expiringBatches'); pm.expect(res.data).to.have.property('outOfStockProducts'); });"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Get Inventory Alerts — No Token (Negative)",
+          "name": "Get Inventory Alerts â€” No Token (Negative)",
           "request": {
             "method": "GET",
             "header": [],
@@ -1844,7 +1852,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('401 khi không có token', function () { pm.response.to.have.status(401); });"
+                  "pm.test('401 khi khĂ´ng cĂ³ token', function () { pm.response.to.have.status(401); });"
                 ]
               }
             }
@@ -1853,7 +1861,7 @@
       ]
     },
     {
-      "name": "🛒 Cart",
+      "name": "đŸ›’ Cart",
       "item": [
         {
           "name": "Add To Cart",
@@ -1893,9 +1901,9 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data._id tồn tại (giỏ hàng)\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);",
-                  "pm.test(\"data.products là mảng\", () => pm.expect(res.data.products).to.be.an('array'));",
-                  "pm.test(\"data.totalPrice là số\", () => pm.expect(res.data.totalPrice).to.be.a('number'));"
+                  "pm.test(\"data._id tá»“n táº¡i (giá» hĂ ng)\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data.products lĂ  máº£ng\", () => pm.expect(res.data.products).to.be.an('array'));",
+                  "pm.test(\"data.totalPrice lĂ  sá»‘\", () => pm.expect(res.data.totalPrice).to.be.a('number'));"
                 ]
               }
             }
@@ -1925,10 +1933,10 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data._id tồn tại (giỏ hàng)\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);",
-                  "pm.test(\"data.products là mảng\", () => pm.expect(res.data.products).to.be.an('array'));",
-                  "pm.test(\"data.totalPrice là số\", () => pm.expect(res.data.totalPrice).to.be.a('number'));",
-                  "pm.test(\"data.totalItems là số\", () => pm.expect(res.data.totalItems).to.be.a('number'));"
+                  "pm.test(\"data._id tá»“n táº¡i (giá» hĂ ng)\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data.products lĂ  máº£ng\", () => pm.expect(res.data.products).to.be.an('array'));",
+                  "pm.test(\"data.totalPrice lĂ  sá»‘\", () => pm.expect(res.data.totalPrice).to.be.a('number'));",
+                  "pm.test(\"data.totalItems lĂ  sá»‘\", () => pm.expect(res.data.totalItems).to.be.a('number'));"
                 ]
               }
             }
@@ -1973,8 +1981,8 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.products là mảng\", () => pm.expect(res.data.products).to.be.an('array'));",
-                  "pm.test(\"data.totalPrice là số\", () => pm.expect(res.data.totalPrice).to.be.a('number'));"
+                  "pm.test(\"data.products lĂ  máº£ng\", () => pm.expect(res.data.products).to.be.an('array'));",
+                  "pm.test(\"data.totalPrice lĂ  sá»‘\", () => pm.expect(res.data.totalPrice).to.be.a('number'));"
                 ]
               }
             }
@@ -2005,7 +2013,7 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.products là mảng\", () => pm.expect(res.data.products).to.be.an('array'));"
+                  "pm.test(\"data.products lĂ  máº£ng\", () => pm.expect(res.data.products).to.be.an('array'));"
                 ]
               }
             }
@@ -2035,14 +2043,14 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"message tồn tại\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
+                  "pm.test(\"message tá»“n táº¡i\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Get Cart — No Token (Negative)",
+          "name": "Get Cart â€” No Token (Negative)",
           "request": {
             "method": "GET",
             "header": [],
@@ -2065,7 +2073,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('401 khi không có token', function () { pm.response.to.have.status(401); });"
+                  "pm.test('401 khi khĂ´ng cĂ³ token', function () { pm.response.to.have.status(401); });"
                 ]
               }
             }
@@ -2074,7 +2082,7 @@
       ]
     },
     {
-      "name": "🧾 Orders",
+      "name": "đŸ§¾ Orders",
       "item": [
         {
           "name": "Add To Cart (COD Setup)",
@@ -2141,7 +2149,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"shippingAddress\": {\n    \"fullName\": \"Nguyễn Văn Test\",\n    \"phone\": \"0901234567\",\n    \"address\": \"123 Nguyễn Huệ, Quận 1, TP.HCM\"\n  },\n  \"note\": \"Giao giờ hành chính\",\n  \"discountCode\": \"\"\n}",
+              "raw": "{\n  \"shippingAddress\": {\n    \"fullName\": \"Nguyá»…n VÄƒn Test\",\n    \"phone\": \"0901234567\",\n    \"address\": \"123 Nguyá»…n Huá»‡, Quáº­n 1, TP.HCM\"\n  },\n  \"note\": \"Giao giá» hĂ nh chĂ­nh\",\n  \"discountCode\": \"\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2155,11 +2163,11 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('201 tạo đơn hàng COD thành công', () => pm.response.to.have.status(201));",
+                  "pm.test('201 táº¡o Ä‘Æ¡n hĂ ng COD thĂ nh cĂ´ng', () => pm.response.to.have.status(201));",
                   "const json = pm.response.json();",
-                  "pm.test('Phản hồi success = true', () => pm.expect(json.success).to.be.true);",
-                  "pm.test('Có order._id', () => pm.expect(json.data._id).to.be.a('string'));",
-                  "pm.test('paymentMethod là COD', () => pm.expect(json.data.paymentMethod).to.equal('COD'));",
+                  "pm.test('Pháº£n há»“i success = true', () => pm.expect(json.success).to.be.true);",
+                  "pm.test('CĂ³ order._id', () => pm.expect(json.data._id).to.be.a('string'));",
+                  "pm.test('paymentMethod lĂ  COD', () => pm.expect(json.data.paymentMethod).to.equal('COD'));",
                   "if (json.data && json.data._id) {",
                   "    pm.collectionVariables.set('orderId', json.data._id);",
                   "}"
@@ -2233,7 +2241,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"shippingAddress\": {\n    \"fullName\": \"Nguyễn Văn Test\",\n    \"phone\": \"0901234567\",\n    \"address\": \"456 Lê Lợi, Quận 3, TP.HCM\"\n  },\n  \"bankCode\": \"NCB\",\n  \"note\": \"Thanh toán VNPay\",\n  \"discountCode\": \"\"\n}",
+              "raw": "{\n  \"shippingAddress\": {\n    \"fullName\": \"Nguyá»…n VÄƒn Test\",\n    \"phone\": \"0901234567\",\n    \"address\": \"456 LĂª Lá»£i, Quáº­n 3, TP.HCM\"\n  },\n  \"bankCode\": \"NCB\",\n  \"note\": \"Thanh toĂ¡n VNPay\",\n  \"discountCode\": \"\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2247,16 +2255,16 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('200 tạo URL thanh toán VNPay thành công', () => pm.response.to.have.status(200));",
+                  "pm.test('200 táº¡o URL thanh toĂ¡n VNPay thĂ nh cĂ´ng', () => pm.response.to.have.status(200));",
                   "const json = pm.response.json();",
-                  "pm.test('Phản hồi success = true', () => pm.expect(json.success).to.be.true);",
-                  "pm.test('Có paymentUrl từ sandbox VNPay', () => {",
+                  "pm.test('Pháº£n há»“i success = true', () => pm.expect(json.success).to.be.true);",
+                  "pm.test('CĂ³ paymentUrl tá»« sandbox VNPay', () => {",
                   "    pm.expect(json.data.paymentUrl).to.be.a('string');",
                   "    pm.expect(json.data.paymentUrl).to.include('sandbox.vnpayment.vn');",
                   "});",
-                  "pm.test('Có order._id', () => pm.expect(json.data.order._id).to.be.a('string'));",
-                  "pm.test('paymentMethod là VNPay', () => pm.expect(json.data.order.paymentMethod).to.equal('VNPay'));",
-                  "pm.test('status là Pending (chờ thanh toán)', () => pm.expect(json.data.order.status).to.equal('Pending'));",
+                  "pm.test('CĂ³ order._id', () => pm.expect(json.data.order._id).to.be.a('string'));",
+                  "pm.test('paymentMethod lĂ  VNPay', () => pm.expect(json.data.order.paymentMethod).to.equal('VNPay'));",
+                  "pm.test('status lĂ  Pending (chá» thanh toĂ¡n)', () => pm.expect(json.data.order.status).to.equal('Pending'));",
                   "if (json.data && json.data.order && json.data.order._id) {",
                   "    pm.collectionVariables.set('vnpayOrderId', json.data.order._id);",
                   "}"
@@ -2299,8 +2307,8 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.orders là mảng\", () => pm.expect(res.data.orders).to.be.an('array'));",
-                  "pm.test(\"data.pagination tồn tại\", () => pm.expect(res.data.pagination).to.be.an('object'));"
+                  "pm.test(\"data.orders lĂ  máº£ng\", () => pm.expect(res.data.orders).to.be.an('array'));",
+                  "pm.test(\"data.pagination tá»“n táº¡i\", () => pm.expect(res.data.pagination).to.be.an('object'));"
                 ]
               }
             }
@@ -2331,9 +2339,9 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data._id tồn tại (đơn hàng)\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);",
-                  "pm.test(\"data._id khớp orderId\", () => pm.expect(res.data._id).to.equal(pm.collectionVariables.get(\"orderId\")));",
-                  "pm.test(\"data.status tồn tại\", () => pm.expect(res.data.status).to.be.a('string').and.not.empty);"
+                  "pm.test(\"data._id tá»“n táº¡i (Ä‘Æ¡n hĂ ng)\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data._id khá»›p orderId\", () => pm.expect(res.data._id).to.equal(pm.collectionVariables.get(\"orderId\")));",
+                  "pm.test(\"data.status tá»“n táº¡i\", () => pm.expect(res.data.status).to.be.a('string').and.not.empty);"
                 ]
               }
             }
@@ -2375,8 +2383,8 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.orders là mảng\", () => pm.expect(res.data.orders).to.be.an('array'));",
-                  "pm.test(\"data.pagination tồn tại\", () => pm.expect(res.data.pagination).to.be.an('object'));"
+                  "pm.test(\"data.orders lĂ  máº£ng\", () => pm.expect(res.data.orders).to.be.an('array'));",
+                  "pm.test(\"data.pagination tá»“n táº¡i\", () => pm.expect(res.data.pagination).to.be.an('object'));"
                 ]
               }
             }
@@ -2422,8 +2430,8 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.status tồn tại\", () => pm.expect(res.data.status).to.be.a('string').and.not.empty);",
-                  "pm.test(\"data._id tồn tại\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);"
+                  "pm.test(\"data.status tá»“n táº¡i\", () => pm.expect(res.data.status).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data._id tá»“n táº¡i\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);"
                 ]
               }
             }
@@ -2452,16 +2460,16 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('200 hủy đơn hàng thành công', () => pm.response.to.have.status(200));",
+                  "pm.test('200 há»§y Ä‘Æ¡n hĂ ng thĂ nh cĂ´ng', () => pm.response.to.have.status(200));",
                   "const json = pm.response.json();",
-                  "pm.test('status chuyển thành Cancelled', () => pm.expect(json.data.status).to.equal('Cancelled'));"
+                  "pm.test('status chuyá»ƒn thĂ nh Cancelled', () => pm.expect(json.data.status).to.equal('Cancelled'));"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Hủy Đơn Hàng Đã Hủy (Negative)",
+          "name": "Há»§y ÄÆ¡n HĂ ng ÄĂ£ Há»§y (Negative)",
           "request": {
             "method": "PATCH",
             "header": [],
@@ -2483,18 +2491,18 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "// Đơn đã Cancelled từ request trước → thử hợy lại phải trả 400",
-                  "pm.test('400 không thể hủy đơn đã Cancelled', () => pm.response.to.have.status(400));",
+                  "// ÄÆ¡n Ä‘Ă£ Cancelled tá»« request trÆ°á»›c â†’ thá»­ há»£y láº¡i pháº£i tráº£ 400",
+                  "pm.test('400 khĂ´ng thá»ƒ há»§y Ä‘Æ¡n Ä‘Ă£ Cancelled', () => pm.response.to.have.status(400));",
                   "const json = pm.response.json();",
-                  "pm.test('Phản hồi lỗi success = false', () => pm.expect(json.success).to.be.false);",
-                  "pm.test('Có thông báo lỗi trạng thái', () => pm.expect(json.message).to.include('Cancelled'));"
+                  "pm.test('Pháº£n há»“i lá»—i success = false', () => pm.expect(json.success).to.be.false);",
+                  "pm.test('CĂ³ thĂ´ng bĂ¡o lá»—i tráº¡ng thĂ¡i', () => pm.expect(json.message).to.include('Cancelled'));"
                 ]
               }
             }
           ]
         },
         {
-          "name": "VNPay IPN (Public Callback — Chữ Ký Không Hợp Lệ)",
+          "name": "VNPay IPN (Public Callback â€” Chá»¯ KĂ½ KhĂ´ng Há»£p Lá»‡)",
           "request": {
             "method": "GET",
             "header": [],
@@ -2528,20 +2536,20 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "// IPN endpoint LUÔN trả về HTTP 200 theo chuẩn VNPay (kể cả lỗi).",
-                  "// Thiếu vnp_SecureHash → verifyReturnUrl trả isValid=false → RspCode:97",
-                  "pm.test('200 IPN luôn trả HTTP 200 (chuẩn VNPay)', () => pm.response.to.have.status(200));",
+                  "// IPN endpoint LUĂ”N tráº£ vá» HTTP 200 theo chuáº©n VNPay (ká»ƒ cáº£ lá»—i).",
+                  "// Thiáº¿u vnp_SecureHash â†’ verifyReturnUrl tráº£ isValid=false â†’ RspCode:97",
+                  "pm.test('200 IPN luĂ´n tráº£ HTTP 200 (chuáº©n VNPay)', () => pm.response.to.have.status(200));",
                   "const json = pm.response.json();",
-                  "pm.test('Có trường RspCode trong phản hồi', () => pm.expect(json).to.have.property('RspCode'));",
-                  "pm.test('Có trường Message trong phản hồi', () => pm.expect(json).to.have.property('Message'));",
-                  "pm.test('RspCode = 97 — thiếu chữ ký hợp lệ', () => pm.expect(json.RspCode).to.equal('97'));"
+                  "pm.test('CĂ³ trÆ°á»ng RspCode trong pháº£n há»“i', () => pm.expect(json).to.have.property('RspCode'));",
+                  "pm.test('CĂ³ trÆ°á»ng Message trong pháº£n há»“i', () => pm.expect(json).to.have.property('Message'));",
+                  "pm.test('RspCode = 97 â€” thiáº¿u chá»¯ kĂ½ há»£p lá»‡', () => pm.expect(json.RspCode).to.equal('97'));"
                 ]
               }
             }
           ]
         },
         {
-          "name": "VNPay Return (Public Callback — Chữ Ký Không Hợp Lệ)",
+          "name": "VNPay Return (Public Callback â€” Chá»¯ KĂ½ KhĂ´ng Há»£p Lá»‡)",
           "request": {
             "method": "GET",
             "header": [],
@@ -2575,18 +2583,18 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "// Return URL thiếu vnp_SecureHash → chữ ký không hợp lệ → 400",
-                  "pm.test('400 Return URL với chữ ký không hợp lệ', () => pm.response.to.have.status(400));",
+                  "// Return URL thiáº¿u vnp_SecureHash â†’ chá»¯ kĂ½ khĂ´ng há»£p lá»‡ â†’ 400",
+                  "pm.test('400 Return URL vá»›i chá»¯ kĂ½ khĂ´ng há»£p lá»‡', () => pm.response.to.have.status(400));",
                   "const json = pm.response.json();",
-                  "pm.test('Phản hồi lỗi success = false', () => pm.expect(json.success).to.be.false);",
-                  "pm.test('Có thông báo lỗi về chữ ký', () => pm.expect(json.message).to.be.a('string'));"
+                  "pm.test('Pháº£n há»“i lá»—i success = false', () => pm.expect(json.success).to.be.false);",
+                  "pm.test('CĂ³ thĂ´ng bĂ¡o lá»—i vá» chá»¯ kĂ½', () => pm.expect(json.message).to.be.a('string'));"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Checkout VNPay — Giỏ Hàng Trống (Negative)",
+          "name": "Checkout VNPay â€” Giá» HĂ ng Trá»‘ng (Negative)",
           "request": {
             "method": "POST",
             "header": [
@@ -2607,7 +2615,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"shippingAddress\": {\n    \"fullName\": \"Test User\",\n    \"phone\": \"0901234567\",\n    \"address\": \"456 Lê Lợi, Quận 3, TP.HCM\"\n  },\n  \"bankCode\": \"NCB\"\n}",
+              "raw": "{\n  \"shippingAddress\": {\n    \"fullName\": \"Test User\",\n    \"phone\": \"0901234567\",\n    \"address\": \"456 LĂª Lá»£i, Quáº­n 3, TP.HCM\"\n  },\n  \"bankCode\": \"NCB\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2621,7 +2629,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "// Xóa sạch giỏ hàng trước khi test",
+                  "// XĂ³a sáº¡ch giá» hĂ ng trÆ°á»›c khi test",
                   "pm.sendRequest({",
                   "    url: pm.collectionVariables.get('baseUrl') + '/cart',",
                   "    method: 'DELETE',",
@@ -2637,17 +2645,17 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('400 không thể thanh toán VNPay khi giỏ hàng trống', () => pm.response.to.have.status(400));",
+                  "pm.test('400 khĂ´ng thá»ƒ thanh toĂ¡n VNPay khi giá» hĂ ng trá»‘ng', () => pm.response.to.have.status(400));",
                   "const json = pm.response.json();",
-                  "pm.test('Phản hồi lỗi success = false', () => pm.expect(json.success).to.be.false);",
-                  "pm.test('Có thông báo lỗi giỏ hàng', () => pm.expect(json.message).to.be.a('string'));"
+                  "pm.test('Pháº£n há»“i lá»—i success = false', () => pm.expect(json.success).to.be.false);",
+                  "pm.test('CĂ³ thĂ´ng bĂ¡o lá»—i giá» hĂ ng', () => pm.expect(json.message).to.be.a('string'));"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Get My Orders — No Token (Negative)",
+          "name": "Get My Orders â€” No Token (Negative)",
           "request": {
             "method": "GET",
             "header": [],
@@ -2670,7 +2678,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('401 khi không có token', function () { pm.response.to.have.status(401); });"
+                  "pm.test('401 khi khĂ´ng cĂ³ token', function () { pm.response.to.have.status(401); });"
                 ]
               }
             }
@@ -2679,7 +2687,7 @@
       ]
     },
     {
-      "name": "⭐ Reviews",
+      "name": "â­ Reviews",
       "item": [
         {
           "name": "Create Review",
@@ -2702,7 +2710,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"rating\": 5,\n  \"comment\": \"Cà chua rất tươi ngon, đóng gói cẩn thận. Sẽ mua lại!\"\n}",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"rating\": 5,\n  \"comment\": \"CĂ  chua ráº¥t tÆ°Æ¡i ngon, Ä‘Ă³ng gĂ³i cáº©n tháº­n. Sáº½ mua láº¡i!\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2767,7 +2775,7 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data có reviews\", () => {",
+                  "pm.test(\"data cĂ³ reviews\", () => {",
                   "  const hasReviews = Array.isArray(res.data) || Array.isArray(res.data.reviews) || typeof res.data === 'object';",
                   "  pm.expect(hasReviews).to.be.true;",
                   "});"
@@ -2798,7 +2806,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"rating\": 4,\n  \"comment\": \"Vẫn ngon nhưng lần này hơi nhỏ trái\"\n}",
+              "raw": "{\n  \"rating\": 4,\n  \"comment\": \"Váº«n ngon nhÆ°ng láº§n nĂ y hÆ¡i nhá» trĂ¡i\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2815,8 +2823,8 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.review tồn tại\", () => pm.expect(res.data.review).to.be.an('object'));",
-                  "pm.test(\"data.review._id tồn tại\", () => pm.expect(res.data.review._id).to.be.a('string').and.not.empty);"
+                  "pm.test(\"data.review tá»“n táº¡i\", () => pm.expect(res.data.review).to.be.an('object'));",
+                  "pm.test(\"data.review._id tá»“n táº¡i\", () => pm.expect(res.data.review._id).to.be.a('string').and.not.empty);"
                 ]
               }
             }
@@ -2847,14 +2855,14 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"message tồn tại\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
+                  "pm.test(\"message tá»“n táº¡i\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Get Reviews — Product Not Found (Negative)",
+          "name": "Get Reviews â€” Product Not Found (Negative)",
           "request": {
             "method": "GET",
             "header": [],
@@ -2879,14 +2887,14 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('404 product không tồn tại', function () { pm.response.to.have.status(404); });"
+                  "pm.test('404 product khĂ´ng tá»“n táº¡i', function () { pm.response.to.have.status(404); });"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Create Review — Comment Quá Ngắn (Negative)",
+          "name": "Create Review â€” Comment QuĂ¡ Ngáº¯n (Negative)",
           "request": {
             "method": "POST",
             "header": [
@@ -2920,14 +2928,14 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('400 khi comment quá ngắn', function () { pm.response.to.have.status(400); });"
+                  "pm.test('400 khi comment quĂ¡ ngáº¯n', function () { pm.response.to.have.status(400); });"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Create Review — No Token (Negative)",
+          "name": "Create Review â€” No Token (Negative)",
           "request": {
             "method": "POST",
             "header": [
@@ -2950,7 +2958,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"rating\": 5,\n  \"comment\": \"Sản phẩm rất ngon, tươi và sạch\"\n}",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"rating\": 5,\n  \"comment\": \"Sáº£n pháº©m ráº¥t ngon, tÆ°Æ¡i vĂ  sáº¡ch\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2964,7 +2972,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('401 khi không có token', function () { pm.response.to.have.status(401); });"
+                  "pm.test('401 khi khĂ´ng cĂ³ token', function () { pm.response.to.have.status(401); });"
                 ]
               }
             }
@@ -2973,7 +2981,7 @@
       ]
     },
     {
-      "name": "🏷️ Discounts",
+      "name": "đŸ·ï¸ Discounts",
       "item": [
         {
           "name": "Create Discount (Admin)",
@@ -3060,9 +3068,9 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 201 Created\", () => pm.response.to.have.status(201));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data._id tồn tại (mã giảm giá)\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);",
-                  "pm.test(\"data.code tồn tại\", () => pm.expect(res.data.code).to.be.a('string').and.not.empty);",
-                  "pm.test(\"data.type tồn tại\", () => pm.expect(res.data.type).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data._id tá»“n táº¡i (mĂ£ giáº£m giĂ¡)\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data.code tá»“n táº¡i\", () => pm.expect(res.data.code).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data.type tá»“n táº¡i\", () => pm.expect(res.data.type).to.be.a('string').and.not.empty);",
                   "pm.collectionVariables.set(\"discountId\", res.data._id);"
                 ]
               }
@@ -3103,7 +3111,7 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data có danh sách discounts\", () => {",
+                  "pm.test(\"data cĂ³ danh sĂ¡ch discounts\", () => {",
                   "  const hasList = Array.isArray(res.data) || Array.isArray(res.data.discounts);",
                   "  pm.expect(hasList).to.be.true;",
                   "});"
@@ -3137,8 +3145,8 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data._id tồn tại\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);",
-                  "pm.test(\"data._id khớp discountId\", () => pm.expect(res.data._id).to.equal(pm.collectionVariables.get(\"discountId\")));"
+                  "pm.test(\"data._id tá»“n táº¡i\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data._id khá»›p discountId\", () => pm.expect(res.data._id).to.equal(pm.collectionVariables.get(\"discountId\")));"
                 ]
               }
             }
@@ -3183,9 +3191,9 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.discountAmount là số\", () => pm.expect(res.data.discountAmount).to.be.a('number'));",
-                  "pm.test(\"data.finalPrice là số\", () => pm.expect(res.data.finalPrice).to.be.a('number'));",
-                  "pm.test(\"data.code tồn tại\", () => pm.expect(res.data.code).to.be.a('string').and.not.empty);"
+                  "pm.test(\"data.discountAmount lĂ  sá»‘\", () => pm.expect(res.data.discountAmount).to.be.a('number'));",
+                  "pm.test(\"data.finalPrice lĂ  sá»‘\", () => pm.expect(res.data.finalPrice).to.be.a('number'));",
+                  "pm.test(\"data.code tá»“n táº¡i\", () => pm.expect(res.data.code).to.be.a('string').and.not.empty);"
                 ]
               }
             }
@@ -3230,7 +3238,7 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data._id tồn tại\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);"
+                  "pm.test(\"data._id tá»“n táº¡i\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);"
                 ]
               }
             }
@@ -3261,14 +3269,14 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"message tồn tại\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
+                  "pm.test(\"message tá»“n táº¡i\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Validate Discount — Mã Không Hợp Lệ (Negative)",
+          "name": "Validate Discount â€” MĂ£ KhĂ´ng Há»£p Lá»‡ (Negative)",
           "request": {
             "method": "POST",
             "header": [
@@ -3303,7 +3311,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('404 khi mã giảm giá không hợp lệ', function () { pm.response.to.have.status(404); });"
+                  "pm.test('404 khi mĂ£ giáº£m giĂ¡ khĂ´ng há»£p lá»‡', function () { pm.response.to.have.status(404); });"
                 ]
               }
             }
@@ -3312,7 +3320,7 @@
       ]
     },
     {
-      "name": "📊 Stats (Admin)",
+      "name": "đŸ“ Stats (Admin)",
       "item": [
         {
           "name": "Get Revenue (Monthly)",
@@ -3346,9 +3354,9 @@
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
                   "pm.test(\"data.period === 'monthly'\", () => pm.expect(res.data.period).to.equal('monthly'));",
-                  "pm.test(\"data.totalRevenue là số\", () => pm.expect(res.data.totalRevenue).to.be.a('number'));",
-                  "pm.test(\"data.totalOrders là số\", () => pm.expect(res.data.totalOrders).to.be.a('number'));",
-                  "pm.test(\"data.details là mảng\", () => pm.expect(res.data.details).to.be.an('array'));"
+                  "pm.test(\"data.totalRevenue lĂ  sá»‘\", () => pm.expect(res.data.totalRevenue).to.be.a('number'));",
+                  "pm.test(\"data.totalOrders lĂ  sá»‘\", () => pm.expect(res.data.totalOrders).to.be.a('number'));",
+                  "pm.test(\"data.details lĂ  máº£ng\", () => pm.expect(res.data.details).to.be.an('array'));"
                 ]
               }
             }
@@ -3386,9 +3394,9 @@
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
                   "pm.test(\"data.period === 'daily'\", () => pm.expect(res.data.period).to.equal('daily'));",
-                  "pm.test(\"data.totalRevenue là số\", () => pm.expect(res.data.totalRevenue).to.be.a('number'));",
-                  "pm.test(\"data.totalOrders là số\", () => pm.expect(res.data.totalOrders).to.be.a('number'));",
-                  "pm.test(\"data.details là mảng\", () => pm.expect(res.data.details).to.be.an('array'));"
+                  "pm.test(\"data.totalRevenue lĂ  sá»‘\", () => pm.expect(res.data.totalRevenue).to.be.a('number'));",
+                  "pm.test(\"data.totalOrders lĂ  sá»‘\", () => pm.expect(res.data.totalOrders).to.be.a('number'));",
+                  "pm.test(\"data.details lĂ  máº£ng\", () => pm.expect(res.data.details).to.be.an('array'));"
                 ]
               }
             }
@@ -3425,7 +3433,7 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.topSellers là mảng\", () => pm.expect(res.data.topSellers).to.be.an('array'));"
+                  "pm.test(\"data.topSellers lĂ  máº£ng\", () => pm.expect(res.data.topSellers).to.be.an('array'));"
                 ]
               }
             }
@@ -3462,15 +3470,15 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"data.totalBatches là số\", () => pm.expect(res.data.totalBatches).to.be.a('number'));",
-                  "pm.test(\"data.batches là mảng\", () => pm.expect(res.data.batches).to.be.an('array'));"
+                  "pm.test(\"data.totalBatches lĂ  sá»‘\", () => pm.expect(res.data.totalBatches).to.be.a('number'));",
+                  "pm.test(\"data.batches lĂ  máº£ng\", () => pm.expect(res.data.batches).to.be.an('array'));"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Get Revenue — User Forbidden (Negative)",
+          "name": "Get Revenue â€” User Forbidden (Negative)",
           "request": {
             "method": "GET",
             "header": [],
@@ -3507,7 +3515,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('403 khi user thường truy cập stats', function () { pm.response.to.have.status(403); });"
+                  "pm.test('403 khi user thÆ°á»ng truy cáº­p stats', function () { pm.response.to.have.status(403); });"
                 ]
               }
             }
@@ -3516,10 +3524,10 @@
       ]
     },
     {
-      "name": "❤️ Wishlist",
+      "name": "â¤ï¸ Wishlist",
       "item": [
         {
-          "name": "Lấy Wishlist (User)",
+          "name": "Láº¥y Wishlist (User)",
           "request": {
             "method": "GET",
             "header": [],
@@ -3539,9 +3547,9 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('200 lấy wishlist thành công', function () { pm.response.to.have.status(200); });",
+                  "pm.test('200 láº¥y wishlist thĂ nh cĂ´ng', function () { pm.response.to.have.status(200); });",
                   "const json = pm.response.json();",
-                  "pm.test('Có field products (array)', function () {",
+                  "pm.test('CĂ³ field products (array)', function () {",
                   "  pm.expect(json.data.wishlist).to.have.property('products');",
                   "  pm.expect(json.data.wishlist.products).to.be.an('array');",
                   "});"
@@ -3551,7 +3559,7 @@
           ]
         },
         {
-          "name": "Toggle Sản Phẩm Vào Wishlist (Thêm)",
+          "name": "Toggle Sáº£n Pháº©m VĂ o Wishlist (ThĂªm)",
           "request": {
             "method": "POST",
             "header": [],
@@ -3572,9 +3580,9 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('200 toggle wishlist thành công', function () { pm.response.to.have.status(200); });",
+                  "pm.test('200 toggle wishlist thĂ nh cĂ´ng', function () { pm.response.to.have.status(200); });",
                   "const json = pm.response.json();",
-                  "pm.test('Field added = true khi thêm mới', function () {",
+                  "pm.test('Field added = true khi thĂªm má»›i', function () {",
                   "  pm.expect(json.data).to.have.property('added');",
                   "  pm.expect(json.data.added).to.equal(true);",
                   "});"
@@ -3584,7 +3592,7 @@
           ]
         },
         {
-          "name": "Kiểm Tra Sản Phẩm Trong Wishlist",
+          "name": "Kiá»ƒm Tra Sáº£n Pháº©m Trong Wishlist",
           "request": {
             "method": "GET",
             "header": [],
@@ -3606,9 +3614,9 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('200 kiểm tra wishlist thành công', function () { pm.response.to.have.status(200); });",
+                  "pm.test('200 kiá»ƒm tra wishlist thĂ nh cĂ´ng', function () { pm.response.to.have.status(200); });",
                   "const json = pm.response.json();",
-                  "pm.test('Field inWishlist = true sau khi toggle thêm', function () {",
+                  "pm.test('Field inWishlist = true sau khi toggle thĂªm', function () {",
                   "  pm.expect(json.data).to.have.property('inWishlist');",
                   "  pm.expect(json.data.inWishlist).to.equal(true);",
                   "});"
@@ -3618,7 +3626,7 @@
           ]
         },
         {
-          "name": "Toggle Sản Phẩm Ra Khỏi Wishlist (Xóa)",
+          "name": "Toggle Sáº£n Pháº©m Ra Khá»i Wishlist (XĂ³a)",
           "request": {
             "method": "POST",
             "header": [],
@@ -3639,9 +3647,9 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('200 toggle xóa khỏi wishlist thành công', function () { pm.response.to.have.status(200); });",
+                  "pm.test('200 toggle xĂ³a khá»i wishlist thĂ nh cĂ´ng', function () { pm.response.to.have.status(200); });",
                   "const json = pm.response.json();",
-                  "pm.test('Field added = false khi xóa', function () {",
+                  "pm.test('Field added = false khi xĂ³a', function () {",
                   "  pm.expect(json.data).to.have.property('added');",
                   "  pm.expect(json.data.added).to.equal(false);",
                   "});"
@@ -3651,7 +3659,7 @@
           ]
         },
         {
-          "name": "Thêm Lại Rồi Xóa Bằng DELETE",
+          "name": "ThĂªm Láº¡i Rá»“i XĂ³a Báº±ng DELETE",
           "request": {
             "method": "DELETE",
             "header": [],
@@ -3672,7 +3680,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "// Thêm lại trước khi xóa bằng DELETE",
+                  "// ThĂªm láº¡i trÆ°á»›c khi xĂ³a báº±ng DELETE",
                   "const baseUrl = pm.collectionVariables.get('baseUrl');",
                   "const productId = pm.collectionVariables.get('productId');",
                   "const token = pm.collectionVariables.get('token');",
@@ -3689,14 +3697,14 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('200 xóa khỏi wishlist bằng DELETE thành công', function () { pm.response.to.have.status(200); });"
+                  "pm.test('200 xĂ³a khá»i wishlist báº±ng DELETE thĂ nh cĂ´ng', function () { pm.response.to.have.status(200); });"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Lấy Wishlist — No Token (Negative)",
+          "name": "Láº¥y Wishlist â€” No Token (Negative)",
           "request": {
             "method": "GET",
             "header": [],
@@ -3719,14 +3727,14 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('401 khi không có token', function () { pm.response.to.have.status(401); });"
+                  "pm.test('401 khi khĂ´ng cĂ³ token', function () { pm.response.to.have.status(401); });"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Xóa Sản Phẩm Không Có Trong Wishlist (Negative)",
+          "name": "XĂ³a Sáº£n Pháº©m KhĂ´ng CĂ³ Trong Wishlist (Negative)",
           "request": {
             "method": "DELETE",
             "header": [],
@@ -3747,7 +3755,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('404 khi xóa sản phẩm không có trong wishlist', function () { pm.response.to.have.status(404); });"
+                  "pm.test('404 khi xĂ³a sáº£n pháº©m khĂ´ng cĂ³ trong wishlist', function () { pm.response.to.have.status(404); });"
                 ]
               }
             }
@@ -3756,7 +3764,606 @@
       ]
     },
     {
-      "name": "🗑️ Cleanup",
+      "name": "👥 Admin Users",
+      "description": "Quản lý người dùng & phân quyền Role — Admin only.\nBusiness rule: Admin KHÔNG thể thay đổi role của Admin khác (cùng cấp bậc). Admin KHÔNG thể tự đổi role của chính mình.",
+      "item": [
+        {
+          "name": "01. Get All Users (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 - Lấy danh sách users thành công', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data.users).to.be.an('array').and.not.empty;",
+                  "    pm.expect(json.data.pagination).to.have.all.keys('page','limit','total','totalPages');",
+                  "});",
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.users) {",
+                  "    const tu = json.data.users.find(u => u.email === 'testuser@cleanfood.vn');",
+                  "    if (tu) pm.collectionVariables.set('testUserId', tu._id);",
+                  "    const au = json.data.users.find(u => u.email === 'admin@cleanfood.vn');",
+                  "    if (au) pm.collectionVariables.set('adminUserId', au._id);",
+                  "    pm.test('testUserId và adminUserId được lưu', () => {",
+                  "        pm.expect(pm.collectionVariables.get('testUserId')).to.be.a('string').and.not.empty;",
+                  "        pm.expect(pm.collectionVariables.get('adminUserId')).to.be.a('string').and.not.empty;",
+                  "    });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02. Get Users — Filter by Role (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users?role=user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "user"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 - Filter role=user: chỉ trả về user thường', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.data.users).to.be.an('array');",
+                  "    json.data.users.forEach(u => pm.expect(u.role).to.equal('user'));",
+                  "    // admin@cleanfood.vn (role=admin) không được xuất hiện",
+                  "    const found = json.data.users.find(u => u.email === 'admin@cleanfood.vn');",
+                  "    pm.expect(found).to.be.undefined;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03. Get Users — Search by Name/Email (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users?search=test",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": "test"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 - Search trả về đúng kết quả', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.data.users).to.be.an('array');",
+                  "    pm.expect(json.data.pagination.total).to.be.at.least(1);",
+                  "    json.data.users.forEach(u => {",
+                  "        const match = u.name.toLowerCase().includes('test') || u.email.toLowerCase().includes('test');",
+                  "        pm.expect(match).to.be.true;",
+                  "    });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04. Get Users — Pagination (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users?page=1&limit=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 - Phân trang hoạt động đúng', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.data.users).to.be.an('array').and.have.lengthOf(1);",
+                  "    pm.expect(json.data.pagination.limit).to.equal(1);",
+                  "    pm.expect(json.data.pagination.page).to.equal(1);",
+                  "    pm.expect(json.data.pagination.totalPages).to.be.at.least(1);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05. Get All Users — No Token (Negative)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 - Không có token bị từ chối', () => {",
+                  "    pm.response.to.have.status(401);",
+                  "    pm.expect(pm.response.json().success).to.be.false;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06. Update Role — User Role Forbidden (Negative)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{userToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{testUserId}}/role",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "{{testUserId}}",
+                "role"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"admin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('403 - User thông thường không có quyền thay đổi role', () => {",
+                  "    pm.response.to.have.status(403);",
+                  "    pm.expect(pm.response.json().success).to.be.false;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07. Update Role — Role Already Same (Negative)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{testUserId}}/role",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "{{testUserId}}",
+                "role"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"user\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 - Role đã giống nhau bị từ chối', () => {",
+                  "    pm.response.to.have.status(400);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.false;",
+                  "    pm.expect(json.message).to.include('đã có role');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08. Update Role — Invalid Role Value (Negative)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{testUserId}}/role",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "{{testUserId}}",
+                "role"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"superadmin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 - Role không hợp lệ bị từ chối', () => {",
+                  "    pm.response.to.have.status(400);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.false;",
+                  "    pm.expect(json.message).to.include('Role không hợp lệ');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "09. Update Role — Invalid ObjectId (Negative)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/not-a-valid-id/role",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "not-a-valid-id",
+                "role"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"user\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 - ObjectId không hợp lệ bị từ chối', () => {",
+                  "    pm.response.to.have.status(400);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.false;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "10. Update Role — User Not Found (Negative)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/000000000000000000000000/role",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "000000000000000000000000",
+                "role"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"user\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 - User không tồn tại bị từ chối', () => {",
+                  "    pm.response.to.have.status(404);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.false;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "11. Update Role — Promote User to Admin",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{testUserId}}/role",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "{{testUserId}}",
+                "role"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"admin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 - Thăng cấp User thành Admin thành công', () => {",
+                  "    pm.response.to.have.status(200);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data.user.role).to.equal('admin');",
+                  "    pm.expect(json.data.user.email).to.equal('testuser@cleanfood.vn');",
+                  "    pm.expect(json.data.user._id).to.equal(pm.collectionVariables.get('testUserId'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "12. Update Role — Same Level Admin→Admin (Negative)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{testUserId}}/role",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "{{testUserId}}",
+                "role"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"user\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('403 - Không thể thay đổi role của Admin khác (cùng cấp bậc)', () => {",
+                  "    pm.response.to.have.status(403);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.false;",
+                  "    pm.expect(json.message).to.include('Admin khác');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "13. Update Role — Self Change (Negative)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{adminUserId}}/role",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "{{adminUserId}}",
+                "role"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"user\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('403 - Admin không thể tự đổi role của chính mình', () => {",
+                  "    pm.response.to.have.status(403);",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.false;",
+                  "    pm.expect(json.message).to.include('chính mình');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "đŸ—‘ï¸ Cleanup",
       "item": [
         {
           "name": "Delete Batch (Admin)",
@@ -3783,7 +4390,7 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"message tồn tại\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
+                  "pm.test(\"message tá»“n táº¡i\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
                 ]
               }
             }
@@ -3814,7 +4421,7 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"message tồn tại\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
+                  "pm.test(\"message tá»“n táº¡i\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
                 ]
               }
             }
@@ -3845,7 +4452,7 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"message tồn tại\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
+                  "pm.test(\"message tá»“n táº¡i\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
                 ]
               }
             }
@@ -3876,17 +4483,17 @@
                   "const res = pm.response.json();",
                   "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
                   "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
-                  "pm.test(\"message tồn tại\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
+                  "pm.test(\"message tá»“n táº¡i\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
                 ]
               }
             }
           ]
         }
       ],
-      "description": "Xóa các tài nguyên đã tạo trong quá trình test. Chạy SAU khi tất cả CRUD tests hoàn thành."
+      "description": "XĂ³a cĂ¡c tĂ i nguyĂªn Ä‘Ă£ táº¡o trong quĂ¡ trĂ¬nh test. Cháº¡y SAU khi táº¥t cáº£ CRUD tests hoĂ n thĂ nh."
     },
     {
-      "name": "❌ 404 Not Found",
+      "name": "âŒ 404 Not Found",
       "item": [
         {
           "name": "Invalid Route (Negative)",

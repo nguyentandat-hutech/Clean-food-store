@@ -109,6 +109,7 @@ function AdminDashboardPage() {
                     { to: '/admin/orders', label: '🧾 Đơn hàng', color: '#6a1b9a' },
                     { to: '/admin/inventory', label: '📊 Tồn kho', color: '#4e342e' },
                     { to: '/admin/discounts', label: '🏷️ Mã giảm giá', color: '#e65100' },
+                    { to: '/admin/users', label: '👥 Quản lý Users', color: '#37474f' },
                 ].map(({ to, label, color }) => (
                     <Link key={to} to={to} style={{
                         padding: '7px 16px', background: color, color: '#fff',

@@ -22,6 +22,7 @@ import OrderSuccessPage from './pages/OrderSuccessPage';
 import AdminOrderPage from './pages/AdminOrderPage';
 import AdminFarmPage from './pages/AdminFarmPage';
 import AdminDiscountPage from './pages/AdminDiscountPage';
+import AdminUserPage from './pages/AdminUserPage';
 import WishlistPage from './pages/WishlistPage';
 
 // ── App Component ─────────────────────────────────────────────
@@ -172,6 +173,16 @@ function App() {
                         element={
                             <ProtectedRoute roles={['admin']}>
                                 <AdminDiscountPage />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* Quản lý Người dùng & Phân quyền Role (Admin) */}
+                    <Route
+                        path="/admin/users"
+                        element={
+                            <ProtectedRoute roles={['admin']}>
+                                <AdminUserPage />
                             </ProtectedRoute>
                         }
                     />
