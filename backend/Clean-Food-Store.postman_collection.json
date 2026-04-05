@@ -52,6 +52,10 @@
     {
       "key": "userToken",
       "value": ""
+    },
+    {
+      "key": "vnpayOrderId",
+      "value": ""
     }
   ],
   "auth": {
@@ -145,17 +149,19 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Register success', function () {",
-                  "    pm.response.to.have.status(201);",
-                  "    const json = pm.response.json();",
-                  "    pm.expect(json.success).to.be.true;",
-                  "    if (json.data && json.data.token) {",
+                  "pm.test('Register success (201) hoặc đã tồn tại (409)', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([201, 409]);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "if (pm.response.code === 201 && json.data) {",
+                  "    if (json.data.token) {",
                   "        pm.collectionVariables.set('token', json.data.token);",
+                  "        pm.collectionVariables.set('userToken', json.data.token);",
                   "    }",
-                  "    if (json.data && json.data.user && json.data.user._id) {",
+                  "    if (json.data.user && json.data.user._id) {",
                   "        pm.collectionVariables.set('userId', json.data.user._id);",
                   "    }",
-                  "});"
+                  "}"
                 ]
               }
             }
@@ -193,7 +199,24 @@
                 }
               }
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test('Register Admin (201) hoặc đã tồn tại (409)', () => pm.expect(pm.response.code).to.be.oneOf([201, 409]));",
+                  "if (pm.response.code === 201 && res.data) {",
+                  "    pm.test('data.token tồn tại', () => pm.expect(res.data.token).to.be.a('string').and.not.empty);",
+                  "    pm.test('data.user._id tồn tại', () => pm.expect(res.data.user._id).to.be.a('string').and.not.empty);",
+                  "    pm.collectionVariables.set('adminToken', res.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "03. Login (User)",
@@ -234,7 +257,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Login success', function () {",
+                  "pm.test('Login User success', function () {",
                   "    pm.response.to.have.status(200);",
                   "    const json = pm.response.json();",
                   "    pm.expect(json.success).to.be.true;",
@@ -245,7 +268,7 @@
                   "    if (json.data && json.data.user && json.data.user._id) {",
                   "        pm.collectionVariables.set('userId', json.data.user._id);",
                   "    }",
-                  ");"
+                  "});"
                 ]
               }
             }
@@ -725,7 +748,22 @@
             "auth": {
               "type": "noauth"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.farm._id tồn tại\", () => pm.expect(res.data.farm._id).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data.farm._id khớp farmId\", () => pm.expect(res.data.farm._id).to.equal(pm.collectionVariables.get(\"farmId\")));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Update Farm (Admin)",
@@ -756,24 +794,22 @@
                 }
               }
             }
-          }
-        },
-        {
-          "name": "Delete Farm (Admin)",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/farms/{{farmId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "farms",
-                "{{farmId}}"
-              ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.farm tồn tại\", () => pm.expect(res.data.farm).to.be.an('object'));",
+                  "pm.test(\"data.farm._id tồn tại\", () => pm.expect(res.data.farm._id).to.be.a('string').and.not.empty);"
+                ]
+              }
             }
-          }
+          ]
         },
         {
           "name": "Get All Farms — Filter VietGAP (Public)",
@@ -972,7 +1008,22 @@
             "auth": {
               "type": "noauth"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.categories là mảng\", () => pm.expect(res.data.categories).to.be.an('array'));",
+                  "pm.test(\"data.pagination tồn tại\", () => pm.expect(res.data.pagination).to.be.an('object'));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get Category By ID (Public)",
@@ -992,7 +1043,22 @@
             "auth": {
               "type": "noauth"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.category._id tồn tại\", () => pm.expect(res.data.category._id).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data.category._id khớp categoryId\", () => pm.expect(res.data.category._id).to.equal(pm.collectionVariables.get(\"categoryId\")));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Update Category (Admin)",
@@ -1023,24 +1089,22 @@
                 }
               }
             }
-          }
-        },
-        {
-          "name": "Delete Category (Admin)",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/categories/{{categoryId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "categories",
-                "{{categoryId}}"
-              ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.category tồn tại\", () => pm.expect(res.data.category).to.be.an('object'));",
+                  "pm.test(\"data.category._id tồn tại\", () => pm.expect(res.data.category._id).to.be.a('string').and.not.empty);"
+                ]
+              }
             }
-          }
+          ]
         },
         {
           "name": "Create Category — Unauthorized User (Negative)",
@@ -1163,7 +1227,7 @@
                 {
                   "key": "images",
                   "type": "file",
-                  "src": ""
+                  "src": "d:/da/a/test-image.png"
                 }
               ]
             }
@@ -1213,7 +1277,22 @@
             "auth": {
               "type": "noauth"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.products là mảng\", () => pm.expect(res.data.products).to.be.an('array'));",
+                  "pm.test(\"data.pagination tồn tại\", () => pm.expect(res.data.pagination).to.be.an('object'));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Search Products (Public)",
@@ -1251,7 +1330,21 @@
             "auth": {
               "type": "noauth"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.products là mảng\", () => pm.expect(res.data.products).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get Product By ID (Public)",
@@ -1271,7 +1364,22 @@
             "auth": {
               "type": "noauth"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.product._id tồn tại\", () => pm.expect(res.data.product._id).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data.product._id khớp productId\", () => pm.expect(res.data.product._id).to.equal(pm.collectionVariables.get(\"productId\")));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Update Product (Admin — FormData)",
@@ -1304,28 +1412,26 @@
                 {
                   "key": "images",
                   "type": "file",
-                  "src": ""
+                  "src": "d:/da/a/test-image.png"
                 }
               ]
             }
-          }
-        },
-        {
-          "name": "Delete Product (Admin)",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/products/{{productId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "products",
-                "{{productId}}"
-              ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.product tồn tại\", () => pm.expect(res.data.product).to.be.an('object'));",
+                  "pm.test(\"data.product._id tồn tại\", () => pm.expect(res.data.product._id).to.be.a('string').and.not.empty);"
+                ]
+              }
             }
-          }
+          ]
         },
         {
           "name": "Get Product By Invalid ID (Negative)",
@@ -1434,7 +1540,22 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.batches là mảng\", () => pm.expect(res.data.batches).to.be.an('array'));",
+                  "pm.test(\"data.pagination tồn tại\", () => pm.expect(res.data.pagination).to.be.an('object'));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get Batch By ID (Admin)",
@@ -1451,7 +1572,22 @@
                 "{{batchId}}"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.batch._id tồn tại\", () => pm.expect(res.data.batch._id).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data.batch._id khớp batchId\", () => pm.expect(res.data.batch._id).to.equal(pm.collectionVariables.get(\"batchId\")));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get Inventory Report (Admin)",
@@ -1468,7 +1604,21 @@
                 "inventory-report"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.report là mảng\", () => pm.expect(res.data.report).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get Expiring Batches (Admin)",
@@ -1491,7 +1641,21 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.batches là mảng\", () => pm.expect(res.data.batches).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get Effective Stock (Admin)",
@@ -1509,7 +1673,22 @@
                 "{{productId}}"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.product tồn tại\", () => pm.expect(res.data.product).to.be.an('object'));",
+                  "pm.test(\"data.effectiveStock là số\", () => pm.expect(res.data.effectiveStock).to.be.a('number'));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Update Batch (Admin)",
@@ -1540,24 +1719,22 @@
                 }
               }
             }
-          }
-        },
-        {
-          "name": "Delete Batch (Admin)",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/batches/{{batchId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "batches",
-                "{{batchId}}"
-              ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.batch tồn tại\", () => pm.expect(res.data.batch).to.be.an('object'));",
+                  "pm.test(\"data.batch._id tồn tại\", () => pm.expect(res.data.batch._id).to.be.a('string').and.not.empty);"
+                ]
+              }
             }
-          }
+          ]
         },
         {
           "name": "Create Batch — Số Lô Trùng (Negative)",
@@ -1626,7 +1803,21 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test('data có cấu trúc cảnh báo kho', () => { pm.expect(res.data).to.have.property('expiredBatches'); pm.expect(res.data).to.have.property('expiringBatches'); pm.expect(res.data).to.have.property('outOfStockProducts'); });"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get Inventory Alerts — No Token (Negative)",
@@ -1692,7 +1883,23 @@
                 }
               }
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data._id tồn tại (giỏ hàng)\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data.products là mảng\", () => pm.expect(res.data.products).to.be.an('array'));",
+                  "pm.test(\"data.totalPrice là số\", () => pm.expect(res.data.totalPrice).to.be.a('number'));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get Cart",
@@ -1708,7 +1915,24 @@
                 "cart"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data._id tồn tại (giỏ hàng)\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data.products là mảng\", () => pm.expect(res.data.products).to.be.an('array'));",
+                  "pm.test(\"data.totalPrice là số\", () => pm.expect(res.data.totalPrice).to.be.a('number'));",
+                  "pm.test(\"data.totalItems là số\", () => pm.expect(res.data.totalItems).to.be.a('number'));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Update Cart Item",
@@ -1739,7 +1963,22 @@
                 }
               }
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.products là mảng\", () => pm.expect(res.data.products).to.be.an('array'));",
+                  "pm.test(\"data.totalPrice là số\", () => pm.expect(res.data.totalPrice).to.be.a('number'));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Remove Cart Item",
@@ -1756,7 +1995,21 @@
                 "{{productId}}"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.products là mảng\", () => pm.expect(res.data.products).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Clear Cart",
@@ -1772,7 +2025,21 @@
                 "cart"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"message tồn tại\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get Cart — No Token (Negative)",
@@ -1810,6 +2077,49 @@
       "name": "🧾 Orders",
       "item": [
         {
+          "name": "Add To Cart (COD Setup)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cart",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cart"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Add to cart for COD setup (200 or 201)', () => {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "Checkout COD",
           "request": {
             "method": "POST",
@@ -1845,11 +2155,56 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('Checkout COD', function () {",
-                  "    const json = pm.response.json();",
-                  "    if (json.data && json.data.order && json.data.order._id) {",
-                  "        pm.collectionVariables.set('orderId', json.data.order._id);",
-                  "    }",
+                  "pm.test('201 tạo đơn hàng COD thành công', () => pm.response.to.have.status(201));",
+                  "const json = pm.response.json();",
+                  "pm.test('Phản hồi success = true', () => pm.expect(json.success).to.be.true);",
+                  "pm.test('Có order._id', () => pm.expect(json.data._id).to.be.a('string'));",
+                  "pm.test('paymentMethod là COD', () => pm.expect(json.data.paymentMethod).to.equal('COD'));",
+                  "if (json.data && json.data._id) {",
+                  "    pm.collectionVariables.set('orderId', json.data._id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add To Cart (VNPay Setup)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/cart",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cart"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Add to cart for VNPay setup (200 or 201)', () => {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
                   "});"
                 ]
               }
@@ -1885,7 +2240,30 @@
                 }
               }
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 tạo URL thanh toán VNPay thành công', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Phản hồi success = true', () => pm.expect(json.success).to.be.true);",
+                  "pm.test('Có paymentUrl từ sandbox VNPay', () => {",
+                  "    pm.expect(json.data.paymentUrl).to.be.a('string');",
+                  "    pm.expect(json.data.paymentUrl).to.include('sandbox.vnpayment.vn');",
+                  "});",
+                  "pm.test('Có order._id', () => pm.expect(json.data.order._id).to.be.a('string'));",
+                  "pm.test('paymentMethod là VNPay', () => pm.expect(json.data.order.paymentMethod).to.equal('VNPay'));",
+                  "pm.test('status là Pending (chờ thanh toán)', () => pm.expect(json.data.order.status).to.equal('Pending'));",
+                  "if (json.data && json.data.order && json.data.order._id) {",
+                  "    pm.collectionVariables.set('vnpayOrderId', json.data.order._id);",
+                  "}"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get My Orders",
@@ -1911,7 +2289,22 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.orders là mảng\", () => pm.expect(res.data.orders).to.be.an('array'));",
+                  "pm.test(\"data.pagination tồn tại\", () => pm.expect(res.data.pagination).to.be.an('object'));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get Order By ID",
@@ -1928,7 +2321,23 @@
                 "{{orderId}}"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data._id tồn tại (đơn hàng)\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data._id khớp orderId\", () => pm.expect(res.data._id).to.equal(pm.collectionVariables.get(\"orderId\")));",
+                  "pm.test(\"data.status tồn tại\", () => pm.expect(res.data.status).to.be.a('string').and.not.empty);"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get All Orders (Admin)",
@@ -1956,7 +2365,22 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.orders là mảng\", () => pm.expect(res.data.orders).to.be.an('array'));",
+                  "pm.test(\"data.pagination tồn tại\", () => pm.expect(res.data.pagination).to.be.an('object'));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Update Order Status (Admin)",
@@ -1969,13 +2393,13 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/orders/{{orderId}}/status",
+              "raw": "{{baseUrl}}/orders/{{vnpayOrderId}}/status",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "orders",
-                "{{orderId}}",
+                "{{vnpayOrderId}}",
                 "status"
               ]
             },
@@ -1988,7 +2412,22 @@
                 }
               }
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.status tồn tại\", () => pm.expect(res.data.status).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data._id tồn tại\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Cancel Order",
@@ -2006,10 +2445,56 @@
                 "cancel"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 hủy đơn hàng thành công', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('status chuyển thành Cancelled', () => pm.expect(json.data.status).to.equal('Cancelled'));"
+                ]
+              }
+            }
+          ]
         },
         {
-          "name": "VNPay IPN (Public Callback)",
+          "name": "Hủy Đơn Hàng Đã Hủy (Negative)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/orders/{{orderId}}/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "{{orderId}}",
+                "cancel"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Đơn đã Cancelled từ request trước → thử hợy lại phải trả 400",
+                  "pm.test('400 không thể hủy đơn đã Cancelled', () => pm.response.to.have.status(400));",
+                  "const json = pm.response.json();",
+                  "pm.test('Phản hồi lỗi success = false', () => pm.expect(json.success).to.be.false);",
+                  "pm.test('Có thông báo lỗi trạng thái', () => pm.expect(json.message).to.include('Cancelled'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "VNPay IPN (Public Callback — Chữ Ký Không Hợp Lệ)",
           "request": {
             "method": "GET",
             "header": [],
@@ -2036,10 +2521,27 @@
             "auth": {
               "type": "noauth"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// IPN endpoint LUÔN trả về HTTP 200 theo chuẩn VNPay (kể cả lỗi).",
+                  "// Thiếu vnp_SecureHash → verifyReturnUrl trả isValid=false → RspCode:97",
+                  "pm.test('200 IPN luôn trả HTTP 200 (chuẩn VNPay)', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('Có trường RspCode trong phản hồi', () => pm.expect(json).to.have.property('RspCode'));",
+                  "pm.test('Có trường Message trong phản hồi', () => pm.expect(json).to.have.property('Message'));",
+                  "pm.test('RspCode = 97 — thiếu chữ ký hợp lệ', () => pm.expect(json.RspCode).to.equal('97'));"
+                ]
+              }
+            }
+          ]
         },
         {
-          "name": "VNPay Return (Public Callback)",
+          "name": "VNPay Return (Public Callback — Chữ Ký Không Hợp Lệ)",
           "request": {
             "method": "GET",
             "header": [],
@@ -2066,7 +2568,83 @@
             "auth": {
               "type": "noauth"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Return URL thiếu vnp_SecureHash → chữ ký không hợp lệ → 400",
+                  "pm.test('400 Return URL với chữ ký không hợp lệ', () => pm.response.to.have.status(400));",
+                  "const json = pm.response.json();",
+                  "pm.test('Phản hồi lỗi success = false', () => pm.expect(json.success).to.be.false);",
+                  "pm.test('Có thông báo lỗi về chữ ký', () => pm.expect(json.message).to.be.a('string'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Checkout VNPay — Giỏ Hàng Trống (Negative)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/orders/checkout-vnpay",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "checkout-vnpay"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shippingAddress\": {\n    \"fullName\": \"Test User\",\n    \"phone\": \"0901234567\",\n    \"address\": \"456 Lê Lợi, Quận 3, TP.HCM\"\n  },\n  \"bankCode\": \"NCB\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Xóa sạch giỏ hàng trước khi test",
+                  "pm.sendRequest({",
+                  "    url: pm.collectionVariables.get('baseUrl') + '/cart',",
+                  "    method: 'DELETE',",
+                  "    header: { 'Authorization': 'Bearer ' + pm.collectionVariables.get('token') }",
+                  "}, (err, res) => {",
+                  "    console.log('[pre] Clear cart status:', res ? res.status() : err);",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 không thể thanh toán VNPay khi giỏ hàng trống', () => pm.response.to.have.status(400));",
+                  "const json = pm.response.json();",
+                  "pm.test('Phản hồi lỗi success = false', () => pm.expect(json.success).to.be.false);",
+                  "pm.test('Có thông báo lỗi giỏ hàng', () => pm.expect(json.message).to.be.a('string'));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get My Orders — No Token (Negative)",
@@ -2179,7 +2757,24 @@
             "auth": {
               "type": "noauth"
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data có reviews\", () => {",
+                  "  const hasReviews = Array.isArray(res.data) || Array.isArray(res.data.reviews) || typeof res.data === 'object';",
+                  "  pm.expect(hasReviews).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Update Review",
@@ -2210,7 +2805,22 @@
                 }
               }
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.review tồn tại\", () => pm.expect(res.data.review).to.be.an('object'));",
+                  "pm.test(\"data.review._id tồn tại\", () => pm.expect(res.data.review._id).to.be.a('string').and.not.empty);"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Delete Review",
@@ -2227,7 +2837,21 @@
                 "{{reviewId}}"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"message tồn tại\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get Reviews — Product Not Found (Negative)",
@@ -2282,7 +2906,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"rating\": 3,\n  \"comment\": \"ok\"\n}",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"rating\": 3,\n  \"comment\": \"x\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -2426,7 +3050,24 @@
                 }
               }
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 201 Created\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data._id tồn tại (mã giảm giá)\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data.code tồn tại\", () => pm.expect(res.data.code).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data.type tồn tại\", () => pm.expect(res.data.type).to.be.a('string').and.not.empty);",
+                  "pm.collectionVariables.set(\"discountId\", res.data._id);"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get All Discounts (Admin)",
@@ -2452,7 +3093,24 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data có danh sách discounts\", () => {",
+                  "  const hasList = Array.isArray(res.data) || Array.isArray(res.data.discounts);",
+                  "  pm.expect(hasList).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get Discount By ID (Admin)",
@@ -2469,7 +3127,22 @@
                 "{{discountId}}"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data._id tồn tại\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);",
+                  "pm.test(\"data._id khớp discountId\", () => pm.expect(res.data._id).to.equal(pm.collectionVariables.get(\"discountId\")));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Validate Discount (User)",
@@ -2500,7 +3173,23 @@
                 }
               }
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.discountAmount là số\", () => pm.expect(res.data.discountAmount).to.be.a('number'));",
+                  "pm.test(\"data.finalPrice là số\", () => pm.expect(res.data.finalPrice).to.be.a('number'));",
+                  "pm.test(\"data.code tồn tại\", () => pm.expect(res.data.code).to.be.a('string').and.not.empty);"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Update Discount (Admin)",
@@ -2531,7 +3220,21 @@
                 }
               }
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data._id tồn tại\", () => pm.expect(res.data._id).to.be.a('string').and.not.empty);"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Delete Discount (Admin)",
@@ -2548,7 +3251,21 @@
                 "{{discountId}}"
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"message tồn tại\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Validate Discount — Mã Không Hợp Lệ (Negative)",
@@ -2618,7 +3335,24 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.period === 'monthly'\", () => pm.expect(res.data.period).to.equal('monthly'));",
+                  "pm.test(\"data.totalRevenue là số\", () => pm.expect(res.data.totalRevenue).to.be.a('number'));",
+                  "pm.test(\"data.totalOrders là số\", () => pm.expect(res.data.totalOrders).to.be.a('number'));",
+                  "pm.test(\"data.details là mảng\", () => pm.expect(res.data.details).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get Revenue (Daily)",
@@ -2641,7 +3375,24 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.period === 'daily'\", () => pm.expect(res.data.period).to.equal('daily'));",
+                  "pm.test(\"data.totalRevenue là số\", () => pm.expect(res.data.totalRevenue).to.be.a('number'));",
+                  "pm.test(\"data.totalOrders là số\", () => pm.expect(res.data.totalOrders).to.be.a('number'));",
+                  "pm.test(\"data.details là mảng\", () => pm.expect(res.data.details).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get Top Sellers",
@@ -2664,7 +3415,21 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.topSellers là mảng\", () => pm.expect(res.data.topSellers).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get Expiring Soon",
@@ -2687,7 +3452,22 @@
                 }
               ]
             }
-          }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"data.totalBatches là số\", () => pm.expect(res.data.totalBatches).to.be.a('number'));",
+                  "pm.test(\"data.batches là mảng\", () => pm.expect(res.data.batches).to.be.an('array'));"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Get Revenue — User Forbidden (Negative)",
@@ -2734,6 +3514,376 @@
           ]
         }
       ]
+    },
+    {
+      "name": "❤️ Wishlist",
+      "item": [
+        {
+          "name": "Lấy Wishlist (User)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wishlist",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "wishlist"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 lấy wishlist thành công', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('Có field products (array)', function () {",
+                  "  pm.expect(json.data.wishlist).to.have.property('products');",
+                  "  pm.expect(json.data.wishlist.products).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Toggle Sản Phẩm Vào Wishlist (Thêm)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wishlist/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "wishlist",
+                "{{productId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 toggle wishlist thành công', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('Field added = true khi thêm mới', function () {",
+                  "  pm.expect(json.data).to.have.property('added');",
+                  "  pm.expect(json.data.added).to.equal(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Kiểm Tra Sản Phẩm Trong Wishlist",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wishlist/check/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "wishlist",
+                "check",
+                "{{productId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 kiểm tra wishlist thành công', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('Field inWishlist = true sau khi toggle thêm', function () {",
+                  "  pm.expect(json.data).to.have.property('inWishlist');",
+                  "  pm.expect(json.data.inWishlist).to.equal(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Toggle Sản Phẩm Ra Khỏi Wishlist (Xóa)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wishlist/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "wishlist",
+                "{{productId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 toggle xóa khỏi wishlist thành công', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.test('Field added = false khi xóa', function () {",
+                  "  pm.expect(json.data).to.have.property('added');",
+                  "  pm.expect(json.data.added).to.equal(false);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Thêm Lại Rồi Xóa Bằng DELETE",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wishlist/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "wishlist",
+                "{{productId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Thêm lại trước khi xóa bằng DELETE",
+                  "const baseUrl = pm.collectionVariables.get('baseUrl');",
+                  "const productId = pm.collectionVariables.get('productId');",
+                  "const token = pm.collectionVariables.get('token');",
+                  "pm.sendRequest({",
+                  "  url: baseUrl + '/wishlist/' + productId,",
+                  "  method: 'POST',",
+                  "  header: { 'Authorization': 'Bearer ' + token }",
+                  "}, function(err, res) {});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 xóa khỏi wishlist bằng DELETE thành công', function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lấy Wishlist — No Token (Negative)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wishlist",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "wishlist"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 khi không có token', function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Xóa Sản Phẩm Không Có Trong Wishlist (Negative)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wishlist/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "wishlist",
+                "{{productId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 khi xóa sản phẩm không có trong wishlist', function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🗑️ Cleanup",
+      "item": [
+        {
+          "name": "Delete Batch (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/batches/{{batchId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "batches",
+                "{{batchId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"message tồn tại\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Product (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/{{productId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "{{productId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"message tồn tại\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Category (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/categories/{{categoryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "categories",
+                "{{categoryId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"message tồn tại\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Farm (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/farms/{{farmId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "farms",
+                "{{farmId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.test(\"Status 200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"success === true\", () => pm.expect(res.success).to.be.true);",
+                  "pm.test(\"message tồn tại\", () => pm.expect(res.message).to.be.a('string').and.not.empty);"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Xóa các tài nguyên đã tạo trong quá trình test. Chạy SAU khi tất cả CRUD tests hoàn thành."
     },
     {
       "name": "❌ 404 Not Found",

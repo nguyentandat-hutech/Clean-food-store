@@ -22,6 +22,7 @@ import OrderSuccessPage from './pages/OrderSuccessPage';
 import AdminOrderPage from './pages/AdminOrderPage';
 import AdminFarmPage from './pages/AdminFarmPage';
 import AdminDiscountPage from './pages/AdminDiscountPage';
+import WishlistPage from './pages/WishlistPage';
 
 // ── App Component ─────────────────────────────────────────────
 function App() {
@@ -85,6 +86,14 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <OrderSuccessPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/wishlist"
+                        element={
+                            <ProtectedRoute>
+                                <WishlistPage />
                             </ProtectedRoute>
                         }
                     />

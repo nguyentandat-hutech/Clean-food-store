@@ -2,16 +2,21 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getProductByIdAPI } from '../api/productService';
+import { toggleWishlistAPI, checkWishlistAPI } from '../api/wishlistService';
+import { useAuth } from '../contexts/AuthContext';
 import ProductReviews from '../components/ProductReviews';
 
 // ── Trang Chi tiết Sản phẩm + Truy xuất nguồn gốc ─────────────
 function ProductDetailPage() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { user } = useAuth();
 
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState(0); // Index ảnh đang xem
+    const [inWishlist, setInWishlist] = useState(false);   // Trạng thái yêu thích
+    const [wishlistLoading, setWishlistLoading] = useState(false);
 
     // ── Gọi API lấy chi tiết sản phẩm ──────────────────────────
     useEffect(() => {
@@ -29,6 +34,38 @@ function ProductDetailPage() {
         };
         fetchProduct();
     }, [id, navigate]);
+
+    // ── Kiểm tra sản phẩm có trong wishlist không (chỉ khi đã login) ──
+    useEffect(() => {
+        if (!user || !id) return;
+        const checkWishlist = async () => {
+            try {
+                const result = await checkWishlistAPI(id);
+                setInWishlist(result.inWishlist);
+            } catch {
+                // Bỏ qua lỗi kiểm tra wishlist
+            }
+        };
+        checkWishlist();
+    }, [id, user]);
+
+    // ── Toggle yêu thích ────────────────────────────────────────
+    const handleToggleWishlist = async () => {
+        if (!user) {
+            toast.info('Vui lòng đăng nhập để lưu sản phẩm yêu thích.');
+            return;
+        }
+        setWishlistLoading(true);
+        try {
+            const result = await toggleWishlistAPI(id);
+            setInWishlist(result.added);
+            toast.success(result.added ? '❤️ Đã thêm vào danh sách yêu thích!' : '💔 Đã xóa khỏi danh sách yêu thích.');
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Có lỗi xảy ra.');
+        } finally {
+            setWishlistLoading(false);
+        }
+    };
 
     // ── Format giá VND ──────────────────────────────────────────
     const formatPrice = (price) => {
@@ -125,7 +162,27 @@ function ProductDetailPage() {
                 {/* CỘT PHẢI: THÔNG TIN SẢN PHẨM                   */}
                 {/* ═══════════════════════════════════════════════ */}
                 <div style={{ flex: '1 1 360px' }}>
-                    <h1 style={{ marginTop: 0, marginBottom: '10px', fontSize: '24px' }}>{product.name}</h1>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '10px' }}>
+                        <h1 style={{ marginTop: 0, marginBottom: 0, fontSize: '24px', flex: 1 }}>{product.name}</h1>
+                        {/* Nút yêu thích */}
+                        <button
+                            onClick={handleToggleWishlist}
+                            disabled={wishlistLoading}
+                            title={inWishlist ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích'}
+                            style={{
+                                background: 'none', border: '2px solid',
+                                borderColor: inWishlist ? '#e74c3c' : '#ced4da',
+                                borderRadius: '50%', width: '44px', height: '44px',
+                                fontSize: '20px', cursor: wishlistLoading ? 'not-allowed' : 'pointer',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                flexShrink: 0, transition: 'all 0.2s',
+                                backgroundColor: inWishlist ? '#fff5f5' : '#fff',
+                                opacity: wishlistLoading ? 0.6 : 1,
+                            }}
+                        >
+                            {inWishlist ? '❤️' : '🤍'}
+                        </button>
+                    </div>
 
                     {/* Giá */}
                     <p style={{ fontSize: '28px', fontWeight: 'bold', color: '#e74c3c', margin: '0 0 10px' }}>

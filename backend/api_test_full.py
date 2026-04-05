@@ -779,30 +779,106 @@ def phase_reviews():
 
 
 # ══════════════════════════════════════════════════════════════
-# PHASE 12 — Stats
+# PHASE 12 — Wishlist (Danh sách yêu thích)
+# ══════════════════════════════════════════════════════════════
+def phase_wishlist():
+    section("PHASE 12 — Wishlist (Danh sách yêu thích)")
+    utk = IDS.get("user_token")
+    pid = IDS.get("product_id")
+
+    # 12.1 GET wishlist (trống khi mới tạo)
+    r = api("GET", "/wishlist", token=utk)
+    ok, resp = record("Wishlist", "Lấy wishlist (ban đầu trống)", "GET", f"{BASE}/wishlist", r)
+
+    if pid:
+        # 12.2 POST toggle → thêm vào wishlist
+        r = api("POST", f"/wishlist/{pid}", token=utk)
+        ok, _ = record("Wishlist", "Toggle thêm sản phẩm vào wishlist", "POST", f"{BASE}/wishlist/:id", r)
+        if ok:
+            added = r.json().get("data", {}).get("added", False)
+            results.append(("Wishlist", "Toggle trả về added=true", "POST", f"{BASE}/wishlist/:id",
+                            r.status_code, added is True, "added phải là true"))
+            mark = "✅" if added is True else "❌"
+            print(f"  {mark} [{r.status_code}] POST   /wishlist/:id — added=true (expect true)")
+
+        # 12.3 GET check → inWishlist = true
+        r = api("GET", f"/wishlist/check/{pid}", token=utk)
+        ok, _ = record("Wishlist", "Kiểm tra sản phẩm trong wishlist (expect true)", "GET", f"{BASE}/wishlist/check/:id", r)
+        if ok:
+            in_wl = r.json().get("data", {}).get("inWishlist", False)
+            results.append(("Wishlist", "Check inWishlist=true", "GET", f"{BASE}/wishlist/check/:id",
+                            r.status_code, in_wl is True, ""))
+            mark = "✅" if in_wl is True else "❌"
+            print(f"  {mark} [{r.status_code}] GET    /wishlist/check/:id — inWishlist=true")
+
+        # 12.4 GET wishlist có sản phẩm
+        r = api("GET", "/wishlist", token=utk)
+        ok, _ = record("Wishlist", "Lấy wishlist sau khi thêm", "GET", f"{BASE}/wishlist", r)
+
+        # 12.5 POST toggle lần 2 → xóa khỏi wishlist
+        r = api("POST", f"/wishlist/{pid}", token=utk)
+        ok, _ = record("Wishlist", "Toggle xóa sản phẩm khỏi wishlist", "POST", f"{BASE}/wishlist/:id", r)
+        if ok:
+            added = r.json().get("data", {}).get("added", True)
+            results.append(("Wishlist", "Toggle trả về added=false", "POST", f"{BASE}/wishlist/:id",
+                            r.status_code, added is False, "added phải là false"))
+            mark = "✅" if added is False else "❌"
+            print(f"  {mark} [{r.status_code}] POST   /wishlist/:id — added=false (expect false)")
+
+        # 12.6 Thêm lại để test DELETE
+        api("POST", f"/wishlist/{pid}", token=utk)
+
+        # 12.7 DELETE xóa sản phẩm
+        r = api("DELETE", f"/wishlist/{pid}", token=utk)
+        record("Wishlist", "Xóa sản phẩm khỏi wishlist (DELETE)", "DELETE", f"{BASE}/wishlist/:id", r)
+
+        # 12.8 DELETE sản phẩm không trong wishlist → 404
+        r = api("DELETE", f"/wishlist/{pid}", token=utk)
+        results.append(("Wishlist", "Xóa sản phẩm không tồn tại trong WL (expect 404)", "DELETE",
+                        f"{BASE}/wishlist/:id", r.status_code, r.status_code == 404, ""))
+        mark = "✅" if r.status_code == 404 else "❌"
+        print(f"  {mark} [{r.status_code}] DELETE /wishlist/:id — Không trong WL (expect 404)")
+
+        # 12.9 Toggle sản phẩm không tồn tại → 404
+        r = api("POST", "/wishlist/000000000000000000000000", token=utk)
+        results.append(("Wishlist", "Toggle sản phẩm không tồn tại (expect 404)", "POST",
+                        f"{BASE}/wishlist/:id", r.status_code, r.status_code == 404, ""))
+        mark = "✅" if r.status_code == 404 else "❌"
+        print(f"  {mark} [{r.status_code}] POST   /wishlist/:id — Product không tồn tại (expect 404)")
+
+    # 12.10 Wishlist không token → 401
+    r = api("GET", "/wishlist")
+    results.append(("Wishlist", "Wishlist không token (expect 401)", "GET", f"{BASE}/wishlist",
+                    r.status_code, r.status_code == 401, ""))
+    mark = "✅" if r.status_code == 401 else "❌"
+    print(f"  {mark} [{r.status_code}] GET    /wishlist — Không token (expect 401)")
+
+
+# ══════════════════════════════════════════════════════════════
+# PHASE 13 — Stats
 # ══════════════════════════════════════════════════════════════
 def phase_stats():
-    section("PHASE 12 — Stats (Thống kê admin)")
+    section("PHASE 13 — Stats (Thống kê admin)")
     atk = IDS.get("admin_token")
     utk = IDS.get("user_token")
 
-    # 12.1 Revenue monthly
+    # 13.1 Revenue monthly
     r = api("GET", "/stats/revenue", token=atk, params={"period": "monthly"})
     record("Stats", "Doanh thu theo tháng", "GET", f"{BASE}/stats/revenue", r)
 
-    # 12.2 Revenue daily
+    # 13.2 Revenue daily
     r = api("GET", "/stats/revenue", token=atk, params={"period": "daily"})
     record("Stats", "Doanh thu theo ngày", "GET", f"{BASE}/stats/revenue", r)
 
-    # 12.3 Top sellers
+    # 13.3 Top sellers
     r = api("GET", "/stats/top-sellers", token=atk, params={"limit": 5})
     record("Stats", "Top sản phẩm bán chạy", "GET", f"{BASE}/stats/top-sellers", r)
 
-    # 12.4 Expiring soon
+    # 13.4 Expiring soon
     r = api("GET", "/stats/expiring-soon", token=atk, params={"days": 7})
     record("Stats", "Lô sắp hết hạn (stats)", "GET", f"{BASE}/stats/expiring-soon", r)
 
-    # 12.5 Stats bằng user → 403
+    # 13.5 Stats bằng user → 403
     r = api("GET", "/stats/revenue", token=utk)
     results.append(("Stats", "Stats bằng user (expect 403)", "GET", f"{BASE}/stats/revenue",
                     r.status_code, r.status_code == 403, ""))
@@ -811,10 +887,10 @@ def phase_stats():
 
 
 # ══════════════════════════════════════════════════════════════
-# PHASE 13 — Cleanup (Xóa dữ liệu test)
+# PHASE 14 — Cleanup (Xóa dữ liệu test)
 # ══════════════════════════════════════════════════════════════
 def phase_cleanup():
-    section("PHASE 13 — Cleanup (Xóa dữ liệu test)")
+    section("PHASE 14 — Cleanup (Xóa dữ liệu test)")
     atk = IDS.get("admin_token")
 
     # Xóa review
@@ -917,6 +993,7 @@ if __name__ == "__main__":
     phase_discounts()
     phase_orders()
     phase_reviews()
+    phase_wishlist()
     phase_stats()
     phase_cleanup()
 

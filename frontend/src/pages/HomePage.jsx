@@ -20,6 +20,7 @@ const HomePage = () => {
                     <Link to="/products" style={linkStyle('#1976d2')}>🛒 Sản phẩm</Link>
                     <Link to="/cart" style={linkStyle('#e65100')}>🛍️ Giỏ hàng</Link>
                     <Link to="/orders" style={linkStyle('#6a1b9a')}>📦 Đơn hàng</Link>
+                    <Link to="/wishlist" style={linkStyle('#e91e63')}>❤️ Yêu thích</Link>
                     <Link to="/profile" style={linkStyle('#2e7d32')}>👤 Tài khoản</Link>
                 </div>
             </div>

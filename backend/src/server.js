@@ -28,6 +28,7 @@ const orderRoutes = require('./routes/orderRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const statsRoutes = require('./routes/statsRoutes');
 const discountRoutes = require('./routes/discountRoutes');
+const wishlistRoutes = require('./routes/wishlistRoutes');
 const { startExpiryChecker } = require('./cron/expiryChecker');
 const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
@@ -90,6 +91,7 @@ app.use('/api/orders', orderRoutes);           // Đơn hàng & Checkout
 app.use('/api/reviews', reviewRoutes);           // Đánh giá sản phẩm
 app.use('/api/stats', statsRoutes);               // Thống kê & báo cáo
 app.use('/api/discounts', discountRoutes);         // Mã giảm giá
+app.use('/api/wishlist', wishlistRoutes);           // Danh sách yêu thích
 
 // Bắt route không tồn tại (404) - phải đặt SAU tất cả routes
 app.use((req, res) => {
