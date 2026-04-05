@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
-// ── Schema Đơn hàng ─────────────────────────────────────────────
+/**
+ * ── Schema Đơn hàng (Order) ─────────────────────────────────────
+ * Lưu thông tin tổng quát đơn hàng.
+ * Chi tiết sản phẩm → xem model OrderItem (orderId reference).
+ * Thông tin thanh toán → xem model Payment (orderId reference).
+ */
 const orderSchema = new mongoose.Schema(
     {
         // Người đặt hàng
@@ -9,26 +14,30 @@ const orderSchema = new mongoose.Schema(
             ref: 'User',
             required: [true, 'UserId không được để trống'],
         },
-        // Snapshot sản phẩm tại thời điểm đặt hàng (giữ nguyên giá lúc mua)
-        products: [
-            {
-                productId: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: 'Product',
-                    required: true,
-                },
-                name: { type: String, required: true },       // Tên sản phẩm lúc mua
-                price: { type: Number, required: true },       // Giá lúc mua
-                unit: { type: String, required: true },        // Đơn vị tính
-                quantity: { type: Number, required: true, min: 1 },
-                subtotal: { type: Number, required: true },    // price × quantity
-            },
-        ],
-        // Tổng tiền đơn hàng
+        // Tổng tiền trước khi giảm giá
         totalPrice: {
             type: Number,
             required: [true, 'Tổng tiền không được để trống'],
             min: [0, 'Tổng tiền không được âm'],
+        },
+        // Mã giảm giá đã áp dụng (nếu có)
+        discountCode: {
+            type: String,
+            default: '',
+            trim: true,
+            uppercase: true,
+        },
+        // Số tiền được giảm (VNĐ)
+        discountAmount: {
+            type: Number,
+            default: 0,
+            min: [0, 'Số tiền giảm không được âm'],
+        },
+        // Tổng tiền sau khi giảm giá (thực tế phải thanh toán)
+        finalPrice: {
+            type: Number,
+            required: [true, 'Giá cuối không được để trống'],
+            min: [0, 'Giá cuối không được âm'],
         },
         // Địa chỉ giao hàng
         shippingAddress: {
@@ -49,10 +58,13 @@ const orderSchema = new mongoose.Schema(
             enum: ['Pending', 'Paid', 'Processing', 'Shipping', 'Delivered', 'Cancelled'],
             default: 'Pending',
         },
-        // ── Thông tin VNPay (chỉ có khi paymentMethod = 'VNPay') ──
-        vnpayTransactionNo: { type: String, default: '' }, // Mã giao dịch VNPay
-        vnpayBankCode: { type: String, default: '' },      // Ngân hàng thanh toán
-        paidAt: { type: Date, default: null },              // Thời điểm thanh toán thành công
+        // Cờ xác nhận kho đã được trừ (để tránh restore kho ảo khi hủy)
+        // COD: true ngay sau khi tạo đơn thành công
+        // VNPay: true chỉ sau khi IPN xác nhận thanh toán thành công
+        stockDeducted: {
+            type: Boolean,
+            default: false,
+        },
         // Ghi chú đơn hàng (tùy chọn)
         note: {
             type: String,
@@ -62,13 +74,31 @@ const orderSchema = new mongoose.Schema(
         },
     },
     {
-        timestamps: true, // Tự động thêm createdAt, updatedAt
+        timestamps: true,
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true },
     }
 );
+
+// Virtual populate OrderItems (chi tiết sản phẩm)
+orderSchema.virtual('items', {
+    ref: 'OrderItem',
+    localField: '_id',
+    foreignField: 'orderId',
+});
+
+// Virtual populate Payment (thông tin thanh toán)
+orderSchema.virtual('payment', {
+    ref: 'Payment',
+    localField: '_id',
+    foreignField: 'orderId',
+    justOne: true,
+});
 
 // Indexes hỗ trợ truy vấn
 orderSchema.index({ userId: 1, createdAt: -1 }); // Đơn hàng của user, mới nhất trước
 orderSchema.index({ status: 1 });                 // Filter theo trạng thái
+orderSchema.index({ createdAt: -1 });
 
 const Order = mongoose.model('Order', orderSchema);
 

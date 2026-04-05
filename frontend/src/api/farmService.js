@@ -19,3 +19,33 @@ export const getFarmByIdAPI = async (id) => {
     const res = await apiClient.get(`/farms/${id}`);
     return res.data.data;
 };
+
+/**
+ * Tạo trang trại mới (Admin only).
+ * @param {object} data - { name, location, description, contact, certificate, isActive }
+ * @returns {{ farm: object }}
+ */
+export const createFarmAPI = async (data) => {
+    const res = await apiClient.post('/farms', data);
+    return res.data.data;
+};
+
+/**
+ * Cập nhật thông tin trang trại (Admin only).
+ * @param {string} id - ID trang trại
+ * @param {object} data - Các field cần cập nhật
+ * @returns {{ farm: object }}
+ */
+export const updateFarmAPI = async (id, data) => {
+    const res = await apiClient.put(`/farms/${id}`, data);
+    return res.data.data;
+};
+
+/**
+ * Xóa trang trại (Admin only).
+ * @param {string} id - ID trang trại
+ */
+export const deleteFarmAPI = async (id) => {
+    const res = await apiClient.delete(`/farms/${id}`);
+    return res.data;
+};

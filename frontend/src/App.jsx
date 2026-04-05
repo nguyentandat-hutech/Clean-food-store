@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import PageLayout from './components/PageLayout';
 
 // Import các trang
 import HomePage from './pages/HomePage';
@@ -20,7 +21,10 @@ import CheckoutPage from './pages/CheckoutPage';
 import OrderListPage from './pages/OrderListPage';
 import OrderSuccessPage from './pages/OrderSuccessPage';
 import AdminOrderPage from './pages/AdminOrderPage';
-import FreshnessScanner from './pages/FreshnessScanner';
+import AdminFarmPage from './pages/AdminFarmPage';
+import AdminDiscountPage from './pages/AdminDiscountPage';
+import AdminUserPage from './pages/AdminUserPage';
+import WishlistPage from './pages/WishlistPage';
 
 // ── App Component ─────────────────────────────────────────────
 function App() {
@@ -29,19 +33,20 @@ function App() {
             {/* AuthProvider bọc toàn bộ app để mọi trang đều dùng được context */}
             <AuthProvider>
                 <Routes>
-                    {/* --- Routes công khai (không cần đăng nhập) --- */}
+                    {/* --- Routes công khai (không cần đăng nhập) — NO Navbar --- */}
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
-                    <Route path="/products" element={<ProductListPage />} />
-                    <Route path="/products/:id" element={<ProductDetailPage />} />
-                    <Route path="/freshness-scanner" element={<FreshnessScanner />} />
+
+                    {/* --- Routes công khai có Navbar --- */}
+                    <Route path="/products" element={<PageLayout><ProductListPage /></PageLayout>} />
+                    <Route path="/products/:id" element={<PageLayout><ProductDetailPage /></PageLayout>} />
 
                     {/* --- Routes bảo vệ (cần đăng nhập) --- */}
                     <Route
                         path="/"
                         element={
                             <ProtectedRoute>
-                                <HomePage />
+                                <PageLayout><HomePage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
@@ -50,7 +55,7 @@ function App() {
                         path="/profile"
                         element={
                             <ProtectedRoute>
-                                <ProfilePage />
+                                <PageLayout><ProfilePage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
@@ -60,7 +65,7 @@ function App() {
                         path="/cart"
                         element={
                             <ProtectedRoute>
-                                <CartPage />
+                                <PageLayout><CartPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
@@ -68,7 +73,7 @@ function App() {
                         path="/checkout"
                         element={
                             <ProtectedRoute>
-                                <CheckoutPage />
+                                <PageLayout><CheckoutPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
@@ -76,7 +81,7 @@ function App() {
                         path="/orders"
                         element={
                             <ProtectedRoute>
-                                <OrderListPage />
+                                <PageLayout><OrderListPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
@@ -84,7 +89,15 @@ function App() {
                         path="/order-success"
                         element={
                             <ProtectedRoute>
-                                <OrderSuccessPage />
+                                <PageLayout><OrderSuccessPage /></PageLayout>
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/wishlist"
+                        element={
+                            <ProtectedRoute>
+                                <PageLayout><WishlistPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
@@ -93,8 +106,17 @@ function App() {
                     <Route
                         path="/admin/categories"
                         element={
-                            <ProtectedRoute>
-                                <AdminCategoryPage />
+                            <ProtectedRoute roles={['admin']}>
+                                <PageLayout><AdminCategoryPage /></PageLayout>
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/admin/farms"
+                        element={
+                            <ProtectedRoute roles={['admin']}>
+                                <PageLayout><AdminFarmPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
@@ -102,54 +124,68 @@ function App() {
                     <Route
                         path="/admin/products"
                         element={
-                            <ProtectedRoute>
-                                <AdminProductPage />
+                            <ProtectedRoute roles={['admin']}>
+                                <PageLayout><AdminProductPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
 
-                    {/* Quản lý Lô hàng */}
                     <Route
                         path="/admin/batches"
                         element={
-                            <ProtectedRoute>
-                                <AdminBatchPage />
+                            <ProtectedRoute roles={['admin']}>
+                                <PageLayout><AdminBatchPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
 
-                    {/* Báo cáo Tồn kho */}
                     <Route
                         path="/admin/inventory"
                         element={
-                            <ProtectedRoute>
-                                <InventoryReportPage />
+                            <ProtectedRoute roles={['admin']}>
+                                <PageLayout><InventoryReportPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
 
-                    {/* Dashboard Admin — Cảnh báo kho hàng */}
                     <Route
                         path="/admin/dashboard"
                         element={
-                            <ProtectedRoute>
-                                <AdminDashboardPage />
+                            <ProtectedRoute roles={['admin']}>
+                                <PageLayout><AdminDashboardPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
 
-                    {/* Quản lý Đơn hàng (Admin) */}
                     <Route
                         path="/admin/orders"
                         element={
-                            <ProtectedRoute>
-                                <AdminOrderPage />
+                            <ProtectedRoute roles={['admin']}>
+                                <PageLayout><AdminOrderPage /></PageLayout>
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/admin/discounts"
+                        element={
+                            <ProtectedRoute roles={['admin']}>
+                                <PageLayout><AdminDiscountPage /></PageLayout>
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/admin/users"
+                        element={
+                            <ProtectedRoute roles={['admin']}>
+                                <PageLayout><AdminUserPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
 
                     {/* --- Bắt mọi route không tồn tại --- */}
-                    <Route path="*" element={<NotFoundPage />} />
+                    <Route path="*" element={<PageLayout><NotFoundPage /></PageLayout>} />
                 </Routes>
             </AuthProvider>
         </BrowserRouter>

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Batch = require('../models/Batch');
 const Product = require('../models/Product');
 const { createError } = require('../utils/responseHelper');
+const { syncInventory } = require('./inventoryService');
 
 // ── VALIDATION NGHIỆP VỤ ───────────────────────────────────────
 
@@ -107,6 +108,9 @@ const createBatch = async (data) => {
     // Populate thông tin sản phẩm để trả về
     const populatedBatch = await Batch.findById(batch._id)
         .populate('product', 'name price unit');
+
+    // Đồng bộ Inventory sau khi tạo lô hàng mới
+    await syncInventory(product);
 
     return populatedBatch;
 };
@@ -242,6 +246,9 @@ const updateBatch = async (batchId, data) => {
         { new: true, runValidators: true }
     ).populate('product', 'name price unit');
 
+    // Đồng bộ Inventory sau khi cập nhật số lượng lô hàng
+    await syncInventory(batch.product);
+
     return updatedBatch;
 };
 
@@ -255,6 +262,9 @@ const deleteBatch = async (batchId) => {
     }
 
     await Batch.findByIdAndDelete(batchId);
+
+    // Đồng bộ Inventory sau khi xóa lô hàng
+    await syncInventory(batch.product);
 
     return { id: batchId, batchNumber: batch.batchNumber };
 };

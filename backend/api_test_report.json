@@ -1,0 +1,749 @@
+[
+  {
+    "group": "Health",
+    "name": "Server health check",
+    "method": "GET",
+    "url": "http://localhost:5000/api/health",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Server is running 🚀\",\"timestamp\":\"2026-03-29T09:26:43.422Z\"}"
+  },
+  {
+    "group": "Auth",
+    "name": "Đăng ký admin",
+    "method": "POST",
+    "url": "http://localhost:5000/api/auth/register",
+    "status": 201,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Đăng ký tài khoản thành công\",\"data\":{\"user\":{\"name\":\"Test Admin\",\"email\":\"testadmin_adc2a532"
+  },
+  {
+    "group": "Auth",
+    "name": "Đăng ký user",
+    "method": "POST",
+    "url": "http://localhost:5000/api/auth/register",
+    "status": 201,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Đăng ký tài khoản thành công\",\"data\":{\"user\":{\"name\":\"Test User\",\"email\":\"testuser_adc2a532@c"
+  },
+  {
+    "group": "Auth",
+    "name": "Đăng ký thiếu field (expect 400)",
+    "method": "POST",
+    "url": "http://localhost:5000/api/auth/register",
+    "status": 400,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "Auth",
+    "name": "Đăng ký email trùng (expect 409)",
+    "method": "POST",
+    "url": "http://localhost:5000/api/auth/register",
+    "status": 409,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "Auth",
+    "name": "Đăng nhập admin",
+    "method": "POST",
+    "url": "http://localhost:5000/api/auth/login",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Đăng nhập thành công\",\"data\":{\"user\":{\"_id\":\"69c8f0534604949aac9d7c9a\",\"name\":\"Test Admin\",\"e"
+  },
+  {
+    "group": "Auth",
+    "name": "Đăng nhập user",
+    "method": "POST",
+    "url": "http://localhost:5000/api/auth/login",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Đăng nhập thành công\",\"data\":{\"user\":{\"_id\":\"69c8f0534604949aac9d7c9d\",\"name\":\"Test User\",\"em"
+  },
+  {
+    "group": "Auth",
+    "name": "Đăng nhập sai mật khẩu (expect 401)",
+    "method": "POST",
+    "url": "http://localhost:5000/api/auth/login",
+    "status": 401,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "Auth",
+    "name": "Lấy thông tin /me (admin)",
+    "method": "GET",
+    "url": "http://localhost:5000/api/auth/me",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy thông tin thành công\",\"data\":{\"user\":{\"_id\":\"69c8f0534604949aac9d7c9a\",\"name\":\"Test Admin"
+  },
+  {
+    "group": "Auth",
+    "name": "GET /me không token (expect 401)",
+    "method": "GET",
+    "url": "http://localhost:5000/api/auth/me",
+    "status": 401,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "Users",
+    "name": "Lấy profile user",
+    "method": "GET",
+    "url": "http://localhost:5000/api/users/profile",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy thông tin profile thành công\",\"data\":{\"user\":{\"_id\":\"69c8f0534604949aac9d7c9d\",\"name\":\"Te"
+  },
+  {
+    "group": "Users",
+    "name": "Cập nhật profile",
+    "method": "PUT",
+    "url": "http://localhost:5000/api/users/profile",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Cập nhật thông tin thành công\",\"data\":{\"user\":{\"_id\":\"69c8f0534604949aac9d7c9d\",\"name\":\"Test "
+  },
+  {
+    "group": "Users",
+    "name": "Profile không token (expect 401)",
+    "method": "GET",
+    "url": "http://localhost:5000/api/users/profile",
+    "status": 401,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "Farms",
+    "name": "Lấy danh sách farms",
+    "method": "GET",
+    "url": "http://localhost:5000/api/farms",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy danh sách trang trại thành công\",\"data\":{\"farms\":[],\"pagination\":{\"total\":0,\"page\":1,\"lim"
+  },
+  {
+    "group": "Farms",
+    "name": "Danh sách farms (filter VietGAP)",
+    "method": "GET",
+    "url": "http://localhost:5000/api/farms",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy danh sách trang trại thành công\",\"data\":{\"farms\":[],\"pagination\":{\"total\":0,\"page\":1,\"lim"
+  },
+  {
+    "group": "Farms",
+    "name": "Tạo farm mới (admin)",
+    "method": "POST",
+    "url": "http://localhost:5000/api/farms",
+    "status": 201,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Tạo trang trại thành công\",\"data\":{\"farm\":{\"name\":\"Farm Test adc2a532\",\"location\":\"Đà Lạt, Lâ"
+  },
+  {
+    "group": "Farms",
+    "name": "Lấy chi tiết farm theo ID",
+    "method": "GET",
+    "url": "http://localhost:5000/api/farms/:id",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy thông tin trang trại thành công\",\"data\":{\"farm\":{\"_id\":\"69c8f0554604949aac9d7caf\",\"name\":"
+  },
+  {
+    "group": "Farms",
+    "name": "Cập nhật farm (admin)",
+    "method": "PUT",
+    "url": "http://localhost:5000/api/farms/:id",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Cập nhật trang trại thành công\",\"data\":{\"farm\":{\"_id\":\"69c8f0554604949aac9d7caf\",\"name\":\"Farm"
+  },
+  {
+    "group": "Farms",
+    "name": "Tạo farm bằng user (expect 403)",
+    "method": "POST",
+    "url": "http://localhost:5000/api/farms",
+    "status": 403,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "Farms",
+    "name": "Farm không tồn tại (expect 404)",
+    "method": "GET",
+    "url": "http://localhost:5000/api/farms/:id",
+    "status": 404,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "Categories",
+    "name": "Lấy danh sách categories",
+    "method": "GET",
+    "url": "http://localhost:5000/api/categories",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy danh sách danh mục thành công\",\"data\":{\"categories\":[],\"pagination\":{\"total\":0,\"page\":1,\""
+  },
+  {
+    "group": "Categories",
+    "name": "Tạo category mới",
+    "method": "POST",
+    "url": "http://localhost:5000/api/categories",
+    "status": 201,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Tạo danh mục thành công\",\"data\":{\"category\":{\"name\":\"Rau củ Test adc2a532\",\"description\":\"Dan"
+  },
+  {
+    "group": "Categories",
+    "name": "Lấy chi tiết category",
+    "method": "GET",
+    "url": "http://localhost:5000/api/categories/:id",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy thông tin danh mục thành công\",\"data\":{\"category\":{\"_id\":\"69c8f0554604949aac9d7cbd\",\"name"
+  },
+  {
+    "group": "Categories",
+    "name": "Cập nhật category",
+    "method": "PUT",
+    "url": "http://localhost:5000/api/categories/:id",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Cập nhật danh mục thành công\",\"data\":{\"category\":{\"_id\":\"69c8f0554604949aac9d7cbd\",\"name\":\"Ra"
+  },
+  {
+    "group": "Categories",
+    "name": "Tạo category bằng user (expect 403)",
+    "method": "POST",
+    "url": "http://localhost:5000/api/categories",
+    "status": 403,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "Products",
+    "name": "Lấy danh sách sản phẩm",
+    "method": "GET",
+    "url": "http://localhost:5000/api/products",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy danh sách sản phẩm thành công\",\"data\":{\"products\":[],\"pagination\":{\"total\":0,\"page\":1,\"li"
+  },
+  {
+    "group": "Products",
+    "name": "Tìm kiếm sản phẩm",
+    "method": "GET",
+    "url": "http://localhost:5000/api/products/search",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy danh sách sản phẩm thành công\",\"data\":{\"products\":[],\"pagination\":{\"total\":0,\"page\":1,\"li"
+  },
+  {
+    "group": "Products",
+    "name": "Tạo sản phẩm mới (admin)",
+    "method": "POST",
+    "url": "http://localhost:5000/api/products",
+    "status": 201,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Tạo sản phẩm thành công\",\"data\":{\"product\":{\"_id\":\"69c8f0564604949aac9d7ccd\",\"name\":\"Chuối Te"
+  },
+  {
+    "group": "Products",
+    "name": "Lấy chi tiết sản phẩm",
+    "method": "GET",
+    "url": "http://localhost:5000/api/products/:id",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy thông tin sản phẩm thành công\",\"data\":{\"product\":{\"_id\":\"69c8f0564604949aac9d7ccd\",\"name\""
+  },
+  {
+    "group": "Products",
+    "name": "Danh sách sản phẩm (phân trang)",
+    "method": "GET",
+    "url": "http://localhost:5000/api/products",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy danh sách sản phẩm thành công\",\"data\":{\"products\":[{\"_id\":\"69c8f0564604949aac9d7ccd\",\"nam"
+  },
+  {
+    "group": "Products",
+    "name": "Cập nhật sản phẩm (admin)",
+    "method": "PUT",
+    "url": "http://localhost:5000/api/products/:id",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Cập nhật sản phẩm thành công\",\"data\":{\"product\":{\"_id\":\"69c8f0564604949aac9d7ccd\",\"name\":\"Chu"
+  },
+  {
+    "group": "Products",
+    "name": "Sản phẩm không tồn tại (expect 404)",
+    "method": "GET",
+    "url": "http://localhost:5000/api/products/:id",
+    "status": 404,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "Batches",
+    "name": "Tạo lô hàng mới",
+    "method": "POST",
+    "url": "http://localhost:5000/api/batches",
+    "status": 201,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Tạo lô hàng thành công\",\"data\":{\"batch\":{\"_id\":\"69c8f0564604949aac9d7ce6\",\"product\":{\"_id\":\"6"
+  },
+  {
+    "group": "Batches",
+    "name": "Danh sách lô hàng",
+    "method": "GET",
+    "url": "http://localhost:5000/api/batches",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy danh sách lô hàng thành công\",\"data\":{\"batches\":[{\"_id\":\"69c8f0564604949aac9d7ce6\",\"produ"
+  },
+  {
+    "group": "Batches",
+    "name": "Chi tiết lô hàng",
+    "method": "GET",
+    "url": "http://localhost:5000/api/batches/:id",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy thông tin lô hàng thành công\",\"data\":{\"batch\":{\"_id\":\"69c8f0564604949aac9d7ce6\",\"product\""
+  },
+  {
+    "group": "Batches",
+    "name": "Báo cáo tồn kho tổng hợp",
+    "method": "GET",
+    "url": "http://localhost:5000/api/batches/inventory-report",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy báo cáo tồn kho thành công\",\"data\":{\"report\":[{\"product\":{\"_id\":\"69c8f0564604949aac9d7ccd"
+  },
+  {
+    "group": "Batches",
+    "name": "Lô sắp hết hạn",
+    "method": "GET",
+    "url": "http://localhost:5000/api/batches/expiring",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy danh sách lô sắp hết hạn thành công\",\"data\":{\"batches\":[{\"_id\":\"69c8f0564604949aac9d7ce6\""
+  },
+  {
+    "group": "Batches",
+    "name": "Tồn kho theo sản phẩm",
+    "method": "GET",
+    "url": "http://localhost:5000/api/batches/stock/:productId",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy tồn kho thực tế thành công\",\"data\":{\"product\":{\"_id\":\"69c8f0564604949aac9d7ccd\",\"name\":\"C"
+  },
+  {
+    "group": "Batches",
+    "name": "Cập nhật lô hàng",
+    "method": "PUT",
+    "url": "http://localhost:5000/api/batches/:id",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Cập nhật lô hàng thành công\",\"data\":{\"batch\":{\"_id\":\"69c8f0564604949aac9d7ce6\",\"product\":{\"_i"
+  },
+  {
+    "group": "Batches",
+    "name": "Batch số lô trùng (expect 400)",
+    "method": "POST",
+    "url": "http://localhost:5000/api/batches",
+    "status": 400,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "Inventory",
+    "name": "Cảnh báo tồn kho",
+    "method": "GET",
+    "url": "http://localhost:5000/api/inventory/alerts",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy cảnh báo kho hàng thành công\",\"data\":{\"expiredBatches\":[],\"expiringBatches\":[],\"outOfStoc"
+  },
+  {
+    "group": "Inventory",
+    "name": "Alerts không token (expect 401)",
+    "method": "GET",
+    "url": "http://localhost:5000/api/inventory/alerts",
+    "status": 401,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "Cart",
+    "name": "Lấy giỏ hàng (mới đăng ký)",
+    "method": "GET",
+    "url": "http://localhost:5000/api/cart",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy giỏ hàng thành công\",\"data\":{\"_id\":\"69c8f0564604949aac9d7d0e\",\"userId\":\"69c8f0534604949aa"
+  },
+  {
+    "group": "Cart",
+    "name": "Thêm sản phẩm vào giỏ",
+    "method": "POST",
+    "url": "http://localhost:5000/api/cart",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Thêm vào giỏ hàng thành công\",\"data\":{\"_id\":\"69c8f0564604949aac9d7d0e\",\"userId\":\"69c8f0534604"
+  },
+  {
+    "group": "Cart",
+    "name": "Lấy giỏ hàng (đã có sản phẩm)",
+    "method": "GET",
+    "url": "http://localhost:5000/api/cart",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy giỏ hàng thành công\",\"data\":{\"_id\":\"69c8f0564604949aac9d7d0e\",\"userId\":\"69c8f0534604949aa"
+  },
+  {
+    "group": "Cart",
+    "name": "Cập nhật số lượng giỏ hàng",
+    "method": "PUT",
+    "url": "http://localhost:5000/api/cart/:productId",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Cập nhật giỏ hàng thành công\",\"data\":{\"_id\":\"69c8f0564604949aac9d7d0e\",\"userId\":\"69c8f0534604"
+  },
+  {
+    "group": "Cart",
+    "name": "Xóa sản phẩm khỏi giỏ",
+    "method": "DELETE",
+    "url": "http://localhost:5000/api/cart/:productId",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Đã xóa sản phẩm khỏi giỏ hàng\",\"data\":{\"_id\":\"69c8f0564604949aac9d7d0e\",\"userId\":\"69c8f053460"
+  },
+  {
+    "group": "Cart",
+    "name": "Xóa toàn bộ giỏ hàng",
+    "method": "DELETE",
+    "url": "http://localhost:5000/api/cart",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Đã xóa toàn bộ giỏ hàng\",\"data\":null}"
+  },
+  {
+    "group": "Cart",
+    "name": "Cart không token (expect 401)",
+    "method": "GET",
+    "url": "http://localhost:5000/api/cart",
+    "status": 401,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "Discounts",
+    "name": "Danh sách mã giảm giá (admin)",
+    "method": "GET",
+    "url": "http://localhost:5000/api/discounts",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy danh sách mã giảm giá thành công\",\"data\":{\"discounts\":[],\"pagination\":{\"total\":0,\"page\":1"
+  },
+  {
+    "group": "Discounts",
+    "name": "Tạo mã giảm giá",
+    "method": "POST",
+    "url": "http://localhost:5000/api/discounts",
+    "status": 201,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Tạo mã giảm giá thành công\",\"data\":{\"code\":\"TESTAUTOADC2A5\",\"type\":\"percentage\",\"value\":10,\"m"
+  },
+  {
+    "group": "Discounts",
+    "name": "Chi tiết mã giảm giá",
+    "method": "GET",
+    "url": "http://localhost:5000/api/discounts/:id",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy chi tiết mã giảm giá thành công\",\"data\":{\"_id\":\"69c8f0564604949aac9d7d49\",\"code\":\"TESTAUT"
+  },
+  {
+    "group": "Discounts",
+    "name": "Cập nhật mã giảm giá",
+    "method": "PUT",
+    "url": "http://localhost:5000/api/discounts/:id",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Cập nhật mã giảm giá thành công\",\"data\":{\"_id\":\"69c8f0564604949aac9d7d49\",\"code\":\"TESTAUTOADC"
+  },
+  {
+    "group": "Discounts",
+    "name": "Validate mã giảm giá (user)",
+    "method": "POST",
+    "url": "http://localhost:5000/api/discounts/validate",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Mã giảm giá hợp lệ\",\"data\":{\"code\":\"TESTAUTOADC2A5\",\"type\":\"percentage\",\"value\":15,\"discountA"
+  },
+  {
+    "group": "Discounts",
+    "name": "Validate mã sai (expect 4xx)",
+    "method": "POST",
+    "url": "http://localhost:5000/api/discounts/validate",
+    "status": 404,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "Orders",
+    "name": "VNPay IPN endpoint (public)",
+    "method": "GET",
+    "url": "http://localhost:5000/api/orders/vnpay-ipn",
+    "status": 200,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "Orders",
+    "name": "VNPay Return endpoint (public)",
+    "method": "GET",
+    "url": "http://localhost:5000/api/orders/vnpay-return",
+    "status": 400,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "Orders",
+    "name": "Đặt hàng COD",
+    "method": "POST",
+    "url": "http://localhost:5000/api/orders/checkout",
+    "status": 201,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Đặt hàng COD thành công\",\"data\":{\"shippingAddress\":{\"fullName\":\"Test User\",\"phone\":\"090123456"
+  },
+  {
+    "group": "Orders",
+    "name": "Checkout VNPay (lấy URL)",
+    "method": "POST",
+    "url": "http://localhost:5000/api/orders/checkout-vnpay",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Tạo URL thanh toán VNPay thành công\",\"data\":{\"order\":{\"userId\":\"69c8f0534604949aac9d7c9d\",\"to"
+  },
+  {
+    "group": "Orders",
+    "name": "Danh sách đơn hàng của user",
+    "method": "GET",
+    "url": "http://localhost:5000/api/orders",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy danh sách đơn hàng thành công\",\"data\":{\"orders\":[{\"shippingAddress\":{\"fullName\":\"Test Use"
+  },
+  {
+    "group": "Orders",
+    "name": "Tất cả đơn hàng (admin)",
+    "method": "GET",
+    "url": "http://localhost:5000/api/orders/admin/all",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy tất cả đơn hàng thành công\",\"data\":{\"orders\":[{\"shippingAddress\":{\"fullName\":\"Test User\","
+  },
+  {
+    "group": "Orders",
+    "name": "Chi tiết đơn hàng",
+    "method": "GET",
+    "url": "http://localhost:5000/api/orders/:id",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy chi tiết đơn hàng thành công\",\"data\":{\"shippingAddress\":{\"fullName\":\"Test User\",\"phone\":\""
+  },
+  {
+    "group": "Orders",
+    "name": "Cập nhật trạng thái đơn (admin)",
+    "method": "PATCH",
+    "url": "http://localhost:5000/api/orders/:id/status",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Cập nhật trạng thái đơn hàng thành \\\"Processing\\\"\",\"data\":{\"shippingAddress\":{\"fullName\":\"Tes"
+  },
+  {
+    "group": "Orders",
+    "name": "Hủy đơn hàng (VNPay-Pending)",
+    "method": "PATCH",
+    "url": "http://localhost:5000/api/orders/:id/cancel",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Hủy đơn hàng thành công. Tồn kho đã được hoàn lại\",\"data\":{\"shippingAddress\":{\"fullName\":\"Tes"
+  },
+  {
+    "group": "Orders",
+    "name": "Đơn hàng không token (expect 401)",
+    "method": "GET",
+    "url": "http://localhost:5000/api/orders",
+    "status": 401,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "Reviews",
+    "name": "Lấy reviews theo sản phẩm",
+    "method": "GET",
+    "url": "http://localhost:5000/api/reviews/product/:id",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy danh sách đánh giá thành công.\",\"data\":{\"reviews\":[],\"pagination\":{\"currentPage\":1,\"total"
+  },
+  {
+    "group": "Reviews",
+    "name": "Reviews sản phẩm không tồn tại (expect 404)",
+    "method": "GET",
+    "url": "http://localhost:5000/api/reviews/product/:id",
+    "status": 404,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "Reviews",
+    "name": "Tạo đánh giá sản phẩm",
+    "method": "POST",
+    "url": "http://localhost:5000/api/reviews",
+    "status": 201,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Đánh giá đã được tạo thành công.\",\"data\":{\"review\":{\"_id\":\"69c8f05b4604949aac9d7db6\",\"product"
+  },
+  {
+    "group": "Reviews",
+    "name": "Cập nhật đánh giá",
+    "method": "PUT",
+    "url": "http://localhost:5000/api/reviews/:id",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Đánh giá đã được cập nhật.\",\"data\":{\"review\":{\"_id\":\"69c8f05b4604949aac9d7db6\",\"productId\":\"6"
+  },
+  {
+    "group": "Reviews",
+    "name": "Review comment quá ngắn (expect 400)",
+    "method": "POST",
+    "url": "http://localhost:5000/api/reviews",
+    "status": 400,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "Reviews",
+    "name": "Review không token (expect 401)",
+    "method": "POST",
+    "url": "http://localhost:5000/api/reviews",
+    "status": 401,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "Stats",
+    "name": "Doanh thu theo tháng",
+    "method": "GET",
+    "url": "http://localhost:5000/api/stats/revenue",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy thống kê doanh thu thành công.\",\"data\":{\"period\":\"monthly\",\"totalRevenue\":0,\"totalOrders\""
+  },
+  {
+    "group": "Stats",
+    "name": "Doanh thu theo ngày",
+    "method": "GET",
+    "url": "http://localhost:5000/api/stats/revenue",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy thống kê doanh thu thành công.\",\"data\":{\"period\":\"daily\",\"totalRevenue\":0,\"totalOrders\":0"
+  },
+  {
+    "group": "Stats",
+    "name": "Top sản phẩm bán chạy",
+    "method": "GET",
+    "url": "http://localhost:5000/api/stats/top-sellers",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy danh sách sản phẩm bán chạy thành công.\",\"data\":{\"topSellers\":[]}}"
+  },
+  {
+    "group": "Stats",
+    "name": "Lô sắp hết hạn (stats)",
+    "method": "GET",
+    "url": "http://localhost:5000/api/stats/expiring-soon",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Lấy thống kê lô sắp hết hạn thành công.\",\"data\":{\"totalBatches\":0,\"days\":7,\"batches\":[]}}"
+  },
+  {
+    "group": "Stats",
+    "name": "Stats bằng user (expect 403)",
+    "method": "GET",
+    "url": "http://localhost:5000/api/stats/revenue",
+    "status": 403,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "group": "AI",
+    "name": "Quét AI độ tươi (freshbanana.jpg)",
+    "method": "POST",
+    "url": "http://localhost:5000/api/ai/scan-freshness",
+    "status": 500,
+    "passed": true,
+    "note": "YOLO server đang restart/lỗi (expected)"
+  },
+  {
+    "group": "Cleanup",
+    "name": "Xóa review test",
+    "method": "DELETE",
+    "url": "http://localhost:5000/api/reviews/:id",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Đã xóa đánh giá thành công.\",\"data\":{\"id\":\"69c8f05b4604949aac9d7db6\"}}"
+  },
+  {
+    "group": "Cleanup",
+    "name": "Xóa discount test",
+    "method": "DELETE",
+    "url": "http://localhost:5000/api/discounts/:id",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Xóa mã giảm giá thành công\",\"data\":{\"id\":\"69c8f0564604949aac9d7d49\",\"code\":\"TESTAUTOADC2A5\"}}"
+  },
+  {
+    "group": "Cleanup",
+    "name": "Xóa batch test",
+    "method": "DELETE",
+    "url": "http://localhost:5000/api/batches/:id",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Xóa lô hàng thành công\",\"data\":{\"id\":\"69c8f0564604949aac9d7ce6\",\"batchNumber\":\"BATCH-adc2a532"
+  },
+  {
+    "group": "Cleanup",
+    "name": "Xóa product test",
+    "method": "DELETE",
+    "url": "http://localhost:5000/api/products/:id",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Xóa sản phẩm thành công\",\"data\":{\"id\":\"69c8f0564604949aac9d7ccd\",\"name\":\"Chuối Test adc2a532\""
+  },
+  {
+    "group": "Cleanup",
+    "name": "Xóa category test",
+    "method": "DELETE",
+    "url": "http://localhost:5000/api/categories/:id",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Xóa danh mục thành công\",\"data\":{\"id\":\"69c8f0554604949aac9d7cbd\",\"name\":\"Rau củ Test adc2a532"
+  },
+  {
+    "group": "Cleanup",
+    "name": "Xóa farm test",
+    "method": "DELETE",
+    "url": "http://localhost:5000/api/farms/:id",
+    "status": 200,
+    "passed": true,
+    "note": "{\"success\":true,\"message\":\"Xóa trang trại thành công\",\"data\":{\"id\":\"69c8f0554604949aac9d7caf\",\"name\":\"Farm Test adc2a532"
+  }
+]

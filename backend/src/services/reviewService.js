@@ -2,6 +2,7 @@
 // Review Service — CRUD đánh giá sản phẩm + tính averageRating
 // ============================================================
 
+const mongoose = require('mongoose');
 const Review = require('../models/Review');
 const Product = require('../models/Product');
 const { createError } = require('../utils/responseHelper');
@@ -14,7 +15,7 @@ const { createError } = require('../utils/responseHelper');
  */
 const recalculateProductRating = async (productId) => {
     const result = await Review.aggregate([
-        { $match: { productId: productId } },
+        { $match: { productId: new mongoose.Types.ObjectId(productId) } },
         {
             $group: {
                 _id: '$productId',

@@ -25,10 +25,13 @@ const batchRoutes = require('./routes/batchRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
-const aiRoutes = require('./routes/aiRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const statsRoutes = require('./routes/statsRoutes');
+const discountRoutes = require('./routes/discountRoutes');
+const wishlistRoutes = require('./routes/wishlistRoutes');
 const { startExpiryChecker } = require('./cron/expiryChecker');
+const rateLimit = require('express-rate-limit');
+const mongoSanitize = require('express-mongo-sanitize');
 
 // ── Khởi tạo app ────────────────────────────────────────────
 const app = express();
@@ -39,7 +42,15 @@ connectDB().then(() => {
     // Khởi động Cron Job SAU khi kết nối DB thành công
     startExpiryChecker();
 });
-
+// ── Rate Limiter (OWASP A07 — Brute Force prevention) ────────
+// Chỉ áp dụng cho /api/auth: 30 request / 15 phút / IP
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,   // 15 phút
+    max: 30,                     // Số request tối đa
+    standardHeaders: true,       // Gửi RateLimit-* headers (RFC 6585)
+    legacyHeaders: false,        // Tắt X-RateLimit-* headers cũ
+    message: { success: false, message: 'Quá nhiều yêu cầu. Vui lòng thử lại sau 15 phút.' },
+});
 // ── Bảo mật & Logging Middlewares ───────────────────────────
 app.use(helmet());           // Thiết lập các HTTP security headers
 app.use(morgan('dev'));       // Log mọi request ra console (dev mode)
@@ -54,8 +65,13 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // ── Body Parser Middlewares ──────────────────────────────────
-app.use(express.json());                        // Đọc body dạng JSON
-app.use(express.urlencoded({ extended: true })); // Đọc body dạng URL-encoded
+app.use(express.json({ limit: '1mb' }));                    // Giới hạn body JSON (ngăn DoS)
+app.use(express.urlencoded({ extended: true, limit: '1mb' })); // URL-encoded
+
+// ── MongoDB Sanitize (OWASP A03 — NoSQL Injection prevention) ──
+// Loại bỏ ký tự $ và . từ req.body, req.query, req.params
+// Ví dụ: { "email": { "$gt": "" } } bị loại bỏ → không thể bypass auth
+app.use(mongoSanitize());
 
 // ── Serve Static Files (ảnh sản phẩm upload) ────────────────
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
@@ -63,7 +79,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // ── Routes ──────────────────────────────────────────────────
 // Tất cả API endpoints bắt đầu bằng /api
 app.use('/api', indexRouter);
-app.use('/api/auth', authRoutes);   // Đăng ký, Đăng nhập, Thông tin người dùng
+app.use('/api/auth', authLimiter, authRoutes);  // Auth routes có rate limit chống brute-force
 app.use('/api/users', userRoutes);  // Quản lý profile người dùng
 app.use('/api/farms', farmRoutes);           // Quản lý đối tác trang trại
 app.use('/api/categories', categoryRoutes); // Quản lý danh mục sản phẩm
@@ -72,9 +88,10 @@ app.use('/api/batches', batchRoutes);         // Quản lý lô hàng & tồn kh
 app.use('/api/inventory', inventoryRoutes);   // Cảnh báo & thống kê tồn kho
 app.use('/api/cart', cartRoutes);               // Giỏ hàng
 app.use('/api/orders', orderRoutes);           // Đơn hàng & Checkout
-app.use('/api/ai', aiRoutes);                   // Quét AI kiểm tra độ tươi
 app.use('/api/reviews', reviewRoutes);           // Đánh giá sản phẩm
 app.use('/api/stats', statsRoutes);               // Thống kê & báo cáo
+app.use('/api/discounts', discountRoutes);         // Mã giảm giá
+app.use('/api/wishlist', wishlistRoutes);           // Danh sách yêu thích
 
 // Bắt route không tồn tại (404) - phải đặt SAU tất cả routes
 app.use((req, res) => {
