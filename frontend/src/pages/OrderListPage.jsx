@@ -5,8 +5,8 @@ const fmt = (p) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency:
 const fmtDate = (d) => new Date(d).toLocaleString('vi-VN');
 
 const STATUS_LABEL = {
-    Pending: 'Ch? x? l?', Paid: '–? thanh to·n', Processing: '–ang x? l?',
-    Shipping: '–ang giao', Delivered: '–? giao', Cancelled: '–? h?y',
+    Pending: 'Ch·ªù x·ª≠ l√Ω', Paid: 'ƒê√£ thanh to√°n', Processing: 'ƒêang x·ª≠ l√Ω',
+    Shipping: 'ƒêang giao', Delivered: 'ƒê√£ giao', Cancelled: 'ƒê√£ h·ªßy',
 };
 const STATUS_CLS = {
     Pending: 'status-pending', Paid: 'status-paid', Processing: 'status-processing',
@@ -27,48 +27,48 @@ const OrderListPage = () => {
             const data = await getMyOrdersAPI({ page, limit: 10 });
             setOrders(data.orders); setPagination(data.pagination);
         } catch (err) {
-            setError(err.response?.data?.message || 'KhÙng th? t?i ın h‡ng');
+            setError(err.response?.data?.message || 'Kh√¥ng th·ªÉ t·∫£i ƒë∆°n h√†ng');
         } finally { setLoading(false); }
     }, []);
 
     useEffect(() => { fetchOrders(); }, [fetchOrders]);
 
     const handleCancel = async (orderId) => {
-        if (!window.confirm('B?n cÛ ch?c mu?n h?y ın h‡ng n‡y?')) return;
+        if (!window.confirm('B·∫°n c√≥ ch·∫Øc mu·ªën h·ªßy ƒë∆°n h√†ng n√†y?')) return;
         try {
             setActionLoading(orderId); setError('');
             await cancelOrderAPI(orderId);
             await fetchOrders(pagination.page || 1);
         } catch (err) {
-            setError(err.response?.data?.message || 'KhÙng th? h?y ın h‡ng');
+            setError(err.response?.data?.message || 'Kh√¥ng th·ªÉ h·ªßy ƒë∆°n h√†ng');
         } finally { setActionLoading(''); }
     };
 
     if (loading) return (
-        <div className="loading-wrap"><div className="spinner" /><p className="loading-text">–ang t?i ın h‡ng...</p></div>
+        <div className="loading-wrap"><div className="spinner" /><p className="loading-text">ƒêang t·∫£i ƒë∆°n h√†ng...</p></div>
     );
 
     return (
         <div style={{ background: 'var(--c-bg)', minHeight: '100vh' }}>
             <div className="page-header">
                 <div className="page-header-inner">
-                    <div className="page-header-icon">??</div>
+                    <div className="page-header-icon">üì¶</div>
                     <div>
-                        <h1>–ın h‡ng c?a tÙi</h1>
-                        <p>Theo d?i tr?ng th·i v‡ l?ch s? ?t h‡ng</p>
+                        <h1>ƒê∆°n h√†ng c·ªßa t√¥i</h1>
+                        <p>Theo d√µi tr·∫°ng th√°i v√† l·ªãch s·ª≠ ƒë·∫∑t h√†ng</p>
                     </div>
                 </div>
             </div>
 
             <div className="container" style={{ paddingBottom: 48 }}>
-                {error && <div className="alert alert-danger">?? {error}</div>}
+                {error && <div className="alert alert-danger">‚ö†Ô∏è {error}</div>}
 
                 {orders.length === 0 ? (
                     <div className="empty-state">
-                        <div className="empty-state-icon">??</div>
-                        <h3>Ch˝a cÛ ın h‡ng n‡o</h3>
-                        <p>H?y kh·m ph· s?n ph?m v‡ ?t h‡ng ngay!</p>
-                        <a href="/products" className="btn btn-primary btn-sm" style={{ marginTop: 12 }}>Mua s?m ngay</a>
+                        <div className="empty-state-icon">üì¶</div>
+                        <h3>Ch∆∞a c√≥ ƒë∆°n h√†ng n√†o</h3>
+                        <p>H√£y kh√°m ph√° s·∫£n ph·∫©m v√† ƒë·∫∑t h√†ng ngay!</p>
+                        <a href="/products" className="btn btn-primary btn-sm" style={{ marginTop: 12 }}>Mua s·∫Øm ngay</a>
                     </div>
                 ) : (
                     <>
@@ -82,14 +82,14 @@ const OrderListPage = () => {
                                     >
                                         <div>
                                             <span style={{ fontWeight: 700, color: 'var(--t-heading)', fontSize: 15 }}>
-                                                –ın #{order._id.slice(-8).toUpperCase()}
+                                                ƒê∆°n #{order._id.slice(-8).toUpperCase()}
                                             </span>
                                             <span style={{ marginLeft: 12, color: 'var(--t-muted)', fontSize: 13 }}>{fmtDate(order.createdAt)}</span>
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                                             <span className={STATUS_CLS[order.status] || 'badge badge-gray'}>{STATUS_LABEL[order.status] || order.status}</span>
                                             <span style={{ fontWeight: 800, fontSize: 15, color: 'var(--c-primary)' }}>{fmt(order.finalPrice)}</span>
-                                            <span style={{ fontSize: 11, color: 'var(--t-muted)' }}>{expandedId === order._id ? '?' : '?'}</span>
+                                            <span style={{ fontSize: 11, color: 'var(--t-muted)' }}>{expandedId === order._id ? '‚ñº' : '‚ñ∫'}</span>
                                         </div>
                                     </div>
 
@@ -100,7 +100,7 @@ const OrderListPage = () => {
                                             <div className="table-wrap" style={{ marginBottom: 16 }}>
                                                 <table className="table">
                                                     <thead>
-                                                        <tr><th>S?n ph?m</th><th className="table-center">SL</th><th className="table-center">–ın gi·</th><th className="table-center">Th‡nh ti?n</th></tr>
+                                                        <tr><th>S·∫£n ph·∫©m</th><th className="table-center">SL</th><th className="table-center">ƒê∆°n gi√°</th><th className="table-center">Th√†nh ti·ªÅn</th></tr>
                                                     </thead>
                                                     <tbody>
                                                         {(order.items || []).map((p, idx) => (
@@ -118,19 +118,19 @@ const OrderListPage = () => {
                                             {/* Delivery info */}
                                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 12, marginBottom: 16 }}>
                                                 <div style={{ background: 'var(--c-50)', borderRadius: 8, padding: '12px 14px' }}>
-                                                    <div style={{ fontSize: 12, color: 'var(--t-muted)', marginBottom: 4 }}>?? Giao ?n</div>
-                                                    <div style={{ fontWeight: 600, fontSize: 14 }}>{order.shippingAddress?.fullName} ó {order.shippingAddress?.phone}</div>
+                                                    <div style={{ fontSize: 12, color: 'var(--t-muted)', marginBottom: 4 }}>üìç Giao ƒë·∫øn</div>
+                                                    <div style={{ fontWeight: 600, fontSize: 14 }}>{order.shippingAddress?.fullName} - {order.shippingAddress?.phone}</div>
                                                     <div style={{ fontSize: 13, color: 'var(--t-secondary)' }}>{order.shippingAddress?.address}</div>
                                                 </div>
                                                 <div style={{ background: 'var(--c-50)', borderRadius: 8, padding: '12px 14px' }}>
-                                                    <div style={{ fontSize: 12, color: 'var(--t-muted)', marginBottom: 4 }}>?? Thanh to·n</div>
+                                                    <div style={{ fontSize: 12, color: 'var(--t-muted)', marginBottom: 4 }}>üí≥ Thanh to√°n</div>
                                                     <div style={{ fontWeight: 600, fontSize: 14 }}>
-                                                        {order.paymentMethod === 'COD' ? '?? Thanh to·n khi nh?n h‡ng' : '?? VNPay'}
+                                                        {order.paymentMethod === 'COD' ? 'üíµ Thanh to√°n khi nh·∫≠n h√†ng' : 'üîó VNPay'}
                                                     </div>
                                                 </div>
                                                 {order.note && (
                                                     <div style={{ background: 'var(--c-50)', borderRadius: 8, padding: '12px 14px' }}>
-                                                        <div style={{ fontSize: 12, color: 'var(--t-muted)', marginBottom: 4 }}>?? Ghi ch˙</div>
+                                                        <div style={{ fontSize: 12, color: 'var(--t-muted)', marginBottom: 4 }}>üìù Ghi ch√∫</div>
                                                         <div style={{ fontSize: 13 }}>{order.note}</div>
                                                     </div>
                                                 )}
@@ -140,7 +140,7 @@ const OrderListPage = () => {
                                                 <button onClick={() => handleCancel(order._id)}
                                                     disabled={actionLoading === order._id}
                                                     className="btn btn-danger btn-sm">
-                                                    {actionLoading === order._id ? '–ang h?y...' : '? H?y ın h‡ng'}
+                                                    {actionLoading === order._id ? 'ƒêang h·ªßy...' : '‚ùå H·ªßy ƒë∆°n h√†ng'}
                                                 </button>
                                             )}
                                         </div>
