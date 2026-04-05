@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getProductByIdAPI } from '../api/productService';
 import { toggleWishlistAPI, checkWishlistAPI } from '../api/wishlistService';
+import { addToCartAPI } from '../api/cartService';
 import { useAuth } from '../contexts/AuthContext';
 import ProductReviews from '../components/ProductReviews';
 
@@ -17,6 +18,8 @@ function ProductDetailPage() {
     const [selectedImage, setSelectedImage] = useState(0); // Index ảnh đang xem
     const [inWishlist, setInWishlist] = useState(false);   // Trạng thái yêu thích
     const [wishlistLoading, setWishlistLoading] = useState(false);
+    const [quantity, setQuantity] = useState(1);           // Số lượng muốn thêm
+    const [addingToCart, setAddingToCart] = useState(false);
 
     // ── Gọi API lấy chi tiết sản phẩm ──────────────────────────
     useEffect(() => {
@@ -64,6 +67,28 @@ function ProductDetailPage() {
             toast.error(error.response?.data?.message || 'Có lỗi xảy ra.');
         } finally {
             setWishlistLoading(false);
+        }
+    };
+
+    // ── Thêm vào giỏ hàng ──────────────────────────────────────
+    const handleAddToCart = async () => {
+        if (!user) {
+            toast.info('Vui lòng đăng nhập để mua hàng.');
+            navigate('/login');
+            return;
+        }
+        if (product.status === 'Ngừng kinh doanh') {
+            toast.error('Sản phẩm này hiện không còn kinh doanh.');
+            return;
+        }
+        setAddingToCart(true);
+        try {
+            await addToCartAPI(id, quantity);
+            toast.success(`✅ Đã thêm ${quantity} ${product.unit} "${product.name}" vào giỏ hàng!`);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Không thể thêm vào giỏ hàng. Vui lòng thử lại.');
+        } finally {
+            setAddingToCart(false);
         }
     };
 
@@ -224,6 +249,80 @@ function ProductDetailPage() {
                         <span style={labelStyle}>⏰ Hạn sử dụng:</span>
                         <span style={valueStyle}>{formatDate(product.expiryDate)}</span>
                     </p>
+
+                    {/* ── Thêm vào giỏ hàng ─────────────────────── */}
+                    <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid #dee2e6' }}>
+                        {product.status === 'Ngừng kinh doanh' ? (
+                            <div style={{
+                                padding: '10px 16px', backgroundColor: '#f8d7da',
+                                color: '#721c24', borderRadius: '6px', marginBottom: '12px',
+                                fontWeight: 'bold', textAlign: 'center',
+                            }}>
+                                ❌ Sản phẩm này hiện không còn kinh doanh
+                            </div>
+                        ) : (
+                            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                                {/* Bộ chọn số lượng */}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <label style={{ fontWeight: 'bold', fontSize: '14px', color: '#495057' }}>
+                                        Số lượng:
+                                    </label>
+                                    <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ced4da', borderRadius: '6px', overflow: 'hidden' }}>
+                                        <button
+                                            type="button"
+                                            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                                            style={{
+                                                width: '32px', height: '38px', border: 'none',
+                                                background: '#f8f9fa', cursor: 'pointer', fontSize: '18px',
+                                                color: '#495057', fontWeight: 'bold',
+                                            }}
+                                        >
+                                            −
+                                        </button>
+                                        <input
+                                            type="number"
+                                            min={1}
+                                            value={quantity}
+                                            onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value, 10) || 1))}
+                                            style={{
+                                                width: '52px', height: '38px', textAlign: 'center',
+                                                border: 'none', borderLeft: '1px solid #ced4da',
+                                                borderRight: '1px solid #ced4da', fontSize: '16px',
+                                                outline: 'none',
+                                            }}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setQuantity((q) => q + 1)}
+                                            style={{
+                                                width: '32px', height: '38px', border: 'none',
+                                                background: '#f8f9fa', cursor: 'pointer', fontSize: '18px',
+                                                color: '#495057', fontWeight: 'bold',
+                                            }}
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Nút thêm vào giỏ */}
+                                <button
+                                    onClick={handleAddToCart}
+                                    disabled={addingToCart}
+                                    style={{
+                                        padding: '10px 24px', backgroundColor: '#28a745',
+                                        color: '#fff', border: 'none', borderRadius: '6px',
+                                        cursor: addingToCart ? 'not-allowed' : 'pointer',
+                                        fontSize: '15px', fontWeight: 'bold',
+                                        opacity: addingToCart ? 0.7 : 1,
+                                        transition: 'opacity 0.2s',
+                                    }}
+                                >
+                                    {addingToCart ? '⏳ Đang thêm...' : '🛒 Thêm vào giỏ hàng'}
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 

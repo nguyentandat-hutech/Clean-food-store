@@ -2,13 +2,17 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { getWishlistAPI, removeFromWishlistAPI } from '../api/wishlistService';
+import { addToCartAPI } from '../api/cartService';
+import { useAuth } from '../contexts/AuthContext';
 
 // ── Trang Danh sách Yêu thích ──────────────────────────────────
 function WishlistPage() {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [wishlist, setWishlist] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [removing, setRemoving] = useState(null); // productId đang xử lý
+    const [removing, setRemoving] = useState(null);       // productId đang xóa
+    const [addingProductId, setAddingProductId] = useState(null); // productId đang thêm vào giỏ
 
     // ── Lấy wishlist khi vào trang ─────────────────────────────
     useEffect(() => {
@@ -24,6 +28,24 @@ function WishlistPage() {
         };
         fetch();
     }, []);
+
+    // ── Thêm sản phẩm vào giỏ hàng ──────────────────────────────
+    const handleAddToCart = async (productId, productName) => {
+        if (!user) {
+            toast.info('Vui lòng đăng nhập để mua hàng.');
+            navigate('/login');
+            return;
+        }
+        setAddingProductId(productId);
+        try {
+            await addToCartAPI(productId, 1);
+            toast.success(`✅ Đã thêm "${productName}" vào giỏ hàng!`);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Không thể thêm vào giỏ hàng.');
+        } finally {
+            setAddingProductId(null);
+        }
+    };
 
     // ── Xóa sản phẩm khỏi wishlist ─────────────────────────────
     const handleRemove = async (productId) => {
@@ -119,8 +141,8 @@ function WishlistPage() {
                         style={{ ...imgStyle, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8f9fa', fontSize: '32px' }}
                         onClick={() => navigate(`/products/${product._id}`)}
                     >
-                        {product.imageUrl
-                            ? <img src={product.imageUrl} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px' }} />
+                        {product.images?.[0]
+                            ? <img src={product.images[0]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px' }} />
                             : '🥬'}
                     </div>
 
@@ -160,6 +182,13 @@ function WishlistPage() {
                             style={{ ...btnStyle(false), backgroundColor: '#007bff', color: '#fff' }}
                         >
                             Xem chi tiết
+                        </button>
+                        <button
+                            onClick={() => handleAddToCart(product._id, product.name)}
+                            disabled={addingProductId === product._id || product.status === 'Ngừng kinh doanh'}
+                            style={{ ...btnStyle(addingProductId === product._id || product.status === 'Ngừng kinh doanh'), backgroundColor: '#28a745', color: '#fff' }}
+                        >
+                            {addingProductId === product._id ? '⏳ Đang thêm...' : product.status === 'Ngừng kinh doanh' ? '❌ Hết hàng' : '🛒 Thêm vào giỏ'}
                         </button>
                         <button
                             onClick={() => handleRemove(product._id)}

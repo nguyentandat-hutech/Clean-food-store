@@ -37,6 +37,8 @@ const HomePage = () => {
                         <Link to="/admin/batches" style={linkStyle('#0277bd')}>📋 Lô hàng</Link>
                         <Link to="/admin/orders" style={linkStyle('#6a1b9a')}>🧾 Đơn hàng</Link>
                         <Link to="/admin/inventory" style={linkStyle('#4e342e')}>📊 Tồn kho</Link>
+                        <Link to="/admin/discounts" style={linkStyle('#e65100')}>🏷️ Mã giảm giá</Link>
+                        <Link to="/admin/users" style={linkStyle('#37474f')}>👥 Người dùng</Link>
                     </div>
                 </div>
             )}

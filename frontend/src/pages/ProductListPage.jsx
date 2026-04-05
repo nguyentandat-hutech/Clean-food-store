@@ -2,17 +2,21 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { searchProductsAPI } from '../api/productService';
+import { addToCartAPI } from '../api/cartService';
+import { useAuth } from '../contexts/AuthContext';
 import SearchBar from '../components/SearchBar';
 import FilterBar from '../components/FilterBar';
 
 // ── Trang công khai: Danh sách sản phẩm với tìm kiếm & bộ lọc ──
 function ProductListPage() {
     const navigate = useNavigate();
+    const { user } = useAuth();
 
     // State danh sách sản phẩm & phân trang
     const [products, setProducts] = useState([]);
     const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
     const [loading, setLoading] = useState(false);
+    const [addingProductId, setAddingProductId] = useState(null); // id sản phẩm đang thêm vào giỏ
 
     // State tìm kiếm & filter hiện tại
     const [searchQuery, setSearchQuery] = useState('');
@@ -64,7 +68,28 @@ function ProductListPage() {
             fetchProducts(newPage);
         }
     };
-
+    // ── Thêm nhanh vào giỏ hàng ─────────────────────────────────
+    const handleQuickAddToCart = async (e, prod) => {
+        e.stopPropagation(); // Không navigate vào trang chi tiết
+        if (!user) {
+            toast.info('Vui lòng đăng nhập để mua hàng.');
+            navigate('/login');
+            return;
+        }
+        if (prod.status === 'Ngừng kinh doanh') {
+            toast.error('Sản phẩm này hiện không còn kinh doanh.');
+            return;
+        }
+        setAddingProductId(prod._id);
+        try {
+            await addToCartAPI(prod._id, 1);
+            toast.success(`✅ Đã thêm "${prod.name}" vào giỏ hàng!`);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Không thể thêm vào giỏ hàng.');
+        } finally {
+            setAddingProductId(null);
+        }
+    };
     // ── Xem chi tiết sản phẩm ──────────────────────────────────
     const handleViewDetail = (productId) => {
         navigate(`/products/${productId}`);
@@ -156,6 +181,22 @@ function ProductListPage() {
                                         <p style={{ margin: '6px 0 0', fontSize: '12px', color: '#6c757d' }}>
                                             Danh mục: {prod.category?.name || '—'}
                                         </p>
+                                        {/* Nút thêm nhanh vào giỏ */}
+                                        <button
+                                            onClick={(e) => handleQuickAddToCart(e, prod)}
+                                            disabled={addingProductId === prod._id || prod.status === 'Ngừng kinh doanh'}
+                                            style={{
+                                                marginTop: '10px', width: '100%',
+                                                padding: '8px', border: 'none', borderRadius: '6px',
+                                                backgroundColor: prod.status === 'Ngừng kinh doanh' ? '#adb5bd' : '#28a745',
+                                                color: '#fff', cursor: (addingProductId === prod._id || prod.status === 'Ngừng kinh doanh') ? 'not-allowed' : 'pointer',
+                                                fontWeight: 'bold', fontSize: '13px',
+                                                opacity: addingProductId === prod._id ? 0.7 : 1,
+                                                transition: 'opacity 0.2s',
+                                            }}
+                                        >
+                                            {addingProductId === prod._id ? '⏳ Đang thêm...' : prod.status === 'Ngừng kinh doanh' ? '❌ Hết hàng' : '🛒 Thêm vào giỏ'}
+                                        </button>
                                     </div>
                                 </div>
                             ))}
