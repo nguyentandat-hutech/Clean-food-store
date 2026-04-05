@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import PageLayout from './components/PageLayout';
 
 // Import các trang
 import HomePage from './pages/HomePage';
@@ -32,18 +33,20 @@ function App() {
             {/* AuthProvider bọc toàn bộ app để mọi trang đều dùng được context */}
             <AuthProvider>
                 <Routes>
-                    {/* --- Routes công khai (không cần đăng nhập) --- */}
+                    {/* --- Routes công khai (không cần đăng nhập) — NO Navbar --- */}
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
-                    <Route path="/products" element={<ProductListPage />} />
-                    <Route path="/products/:id" element={<ProductDetailPage />} />
+
+                    {/* --- Routes công khai có Navbar --- */}
+                    <Route path="/products" element={<PageLayout><ProductListPage /></PageLayout>} />
+                    <Route path="/products/:id" element={<PageLayout><ProductDetailPage /></PageLayout>} />
 
                     {/* --- Routes bảo vệ (cần đăng nhập) --- */}
                     <Route
                         path="/"
                         element={
                             <ProtectedRoute>
-                                <HomePage />
+                                <PageLayout><HomePage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
@@ -52,7 +55,7 @@ function App() {
                         path="/profile"
                         element={
                             <ProtectedRoute>
-                                <ProfilePage />
+                                <PageLayout><ProfilePage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
@@ -62,7 +65,7 @@ function App() {
                         path="/cart"
                         element={
                             <ProtectedRoute>
-                                <CartPage />
+                                <PageLayout><CartPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
@@ -70,7 +73,7 @@ function App() {
                         path="/checkout"
                         element={
                             <ProtectedRoute>
-                                <CheckoutPage />
+                                <PageLayout><CheckoutPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
@@ -78,7 +81,7 @@ function App() {
                         path="/orders"
                         element={
                             <ProtectedRoute>
-                                <OrderListPage />
+                                <PageLayout><OrderListPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
@@ -86,7 +89,7 @@ function App() {
                         path="/order-success"
                         element={
                             <ProtectedRoute>
-                                <OrderSuccessPage />
+                                <PageLayout><OrderSuccessPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
@@ -94,7 +97,7 @@ function App() {
                         path="/wishlist"
                         element={
                             <ProtectedRoute>
-                                <WishlistPage />
+                                <PageLayout><WishlistPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
@@ -104,7 +107,7 @@ function App() {
                         path="/admin/categories"
                         element={
                             <ProtectedRoute roles={['admin']}>
-                                <AdminCategoryPage />
+                                <PageLayout><AdminCategoryPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
@@ -113,7 +116,7 @@ function App() {
                         path="/admin/farms"
                         element={
                             <ProtectedRoute roles={['admin']}>
-                                <AdminFarmPage />
+                                <PageLayout><AdminFarmPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
@@ -122,73 +125,67 @@ function App() {
                         path="/admin/products"
                         element={
                             <ProtectedRoute roles={['admin']}>
-                                <AdminProductPage />
+                                <PageLayout><AdminProductPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
 
-                    {/* Quản lý Lô hàng */}
                     <Route
                         path="/admin/batches"
                         element={
                             <ProtectedRoute roles={['admin']}>
-                                <AdminBatchPage />
+                                <PageLayout><AdminBatchPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
 
-                    {/* Báo cáo Tồn kho */}
                     <Route
                         path="/admin/inventory"
                         element={
                             <ProtectedRoute roles={['admin']}>
-                                <InventoryReportPage />
+                                <PageLayout><InventoryReportPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
 
-                    {/* Dashboard Admin — Cảnh báo kho hàng */}
                     <Route
                         path="/admin/dashboard"
                         element={
                             <ProtectedRoute roles={['admin']}>
-                                <AdminDashboardPage />
+                                <PageLayout><AdminDashboardPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
 
-                    {/* Quản lý Đơn hàng (Admin) */}
                     <Route
                         path="/admin/orders"
                         element={
                             <ProtectedRoute roles={['admin']}>
-                                <AdminOrderPage />
+                                <PageLayout><AdminOrderPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
 
-                    {/* Quản lý Mã giảm giá (Admin) */}
                     <Route
                         path="/admin/discounts"
                         element={
                             <ProtectedRoute roles={['admin']}>
-                                <AdminDiscountPage />
+                                <PageLayout><AdminDiscountPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
 
-                    {/* Quản lý Người dùng & Phân quyền Role (Admin) */}
                     <Route
                         path="/admin/users"
                         element={
                             <ProtectedRoute roles={['admin']}>
-                                <AdminUserPage />
+                                <PageLayout><AdminUserPage /></PageLayout>
                             </ProtectedRoute>
                         }
                     />
 
                     {/* --- Bắt mọi route không tồn tại --- */}
-                    <Route path="*" element={<NotFoundPage />} />
+                    <Route path="*" element={<PageLayout><NotFoundPage /></PageLayout>} />
                 </Routes>
             </AuthProvider>
         </BrowserRouter>

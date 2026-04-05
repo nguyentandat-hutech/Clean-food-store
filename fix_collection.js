@@ -12,7 +12,7 @@
  */
 
 const fs = require('fs');
-const { v4: uuidv4 } = require('crypto').randomUUID ? { v4: () => require('crypto').randomUUID() } : { v4: () => 'xxxx-xxxx'.replace(/x/g, () => Math.floor(Math.random()*16).toString(16)) };
+const { v4: uuidv4 } = require('crypto').randomUUID ? { v4: () => require('crypto').randomUUID() } : { v4: () => 'xxxx-xxxx'.replace(/x/g, () => Math.floor(Math.random() * 16).toString(16)) };
 const uuid = () => require('crypto').randomUUID();
 
 const collectionPath = './Clean-Food-Store.postman_collection.json';
@@ -130,8 +130,8 @@ const ordersItems = ordersFolder.item;
 // 11 Get My Orders — No Token (Negative)
 
 const [checkoutCOD, checkoutVNPay, getMyOrders, getOrderById,
-       getAllOrders, updateOrderStatus, cancelOrder, cancelCancelled,
-       vnpayIPN, vnpayReturn, checkoutVNPayEmpty, getMyOrdersNoToken] = ordersItems;
+    getAllOrders, updateOrderStatus, cancelOrder, cancelCancelled,
+    vnpayIPN, vnpayReturn, checkoutVNPayEmpty, getMyOrdersNoToken] = ordersItems;
 
 // Fix Update Order Status to use vnpayOrderId
 if (updateOrderStatus.request.url.raw) {
@@ -276,9 +276,9 @@ if (wishlistFolderFix) {
                 evt.script.exec = evt.script.exec.map(line =>
                     line
                         .replace("pm.expect(json.data).to.have.property('products')",
-                                 "pm.expect(json.data.wishlist).to.have.property('products')")
+                            "pm.expect(json.data.wishlist).to.have.property('products')")
                         .replace("pm.expect(json.data.products).to.be.an('array')",
-                                 "pm.expect(json.data.wishlist.products).to.be.an('array')")
+                            "pm.expect(json.data.wishlist.products).to.be.an('array')")
                 );
             }
         });
@@ -293,6 +293,222 @@ c.item.splice(lastFolderIdx, 0, cleanupFolder);
 console.log('\nFinal folder order:');
 c.item.forEach((f, i) => console.log(i, f.name));
 
-// ── 6. Write modified collection ───────────────────────────────────────────
+// ── 6. Add Admin Users (Role Management) folder ────────────────────────────
+/**
+ * Helper: tạo request item cho Admin Users folder.
+ * customToken:
+ *   - undefined  → kế thừa auth từ collection (adminToken)
+ *   - 'noauth'   → không gửi token
+ *   - '{{userToken}}' → gửi userToken thay vì adminToken
+ */
+function makeAdminUserItem(name, method, rawUrl, bodyObj, testExec, customToken) {
+    const withoutBase = rawUrl.replace('{{baseUrl}}/', '');
+    const [pathStr, queryStr] = withoutBase.split('?');
+    const urlObj = {
+        raw: rawUrl,
+        host: ['{{baseUrl}}'],
+        path: pathStr.split('/'),
+    };
+    if (queryStr) {
+        urlObj.query = queryStr.split('&').map(p => {
+            const [k, v] = p.split('=');
+            return { key: k, value: v };
+        });
+    }
+
+    const headers = [];
+    if (bodyObj) headers.push({ key: 'Content-Type', value: 'application/json' });
+
+    const item = {
+        name,
+        request: { method, header: headers, url: urlObj },
+        event: [],
+    };
+
+    if (customToken === 'noauth') {
+        item.request.auth = { type: 'noauth' };
+    } else if (customToken) {
+        // Dùng token cụ thể → tắt auth kế thừa + thêm header thủ công
+        item.request.auth = { type: 'noauth' };
+        item.request.header.push({ key: 'Authorization', value: `Bearer ${customToken}` });
+    }
+
+    if (bodyObj) {
+        item.request.body = {
+            mode: 'raw',
+            raw: JSON.stringify(bodyObj, null, 2),
+            options: { raw: { language: 'json' } },
+        };
+    }
+
+    if (testExec) {
+        item.event.push({
+            listen: 'test',
+            script: { type: 'text/javascript', exec: testExec },
+        });
+    }
+
+    return item;
+}
+
+const adminUsersFolder = {
+    name: '👥 Admin Users',
+    description: 'Quản lý người dùng & phân quyền Role — Admin only.\nBusiness rule: Admin KHÔNG thể thay đổi role của Admin khác (cùng cấp bậc). Admin KHÔNG thể tự đổi role của chính mình.',
+    item: [
+        // 01 — List all users, save IDs for subsequent tests
+        makeAdminUserItem(
+            '01. Get All Users (Admin)',
+            'GET',
+            '{{baseUrl}}/users',
+            null,
+            [
+                "pm.test('200 - Lấy danh sách users thành công', () => {",
+                "    pm.response.to.have.status(200);",
+                "    const json = pm.response.json();",
+                "    pm.expect(json.success).to.be.true;",
+                "    pm.expect(json.data.users).to.be.an('array');",
+                "    pm.expect(json.data.pagination).to.have.property('total');",
+                "});",
+                "const json = pm.response.json();",
+                "if (json.data && json.data.users) {",
+                "    const tu = json.data.users.find(u => u.email === 'testuser@cleanfood.vn');",
+                "    if (tu) pm.collectionVariables.set('testUserId', tu._id);",
+                "    const au = json.data.users.find(u => u.email === 'admin@cleanfood.vn');",
+                "    if (au) pm.collectionVariables.set('adminUserId', au._id);",
+                "    pm.test('testUserId và adminUserId được lưu', () => {",
+                "        pm.expect(pm.collectionVariables.get('testUserId')).to.be.a('string').and.not.empty;",
+                "        pm.expect(pm.collectionVariables.get('adminUserId')).to.be.a('string').and.not.empty;",
+                "    });",
+                "}",
+            ]
+        ),
+        // 02 — Filter by role
+        makeAdminUserItem(
+            '02. Get Users — Filter by Role (Admin)',
+            'GET',
+            '{{baseUrl}}/users?role=user',
+            null,
+            [
+                "pm.test('200 - Filter role=user thành công', () => {",
+                "    pm.response.to.have.status(200);",
+                "    const json = pm.response.json();",
+                "    pm.expect(json.data.users).to.be.an('array');",
+                "    json.data.users.forEach(u => pm.expect(u.role).to.equal('user'));",
+                "});",
+            ]
+        ),
+        // 03 — Search
+        makeAdminUserItem(
+            '03. Get Users — Search by Name/Email (Admin)',
+            'GET',
+            '{{baseUrl}}/users?search=test',
+            null,
+            [
+                "pm.test('200 - Search user thành công', () => {",
+                "    pm.response.to.have.status(200);",
+                "    const json = pm.response.json();",
+                "    pm.expect(json.data.users).to.be.an('array');",
+                "    pm.expect(json.data.pagination).to.have.property('total');",
+                "});",
+            ]
+        ),
+        // 04 — Negative: No token
+        makeAdminUserItem(
+            '04. Get All Users — No Token (Negative)',
+            'GET',
+            '{{baseUrl}}/users',
+            null,
+            [
+                "pm.test('401 - Không có token bị từ chối', () => {",
+                "    pm.response.to.have.status(401);",
+                "});",
+            ],
+            'noauth'
+        ),
+        // 05 — Negative: User role cannot change roles (testUser still 'user' at this point)
+        makeAdminUserItem(
+            '05. Update Role — User Role Cannot Change Role (Negative)',
+            'PATCH',
+            '{{baseUrl}}/users/{{testUserId}}/role',
+            { role: 'admin' },
+            [
+                "pm.test('403 - User thông thường không có quyền thay đổi role', () => {",
+                "    pm.response.to.have.status(403);",
+                "});",
+            ],
+            '{{userToken}}'
+        ),
+        // 06 — Negative: Invalid role value
+        makeAdminUserItem(
+            '06. Update Role — Invalid Role Value (Negative)',
+            'PATCH',
+            '{{baseUrl}}/users/{{testUserId}}/role',
+            { role: 'superadmin' },
+            [
+                "pm.test('400 - Role không hợp lệ bị từ chối', () => {",
+                "    pm.response.to.have.status(400);",
+                "    const json = pm.response.json();",
+                "    pm.expect(json.success).to.be.false;",
+                "});",
+            ]
+        ),
+        // 07 — Positive: Promote testUser to admin
+        makeAdminUserItem(
+            '07. Update Role — Promote User to Admin',
+            'PATCH',
+            '{{baseUrl}}/users/{{testUserId}}/role',
+            { role: 'admin' },
+            [
+                "pm.test('200 - Thăng cấp User thành Admin thành công', () => {",
+                "    pm.response.to.have.status(200);",
+                "    const json = pm.response.json();",
+                "    pm.expect(json.success).to.be.true;",
+                "    pm.expect(json.data.user.role).to.equal('admin');",
+                "    pm.expect(json.data.user.email).to.equal('testuser@cleanfood.vn');",
+                "});",
+            ]
+        ),
+        // 08 — Negative: testUser is now admin → same-level protection
+        makeAdminUserItem(
+            '08. Update Role — Same Level Admin→Admin (Negative)',
+            'PATCH',
+            '{{baseUrl}}/users/{{testUserId}}/role',
+            { role: 'user' },
+            [
+                "pm.test('403 - Không thể thay đổi role của Admin khác (cùng cấp bậc)', () => {",
+                "    pm.response.to.have.status(403);",
+                "    const json = pm.response.json();",
+                "    pm.expect(json.success).to.be.false;",
+                "});",
+            ]
+        ),
+        // 09 — Negative: Admin cannot change own role
+        makeAdminUserItem(
+            '09. Update Role — Self Change (Negative)',
+            'PATCH',
+            '{{baseUrl}}/users/{{adminUserId}}/role',
+            { role: 'user' },
+            [
+                "pm.test('403 - Admin không thể tự đổi role của chính mình', () => {",
+                "    pm.response.to.have.status(403);",
+                "    const json = pm.response.json();",
+                "    pm.expect(json.success).to.be.false;",
+                "});",
+            ]
+        ),
+    ],
+};
+
+// Insert Admin Users folder before the Cleanup folder
+const cleanupIdx = c.item.findIndex(f => f.name === '🗑️ Cleanup');
+if (cleanupIdx !== -1) {
+    c.item.splice(cleanupIdx, 0, adminUsersFolder);
+    console.log('✅ Inserted Admin Users folder at index', cleanupIdx);
+} else {
+    c.item.splice(c.item.length - 1, 0, adminUsersFolder);
+    console.log('✅ Inserted Admin Users folder before last folder (fallback)');
+}
+
+// ── 7. Write modified collection ───────────────────────────────────────────
 fs.writeFileSync(collectionPath, JSON.stringify(c, null, 2), 'utf8');
 console.log('\n✅ Collection saved to', collectionPath);

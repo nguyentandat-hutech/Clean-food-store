@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { vnpayReturnAPI } from '../api/orderService';
 
+const fmt = (p) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p);
+
 /**
  * ── OrderSuccessPage ─────────────────────────────────────────────
  * Trang kết quả đặt hàng:
@@ -60,86 +62,73 @@ const OrderSuccessPage = () => {
         processResult();
     }, [location.state, searchParams, navigate]);
 
-    // Format tiền VNĐ
-    const formatPrice = (price) => {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
-    };
-
-    if (loading) return <div style={{ padding: 40, textAlign: 'center' }}>Đang xử lý kết quả thanh toán...</div>;
+    if (loading) return (
+        <div className="loading-wrap"><div className="spinner" /><p className="loading-text">Đang xử lý kết quả thanh toán...</p></div>
+    );
 
     return (
-        <div style={{ maxWidth: 600, margin: '0 auto', padding: 20, textAlign: 'center' }}>
-            {/* Lỗi */}
-            {error && (
-                <div style={{ background: '#fee', border: '1px solid #f00', padding: 15, borderRadius: 8, color: '#c00', marginBottom: 20 }}>
-                    <h2>❌ Lỗi xử lý</h2>
-                    <p>{error}</p>
-                    <button onClick={() => navigate('/orders')} style={{ padding: '10px 20px', cursor: 'pointer', marginTop: 10 }}>
-                        📋 Xem đơn hàng
-                    </button>
-                </div>
-            )}
-
-            {/* Kết quả */}
-            {result && (
-                <div style={{
-                    border: `2px solid ${result.success ? '#4caf50' : '#f44336'}`,
-                    borderRadius: 12, padding: 30,
-                    background: result.success ? '#f0fff0' : '#fff0f0',
-                }}>
-                    {/* Icon + Tiêu đề */}
-                    <div style={{ fontSize: 60, marginBottom: 10 }}>
-                        {result.success ? '✅' : '❌'}
+        <div style={{ background: 'var(--c-bg)', minHeight: '100vh', paddingBottom: 48 }}>
+            <div className="container" style={{ maxWidth: 640 }}>
+                {error && (
+                    <div className="card" style={{ marginTop: 32, textAlign: 'center', borderTop: '4px solid var(--c-danger)' }}>
+                        <div className="card-body" style={{ padding: '40px 32px' }}>
+                            <div style={{ fontSize: 56, marginBottom: 12 }}>❌</div>
+                            <h2 style={{ color: 'var(--c-danger)', marginBottom: 8 }}>Lỗi xử lý thanh toán</h2>
+                            <p style={{ color: 'var(--t-secondary)', marginBottom: 24 }}>{error}</p>
+                            <button className="btn btn-primary" onClick={() => navigate('/orders')}>📋 Xem đơn hàng</button>
+                        </div>
                     </div>
-                    <h1 style={{ color: result.success ? '#2e7d32' : '#c62828', marginBottom: 5 }}>
-                        {result.success
-                            ? (result.paymentMethod === 'VNPay' ? 'Thanh toán VNPay thành công!' : 'Đặt hàng COD thành công!')
-                            : 'Thanh toán thất bại'
-                        }
-                    </h1>
+                )}
 
-                    {/* Thông tin đơn hàng */}
-                    {result.order && (
-                        <div style={{ textAlign: 'left', marginTop: 20, padding: 15, background: '#fff', borderRadius: 8, border: '1px solid #ddd' }}>
-                            <p><strong>Mã đơn hàng:</strong> {result.order._id}</p>
-                            <p><strong>Tổng tiền:</strong> <span style={{ color: '#c00', fontWeight: 'bold' }}>{formatPrice(result.order.finalPrice)}</span></p>
-                            <p><strong>Phương thức:</strong> {result.paymentMethod === 'VNPay' ? '💳 VNPay' : '💵 COD'}</p>
-                            <p><strong>Trạng thái:</strong> {result.order.status === 'Paid' ? '✅ Đã thanh toán' : result.order.status === 'Pending' ? '⏳ Chờ xử lý' : result.order.status}</p>
+                {result && (
+                    <div className="card" style={{ marginTop: 32, borderTop: `4px solid ${result.success ? 'var(--c-primary)' : 'var(--c-danger)'}` }}>
+                        <div className="card-body" style={{ padding: '40px 32px', textAlign: 'center' }}>
+                            <div style={{ fontSize: 64, marginBottom: 12 }}>{result.success ? '🎉' : '❌'}</div>
+                            <h1 style={{ color: result.success ? 'var(--c-primary)' : 'var(--c-danger)', marginBottom: 8, fontSize: 24 }}>
+                                {result.success
+                                    ? (result.paymentMethod === 'VNPay' ? 'Thanh toán VNPay thành công!' : 'Đặt hàng thành công!')
+                                    : 'Thanh toán thất bại'}
+                            </h1>
+                            <p style={{ color: 'var(--t-secondary)', marginBottom: 28 }}>
+                                {result.success
+                                    ? 'Cảm ơn bạn đã tin tưởng Clean Food Store. Đơn hàng đang được xử lý.'
+                                    : 'Giao dịch không thành công. Vui lòng thử lại.'}
+                            </p>
 
-                            {/* Thông tin VNPay */}
-                            {result.paymentMethod === 'VNPay' && result.success && (
-                                <>
-                                    <p><strong>Mã GD VNPay:</strong> {result.transactionNo}</p>
-                                    <p><strong>Ngân hàng:</strong> {result.bankCode}</p>
-                                </>
+                            {result.order && (
+                                <div style={{ background: 'var(--c-50)', borderRadius: 12, padding: 20, textAlign: 'left', marginBottom: 24 }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
+                                        <div><span style={{ fontSize: 12, color: 'var(--t-muted)' }}>Mã đơn hàng</span><br /><span style={{ fontWeight: 700, fontSize: 14 }}>#{result.order._id?.slice(-8).toUpperCase()}</span></div>
+                                        <div><span style={{ fontSize: 12, color: 'var(--t-muted)' }}>Phương thức</span><br /><span style={{ fontWeight: 600, fontSize: 14 }}>{result.paymentMethod === 'VNPay' ? '💳 VNPay' : '💵 COD'}</span></div>
+                                        {result.paymentMethod === 'VNPay' && result.success && <>
+                                            <div><span style={{ fontSize: 12, color: 'var(--t-muted)' }}>Mã GD VNPay</span><br /><span style={{ fontWeight: 600, fontSize: 14 }}>{result.transactionNo}</span></div>
+                                            <div><span style={{ fontSize: 12, color: 'var(--t-muted)' }}>Ngân hàng</span><br /><span style={{ fontWeight: 600, fontSize: 14 }}>{result.bankCode}</span></div>
+                                        </>}
+                                    </div>
+
+                                    <hr className="divider" style={{ margin: '10px 0 14px' }} />
+                                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--t-muted)', marginBottom: 8 }}>Sản phẩm đã đặt</div>
+                                    {result.order.items?.map((p, idx) => (
+                                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', fontSize: 14, borderBottom: '1px solid var(--s-divider)' }}>
+                                            <span>{p.name} <span style={{ color: 'var(--t-muted)' }}>×{p.quantity}</span></span>
+                                            <span style={{ fontWeight: 600 }}>{fmt(p.subtotal)}</span>
+                                        </div>
+                                    ))}
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 12, fontWeight: 800, fontSize: 17 }}>
+                                        <span>Tổng thanh toán</span>
+                                        <span style={{ color: 'var(--c-primary)' }}>{fmt(result.order.finalPrice)}</span>
+                                    </div>
+                                </div>
                             )}
 
-                            {/* Sản phẩm */}
-                            <h4 style={{ margin: '15px 0 8px' }}>Sản phẩm đã đặt:</h4>
-                            {result.order.items?.map((p, idx) => (
-                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', fontSize: 14 }}>
-                                    <span>{p.name} x{p.quantity}</span>
-                                    <span>{formatPrice(p.subtotal)}</span>
-                                </div>
-                            ))}
+                            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+                                <button className="btn btn-primary" onClick={() => navigate('/orders')}>📋 Xem đơn hàng</button>
+                                <button className="btn btn-outline" onClick={() => navigate('/products')}>🛒 Tiếp tục mua sắm</button>
+                            </div>
                         </div>
-                    )}
-
-                    {/* Nút điều hướng */}
-                    <div style={{ marginTop: 20, display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-                        <button onClick={() => navigate('/orders')}
-                            style={{ padding: '10px 24px', cursor: 'pointer', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 'bold' }}
-                        >
-                            📋 Xem đơn hàng
-                        </button>
-                        <button onClick={() => navigate('/products')}
-                            style={{ padding: '10px 24px', cursor: 'pointer', background: '#fff', color: '#333', border: '1px solid #ccc', borderRadius: 6 }}
-                        >
-                            🛒 Tiếp tục mua sắm
-                        </button>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </div>
     );
 };

@@ -1,76 +1,35 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import {
-    getAllDiscountsAPI,
-    createDiscountAPI,
-    updateDiscountAPI,
-    deleteDiscountAPI,
-} from '../api/discountService';
+﻿import { useState, useEffect, useCallback } from 'react';
+import { toast } from 'react-toastify';
+import { getAllDiscountsAPI, createDiscountAPI, updateDiscountAPI, deleteDiscountAPI } from '../api/discountService';
 
-const EMPTY_FORM = {
-    code: '',
-    type: 'percentage',
-    value: '',
-    minOrderAmount: '',
-    maxUses: '',
-    expiryDate: '',
-    isActive: true,
-};
+const LIMIT = 10;
+const EMPTY = { code: '', type: 'percentage', value: '', minOrderAmount: '', maxUses: '', expiryDate: '', isActive: true };
 
-const formatPrice = (v) =>
-    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v);
+const fmt = (n) => n?.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }) ?? '—';
+const fmtDate = (d) => d ? new Date(d).toLocaleDateString('vi-VN') : '—';
 
-const formatDate = (d) => (d ? new Date(d).toLocaleDateString('vi-VN') : '—');
-
-/**
- * ── AdminDiscountPage ─────────────────────────────────────────
- * Quản lý mã giảm giá: xem danh sách, tạo, sửa, xóa.
- */
-const AdminDiscountPage = () => {
+function AdminDiscountPage() {
     const [discounts, setDiscounts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-
-    // Pagination
+    const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const LIMIT = 10;
-
-    // Modal state
     const [showModal, setShowModal] = useState(false);
     const [editingId, setEditingId] = useState(null);
-    const [formData, setFormData] = useState(EMPTY_FORM);
+    const [formData, setFormData] = useState(EMPTY);
     const [formError, setFormError] = useState('');
     const [saving, setSaving] = useState(false);
-
-    // Delete confirm
     const [deletingId, setDeletingId] = useState(null);
 
-    const fetchDiscounts = useCallback(async () => {
+    const fetchDiscounts = useCallback(async (p = 1) => {
         setLoading(true);
-        setError('');
-        try {
-            const data = await getAllDiscountsAPI({ page, limit: LIMIT });
-            setDiscounts(data.discounts || []);
-            setTotalPages(data.pagination?.totalPages || 1);
-        } catch (err) {
-            setError(err.response?.data?.message || 'Không thể tải danh sách mã giảm giá');
-        } finally {
-            setLoading(false);
-        }
-    }, [page]);
+        try { const data = await getAllDiscountsAPI({ page: p, limit: LIMIT }); setDiscounts(data.discounts || []); setTotalPages(data.pagination?.totalPages || 1); }
+        catch { toast.error('Không thể tải mã giảm giá'); }
+        finally { setLoading(false); }
+    }, []);
 
-    useEffect(() => {
-        fetchDiscounts();
-    }, [fetchDiscounts]);
+    useEffect(() => { fetchDiscounts(page); }, [fetchDiscounts, page]);
 
-    // ── Modal helpers ──────────────────────────────────────────
-    const openCreate = () => {
-        setEditingId(null);
-        setFormData(EMPTY_FORM);
-        setFormError('');
-        setShowModal(true);
-    };
+    const openCreate = () => { setFormData(EMPTY); setEditingId(null); setFormError(''); setShowModal(true); };
 
     const openEdit = (d) => {
         setEditingId(d._id);
@@ -78,398 +37,168 @@ const AdminDiscountPage = () => {
             code: d.code,
             type: d.type,
             value: String(d.value),
-            minOrderAmount: d.minOrderAmount != null ? String(d.minOrderAmount) : '',
+            minOrderAmount: d.minOrderAmount ? String(d.minOrderAmount) : '',
             maxUses: d.maxUses != null ? String(d.maxUses) : '',
-            expiryDate: d.expiryDate ? d.expiryDate.slice(0, 10) : '',
+            expiryDate: d.expiryDate ? new Date(d.expiryDate).toISOString().split('T')[0] : '',
             isActive: d.isActive,
         });
         setFormError('');
         setShowModal(true);
     };
 
-    const closeModal = () => {
-        setShowModal(false);
-        setEditingId(null);
-        setFormData(EMPTY_FORM);
-        setFormError('');
-    };
+    const closeModal = () => { setShowModal(false); setEditingId(null); };
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : name === 'code' ? value.toUpperCase() : value,
-        }));
+        setFormData(p => ({ ...p, [name]: type === 'checkbox' ? checked : (name === 'code' ? value.toUpperCase() : value) }));
     };
 
-    const handleSave = async (e) => {
-        e.preventDefault();
-        setFormError('');
-
-        // Basic client validation
-        if (!formData.code.trim()) return setFormError('Vui lòng nhập mã');
-        if (!formData.value || Number(formData.value) <= 0)
-            return setFormError('Giá trị giảm phải > 0');
-        if (formData.type === 'percentage' && Number(formData.value) > 100)
-            return setFormError('Phần trăm giảm không được vượt quá 100%');
-
-        const payload = {
-            code: formData.code.trim(),
-            type: formData.type,
-            value: Number(formData.value),
-            minOrderAmount: formData.minOrderAmount !== '' ? Number(formData.minOrderAmount) : 0,
-            maxUses: formData.maxUses !== '' ? Number(formData.maxUses) : null,
-            expiryDate: formData.expiryDate || null,
-            isActive: formData.isActive,
-        };
-
+    const handleSave = async () => {
+        const { code, type, value, minOrderAmount, maxUses, expiryDate, isActive } = formData;
+        if (!code.trim()) { setFormError('Nhập mã giảm giá'); return; }
+        if (!value || Number(value) <= 0) { setFormError('Giá trị phải > 0'); return; }
+        if (type === 'percentage' && Number(value) > 100) { setFormError('Phần trăm không được vượt 100%'); return; }
+        setFormError(''); setSaving(true);
         try {
-            setSaving(true);
-            if (editingId) {
-                await updateDiscountAPI(editingId, payload);
-            } else {
-                await createDiscountAPI(payload);
-            }
-            closeModal();
-            fetchDiscounts();
-        } catch (err) {
-            setFormError(err.response?.data?.message || 'Lưu thất bại');
-        } finally {
-            setSaving(false);
-        }
+            const payload = {
+                code: code.trim(), type,
+                value: Number(value),
+                minOrderAmount: minOrderAmount ? Number(minOrderAmount) : 0,
+                maxUses: maxUses ? Number(maxUses) : null,
+                expiryDate: expiryDate || undefined,
+                isActive,
+            };
+            if (editingId) { await updateDiscountAPI(editingId, payload); toast.success('Cập nhật mã thành công!'); }
+            else { await createDiscountAPI(payload); toast.success('Tạo mã giảm giá thành công!'); }
+            closeModal(); fetchDiscounts(page);
+        } catch (err) { setFormError(err.response?.data?.message || 'Thao tác thất bại'); }
+        finally { setSaving(false); }
     };
 
-    // ── Toggle active ──────────────────────────────────────────
     const handleToggleActive = async (d) => {
-        try {
-            await updateDiscountAPI(d._id, { isActive: !d.isActive });
-            fetchDiscounts();
-        } catch {
-            setError('Không thể cập nhật trạng thái');
-        }
+        try { await updateDiscountAPI(d._id, { isActive: !d.isActive }); fetchDiscounts(page); }
+        catch { toast.error('Không thể cập nhật trạng thái'); }
     };
 
-    // ── Delete ─────────────────────────────────────────────────
     const handleDelete = async (id) => {
-        try {
-            await deleteDiscountAPI(id);
-            setDeletingId(null);
-            fetchDiscounts();
-        } catch (err) {
-            setError(err.response?.data?.message || 'Xóa thất bại');
-        }
+        try { await deleteDiscountAPI(id); toast.success('Đã xóa mã giảm giá'); setDeletingId(null); fetchDiscounts(page); }
+        catch (err) { toast.error(err.response?.data?.message || 'Xóa thất bại'); setDeletingId(null); }
     };
 
-    // ── Render ─────────────────────────────────────────────────
     return (
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: 24 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <div>
-                    <h1 style={{ margin: 0, color: '#1b5e20' }}>🏷️ Quản lý Mã giảm giá</h1>
-                    <Link to="/admin/dashboard" style={{ fontSize: 13, color: '#555', textDecoration: 'none' }}>
-                        ← Dashboard
-                    </Link>
+        <div style={{ background: 'var(--c-bg)', minHeight: '100vh' }}>
+            <div className="admin-header">
+                <div className="admin-header-inner">
+                    <h1 className="admin-title">🏷️ Quản lý Mã giảm giá</h1>
+                    <button className="btn btn-primary" onClick={openCreate}>+ Tạo mã mới</button>
                 </div>
-                <button
-                    onClick={openCreate}
-                    style={{ padding: '9px 20px', background: '#28a745', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}
-                >
-                    + Tạo mã mới
-                </button>
             </div>
-
-            {error && (
-                <div style={{ background: '#fee', border: '1px solid #f00', padding: 10, marginBottom: 12, borderRadius: 4, color: '#c00' }}>
-                    {error}
-                </div>
-            )}
-
-            {loading ? (
-                <p style={{ textAlign: 'center', padding: 40 }}>Đang tải...</p>
-            ) : discounts.length === 0 ? (
-                <p style={{ textAlign: 'center', padding: 40, color: '#888' }}>Chưa có mã giảm giá nào.</p>
-            ) : (
-                <>
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
-                            <thead>
-                                <tr style={{ background: '#1b5e20', color: '#fff' }}>
-                                    {['Mã', 'Loại', 'Giá trị', 'Đơn tối thiểu', 'Đã dùng / Tối đa', 'Hết hạn', 'Trạng thái', ''].map((h) => (
-                                        <th key={h} style={{ padding: '10px 12px', textAlign: 'left', whiteSpace: 'nowrap' }}>{h}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {discounts.map((d, i) => {
-                                    const isExpired = d.expiryDate && new Date(d.expiryDate) < new Date();
-                                    const isExhausted = d.maxUses !== null && d.usedCount >= d.maxUses;
-                                    return (
-                                        <tr key={d._id} style={{ background: i % 2 === 0 ? '#f9f9f9' : '#fff' }}>
-                                            <td style={{ padding: '9px 12px', fontWeight: 700 }}>{d.code}</td>
-                                            <td style={{ padding: '9px 12px' }}>
-                                                {d.type === 'percentage' ? 'Phần trăm' : 'Cố định'}
+            <div className="admin-content">
+                {loading ? (
+                    <div className="loading-wrap"><div className="spinner" /><p className="loading-text">Đang tải...</p></div>
+                ) : (
+                    <>
+                        <div className="table-wrap">
+                            <table className="table">
+                                <thead><tr>
+                                    <th>Mã</th><th>Loại</th><th>Giá trị</th><th>Đơn tối thiểu</th><th>Đã dùng / Tối đa</th><th>Hết hạn</th><th>Trạng thái</th><th className="table-center">Hành động</th>
+                                </tr></thead>
+                                <tbody>
+                                    {discounts.length === 0 ? (
+                                        <tr><td colSpan={8}><div className="empty-state" style={{ padding: '20px 0' }}><div className="empty-state-icon">🏷️</div><p>Chưa có mã giảm giá nào.</p></div></td></tr>
+                                    ) : discounts.map(d => (
+                                        <tr key={d._id}>
+                                            <td><strong>{d.code}</strong></td>
+                                            <td><span className={`badge ${d.type === 'percentage' ? 'badge-blue' : 'badge-purple'}`}>{d.type === 'percentage' ? 'Phần trăm' : 'Cố định'}</span></td>
+                                            <td>{d.type === 'percentage' ? `${d.value}%` : fmt(d.value)}</td>
+                                            <td>{d.minOrderAmount ? fmt(d.minOrderAmount) : '—'}</td>
+                                            <td>{(d.usedCount ?? 0)} / {d.maxUses ?? '∞'}</td>
+                                            <td>{fmtDate(d.expiryDate)}</td>
+                                            <td>
+                                                <button
+                                                    className={`badge ${d.isActive ? 'badge-green' : 'badge-gray'}`}
+                                                    style={{ cursor: 'pointer', border: 'none', background: 'none' }}
+                                                    onClick={() => handleToggleActive(d)}
+                                                    title="Nhấn để bật/tắt"
+                                                >
+                                                    {d.isActive ? '✅ Hoạt động' : '⛔ Tắt'}
+                                                </button>
                                             </td>
-                                            <td style={{ padding: '9px 12px', fontWeight: 600, color: '#c00' }}>
-                                                {d.type === 'percentage'
-                                                    ? `${d.value}%`
-                                                    : formatPrice(d.value)}
-                                            </td>
-                                            <td style={{ padding: '9px 12px' }}>
-                                                {d.minOrderAmount > 0 ? formatPrice(d.minOrderAmount) : '—'}
-                                            </td>
-                                            <td style={{ padding: '9px 12px' }}>
-                                                {d.usedCount} / {d.maxUses ?? '∞'}
-                                                {isExhausted && (
-                                                    <span style={{ marginLeft: 6, fontSize: 11, background: '#e53935', color: '#fff', borderRadius: 3, padding: '1px 5px' }}>
-                                                        Hết lượt
-                                                    </span>
+                                            <td className="table-center">
+                                                <button className="btn btn-secondary btn-sm" style={{ marginRight: 6 }} onClick={() => openEdit(d)}>✏️ Sửa</button>
+                                                {deletingId === d._id ? (
+                                                    <>
+                                                        <button className="btn btn-danger btn-sm" style={{ marginRight: 4 }} onClick={() => handleDelete(d._id)}>Xác nhận</button>
+                                                        <button className="btn btn-ghost btn-sm" onClick={() => setDeletingId(null)}>Hủy</button>
+                                                    </>
+                                                ) : (
+                                                    <button className="btn btn-danger btn-sm" onClick={() => setDeletingId(d._id)}>🗑️ Xóa</button>
                                                 )}
                                             </td>
-                                            <td style={{ padding: '9px 12px' }}>
-                                                {d.expiryDate ? (
-                                                    <span style={{ color: isExpired ? '#c00' : '#333' }}>
-                                                        {formatDate(d.expiryDate)}
-                                                        {isExpired && ' (Hết hạn)'}
-                                                    </span>
-                                                ) : '—'}
-                                            </td>
-                                            <td style={{ padding: '9px 12px' }}>
-                                                <button
-                                                    onClick={() => handleToggleActive(d)}
-                                                    style={{
-                                                        padding: '4px 10px', fontSize: 12, borderRadius: 12, border: 'none', cursor: 'pointer', fontWeight: 600,
-                                                        background: d.isActive ? '#e8f5e9' : '#fce4ec',
-                                                        color: d.isActive ? '#2e7d32' : '#c62828',
-                                                    }}
-                                                >
-                                                    {d.isActive ? '✅ Hoạt động' : '❌ Tắt'}
-                                                </button>
-                                            </td>
-                                            <td style={{ padding: '9px 8px', whiteSpace: 'nowrap' }}>
-                                                <button
-                                                    onClick={() => openEdit(d)}
-                                                    style={{ marginRight: 6, padding: '4px 10px', background: '#0277bd', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 13 }}
-                                                >
-                                                    Sửa
-                                                </button>
-                                                <button
-                                                    onClick={() => setDeletingId(d._id)}
-                                                    style={{ padding: '4px 10px', background: '#e53935', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontSize: 13 }}
-                                                >
-                                                    Xóa
-                                                </button>
-                                            </td>
                                         </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginTop: 16 }}>
-                            <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}
-                                style={{ padding: '6px 14px', cursor: page === 1 ? 'not-allowed' : 'pointer' }}>
-                                ‹ Trước
-                            </button>
-                            <span style={{ padding: '6px 14px', background: '#eee', borderRadius: 4 }}>
-                                {page} / {totalPages}
-                            </span>
-                            <button disabled={page === totalPages} onClick={() => setPage((p) => p + 1)}
-                                style={{ padding: '6px 14px', cursor: page === totalPages ? 'not-allowed' : 'pointer' }}>
-                                Sau ›
-                            </button>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
-                    )}
-                </>
-            )}
-
-            {/* ── Create / Edit Modal ──────────────────────────────── */}
-            {showModal && (
-                <div style={{
-                    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
-                }}>
-                    <div style={{
-                        background: '#fff', borderRadius: 8, padding: 28, width: '100%', maxWidth: 480,
-                        maxHeight: '90vh', overflowY: 'auto', position: 'relative',
-                    }}>
-                        <h2 style={{ marginTop: 0 }}>
-                            {editingId ? '✏️ Sửa mã giảm giá' : '➕ Tạo mã giảm giá mới'}
-                        </h2>
-
-                        {formError && (
-                            <div style={{ background: '#fee', border: '1px solid #f00', padding: 8, marginBottom: 12, borderRadius: 4, color: '#c00', fontSize: 14 }}>
-                                {formError}
+                        {totalPages > 1 && (
+                            <div className="pagination">
+                                <button className="page-btn" onClick={() => setPage(p => p - 1)} disabled={page === 1}>‹</button>
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                                    <button key={p} className={`page-btn ${p === page ? 'active' : ''}`} onClick={() => setPage(p)}>{p}</button>
+                                ))}
+                                <button className="page-btn" onClick={() => setPage(p => p + 1)} disabled={page === totalPages}>›</button>
                             </div>
                         )}
+                    </>
+                )}
+            </div>
 
-                        <form onSubmit={handleSave}>
-                            {/* Mã code */}
-                            <div style={{ marginBottom: 14 }}>
-                                <label style={{ display: 'block', marginBottom: 4, fontWeight: 600 }}>
-                                    Mã giảm giá *
-                                </label>
-                                <input
-                                    type="text"
-                                    name="code"
-                                    value={formData.code}
-                                    onChange={handleChange}
-                                    placeholder="SUMMER20"
-                                    style={{ width: '100%', padding: '8px 10px', border: '1px solid #ccc', borderRadius: 4, boxSizing: 'border-box', textTransform: 'uppercase' }}
-                                    disabled={!!editingId}
-                                />
-                                {editingId && <small style={{ color: '#888' }}>Mã không thể thay đổi sau khi tạo</small>}
-                            </div>
-
-                            {/* Loại */}
-                            <div style={{ marginBottom: 14 }}>
-                                <label style={{ display: 'block', marginBottom: 4, fontWeight: 600 }}>Loại *</label>
-                                <select
-                                    name="type"
-                                    value={formData.type}
-                                    onChange={handleChange}
-                                    style={{ width: '100%', padding: '8px 10px', border: '1px solid #ccc', borderRadius: 4, boxSizing: 'border-box' }}
-                                >
-                                    <option value="percentage">Phần trăm (%)</option>
-                                    <option value="fixed">Cố định (VNĐ)</option>
-                                </select>
-                            </div>
-
-                            {/* Giá trị */}
-                            <div style={{ marginBottom: 14 }}>
-                                <label style={{ display: 'block', marginBottom: 4, fontWeight: 600 }}>
-                                    Giá trị * {formData.type === 'percentage' ? '(%)' : '(VNĐ)'}
-                                </label>
-                                <input
-                                    type="number"
-                                    name="value"
-                                    value={formData.value}
-                                    onChange={handleChange}
-                                    min="1"
-                                    max={formData.type === 'percentage' ? 100 : undefined}
-                                    step={formData.type === 'percentage' ? '1' : '1000'}
-                                    placeholder={formData.type === 'percentage' ? '20' : '50000'}
-                                    style={{ width: '100%', padding: '8px 10px', border: '1px solid #ccc', borderRadius: 4, boxSizing: 'border-box' }}
-                                />
-                            </div>
-
-                            {/* Đơn tối thiểu */}
-                            <div style={{ marginBottom: 14 }}>
-                                <label style={{ display: 'block', marginBottom: 4, fontWeight: 600 }}>
-                                    Giá trị đơn tối thiểu (VNĐ)
-                                </label>
-                                <input
-                                    type="number"
-                                    name="minOrderAmount"
-                                    value={formData.minOrderAmount}
-                                    onChange={handleChange}
-                                    min="0"
-                                    step="1000"
-                                    placeholder="0 = không giới hạn"
-                                    style={{ width: '100%', padding: '8px 10px', border: '1px solid #ccc', borderRadius: 4, boxSizing: 'border-box' }}
-                                />
-                            </div>
-
-                            {/* Số lần dùng tối đa */}
-                            <div style={{ marginBottom: 14 }}>
-                                <label style={{ display: 'block', marginBottom: 4, fontWeight: 600 }}>
-                                    Số lần dùng tối đa
-                                </label>
-                                <input
-                                    type="number"
-                                    name="maxUses"
-                                    value={formData.maxUses}
-                                    onChange={handleChange}
-                                    min="1"
-                                    placeholder="Để trống = không giới hạn"
-                                    style={{ width: '100%', padding: '8px 10px', border: '1px solid #ccc', borderRadius: 4, boxSizing: 'border-box' }}
-                                />
-                            </div>
-
-                            {/* Ngày hết hạn */}
-                            <div style={{ marginBottom: 14 }}>
-                                <label style={{ display: 'block', marginBottom: 4, fontWeight: 600 }}>
-                                    Ngày hết hạn
-                                </label>
-                                <input
-                                    type="date"
-                                    name="expiryDate"
-                                    value={formData.expiryDate}
-                                    onChange={handleChange}
-                                    min={new Date().toISOString().slice(0, 10)}
-                                    style={{ width: '100%', padding: '8px 10px', border: '1px solid #ccc', borderRadius: 4, boxSizing: 'border-box' }}
-                                />
-                                <small style={{ color: '#888' }}>Để trống = không hết hạn</small>
-                            </div>
-
-                            {/* Trạng thái */}
-                            <div style={{ marginBottom: 20 }}>
-                                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontWeight: 600 }}>
-                                    <input
-                                        type="checkbox"
-                                        name="isActive"
-                                        checked={formData.isActive}
-                                        onChange={handleChange}
-                                        style={{ width: 16, height: 16 }}
-                                    />
-                                    Kích hoạt ngay
-                                </label>
-                            </div>
-
-                            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-                                <button
-                                    type="button"
-                                    onClick={closeModal}
-                                    style={{ padding: '9px 20px', background: '#eee', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}
-                                >
-                                    Hủy
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={saving}
-                                    style={{ padding: '9px 20px', background: saving ? '#999' : '#28a745', color: '#fff', border: 'none', borderRadius: 6, cursor: saving ? 'not-allowed' : 'pointer', fontWeight: 600 }}
-                                >
-                                    {saving ? 'Đang lưu...' : (editingId ? 'Cập nhật' : 'Tạo mã')}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {/* ── Delete Confirm Dialog ────────────────────────────── */}
-            {deletingId && (
-                <div style={{
-                    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000,
-                }}>
-                    <div style={{ background: '#fff', borderRadius: 8, padding: 28, maxWidth: 360, textAlign: 'center' }}>
-                        <p style={{ fontSize: 16, marginBottom: 20 }}>
-                            Bạn có chắc muốn <strong>xóa</strong> mã giảm giá này không?
-                            <br />
-                            <small style={{ color: '#888' }}>Hành động này không thể hoàn tác.</small>
-                        </p>
-                        <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
-                            <button
-                                onClick={() => setDeletingId(null)}
-                                style={{ padding: '8px 20px', background: '#eee', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}
-                            >
-                                Hủy
-                            </button>
-                            <button
-                                onClick={() => handleDelete(deletingId)}
-                                style={{ padding: '8px 20px', background: '#e53935', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}
-                            >
-                                Xóa
-                            </button>
+            {/* ── Modal ──────────────────────────────────────── */}
+            {showModal && (
+                <div className="modal-backdrop" onClick={closeModal}>
+                    <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 500 }}>
+                        <h3 style={{ marginTop: 0 }}>{editingId ? '✏️ Cập nhật mã giảm giá' : '➕ Tạo mã giảm giá'}</h3>
+                        <div className="form-row">
+                            <label className="form-label">Mã giảm giá *</label>
+                            <input className="form-control" name="code" value={formData.code} onChange={handleChange} placeholder="VD: SUMMER20" disabled={!!editingId} />
+                        </div>
+                        <div className="form-row">
+                            <label className="form-label">Loại giảm giá *</label>
+                            <select className="form-control" name="type" value={formData.type} onChange={handleChange}>
+                                <option value="percentage">Phần trăm (%)</option>
+                                <option value="fixed">Cố định (VND)</option>
+                            </select>
+                        </div>
+                        <div className="form-row">
+                            <label className="form-label">Giá trị * {formData.type === 'percentage' ? '(%)' : '(VND)'}</label>
+                            <input className="form-control" type="number" name="value" value={formData.value} onChange={handleChange} min={1} max={formData.type === 'percentage' ? 100 : undefined} />
+                        </div>
+                        <div className="form-row">
+                            <label className="form-label">Đơn hàng tối thiểu (VND)</label>
+                            <input className="form-control" type="number" name="minOrderAmount" value={formData.minOrderAmount} onChange={handleChange} min={0} placeholder="Để trống nếu không giới hạn" />
+                        </div>
+                        <div className="form-row">
+                            <label className="form-label">Số lần dùng tối đa</label>
+                            <input className="form-control" type="number" name="maxUses" value={formData.maxUses} onChange={handleChange} min={1} placeholder="Để trống = không giới hạn" />
+                        </div>
+                        <div className="form-row">
+                            <label className="form-label">Ngày hết hạn</label>
+                            <input className="form-control" type="date" name="expiryDate" value={formData.expiryDate} onChange={handleChange} />
+                        </div>
+                        <div className="form-row" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <input type="checkbox" id="isActive" name="isActive" checked={formData.isActive} onChange={handleChange} />
+                            <label htmlFor="isActive" className="form-label" style={{ margin: 0 }}>Kích hoạt mã</label>
+                        </div>
+                        {formError && <div className="alert alert-danger" style={{ marginTop: 8 }}>{formError}</div>}
+                        <div style={{ display: 'flex', gap: 10, marginTop: 16, justifyContent: 'flex-end' }}>
+                            <button className="btn btn-ghost" onClick={closeModal}>Hủy</button>
+                            <button className="btn btn-primary" onClick={handleSave} disabled={saving}>{saving ? 'Đang lưu...' : 'Lưu'}</button>
                         </div>
                     </div>
                 </div>
             )}
         </div>
     );
-};
+}
 
 export default AdminDiscountPage;
