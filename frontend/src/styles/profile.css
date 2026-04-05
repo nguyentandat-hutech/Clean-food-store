@@ -1,0 +1,299 @@
+/* ──────────────────────────────────────────
+   profile.css  –  Trang quản lý tài khoản
+   ────────────────────────────────────────── */
+
+.profile-page {
+    min-height: 100vh;
+    background: var(--bg-page, #f5f5f5);
+    padding: 2rem 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* Loading skeleton */
+.profile-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 4rem;
+    color: #666;
+}
+
+.profile-spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Wrapper */
+.profile-container {
+    width: 100%;
+    max-width: 640px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* ── Header card (avatar + name) ── */
+.profile-header-card {
+    background: var(--bg-card);
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, .08);
+    padding: 1.75rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.profile-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    font-size: 1.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(46, 125, 50, .35);
+    user-select: none;
+}
+
+.profile-header-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.profile-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.profile-email {
+    font-size: 0.875rem;
+    color: #666;
+    margin: 0;
+}
+
+/* ── Role badge ── */
+.profile-badge {
+    display: inline-block;
+    padding: 0.2rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    width: fit-content;
+}
+
+.badge-admin {
+    background: #fff3e0;
+    color: #e65100;
+    border: 1px solid #ffcc80;
+}
+
+.badge-user {
+    background: #e8f5e9;
+    color: var(--primary-dark);
+    border: 1px solid #a5d6a7;
+}
+
+/* ── Main card ── */
+.profile-card {
+    background: var(--bg-card);
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, .08);
+    padding: 1.75rem 2rem;
+}
+
+.profile-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.profile-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+/* Edit button */
+.btn-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 1rem;
+    border: 1.5px solid var(--primary);
+    color: var(--primary);
+    background: transparent;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.btn-edit:hover {
+    background: var(--primary);
+    color: #fff;
+}
+
+/* ── Info view (read mode) ── */
+.profile-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.profile-info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.875rem 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.profile-info-row:last-child {
+    border-bottom: none;
+}
+
+.profile-info-label {
+    font-size: 0.875rem;
+    color: #666;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.profile-info-value {
+    font-size: 0.9rem;
+    color: #1a1a1a;
+    font-weight: 500;
+    text-align: right;
+    word-break: break-all;
+}
+
+.profile-empty {
+    color: #aaa;
+    font-style: italic;
+    font-weight: 400;
+}
+
+/* Status indicator */
+.profile-status {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.2rem 0.65rem;
+    border-radius: 20px;
+}
+
+.status-active {
+    background: #e8f5e9;
+    color: var(--primary-dark);
+}
+
+.status-inactive {
+    background: #ffebee;
+    color: var(--danger);
+}
+
+/* ── Form (edit mode) ── */
+.profile-input-readonly {
+    background: #f9f9f9 !important;
+    cursor: not-allowed;
+    color: #888 !important;
+}
+
+.profile-readonly-hint {
+    font-size: 0.75rem;
+    color: #aaa;
+    margin-top: 0.3rem;
+}
+
+/* Required star */
+.required {
+    color: var(--danger);
+    margin-left: 2px;
+}
+
+/* Action row */
+.profile-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.btn-cancel {
+    flex: 0 0 auto;
+    padding: 0 1.25rem;
+    height: 48px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: #444;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.btn-cancel:hover:not(:disabled) {
+    border-color: var(--danger);
+    color: var(--danger);
+    background: #fff5f5;
+}
+
+.btn-cancel:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .profile-page {
+        padding: 1rem 0.75rem;
+    }
+
+    .profile-header-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile-header-info {
+        align-items: center;
+    }
+
+    .profile-card {
+        padding: 1.25rem;
+    }
+
+    .profile-info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    .profile-info-value {
+        text-align: left;
+    }
+}

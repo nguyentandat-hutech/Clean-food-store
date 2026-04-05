@@ -1,0 +1,3 @@
+# Thư mục này chứa các Controllers
+# Controller chỉ được phép: nhận req, gọi service, trả res.json()
+# KHÔNG chứa business logic

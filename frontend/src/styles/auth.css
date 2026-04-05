@@ -1,0 +1,273 @@
+/* ============================================================
+   Auth Pages Styles — LoginPage & RegisterPage
+   ============================================================ */
+
+/* ── Outer wrapper: full-screen vertically-centered layout ── */
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 50%, #dcedc8 100%);
+    padding: 2rem 1rem;
+}
+
+/* ── Card container ── */
+.auth-card {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(46, 125, 50, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 2.5rem 2.25rem;
+    width: 100%;
+    max-width: 420px;
+}
+
+/* ── Brand / Logo area ── */
+.auth-brand {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-brand-icon {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #2e7d32, #4caf50);
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+    font-size: 1.6rem;
+}
+
+.auth-brand h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1b5e20;
+    letter-spacing: -0.02em;
+}
+
+.auth-brand p {
+    font-size: 0.875rem;
+    color: #757575;
+    margin-top: 0.25rem;
+}
+
+/* ── Form title ── */
+.auth-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #212121;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* ── Alert banner for API errors ── */
+.auth-alert {
+    background: #ffebee;
+    border: 1px solid #ef9a9a;
+    border-left: 4px solid #d32f2f;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #b71c1c;
+    line-height: 1.5;
+}
+
+.auth-alert-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+/* ── Form field group ── */
+.form-group {
+    margin-bottom: 1.1rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #424242;
+    margin-bottom: 0.4rem;
+}
+
+.form-label span.required {
+    color: #d32f2f;
+    margin-left: 2px;
+}
+
+/* ── Input wrapper (for icon + input combination) ── */
+.input-wrapper {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9e9e9e;
+    font-size: 1rem;
+    pointer-events: none;
+}
+
+.form-input {
+    display: block;
+    width: 100%;
+    padding: 0.625rem 0.875rem 0.625rem 2.4rem;
+    font-size: 0.9375rem;
+    color: #212121;
+    background: #fafafa;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+.form-input:focus {
+    border-color: #2e7d32;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.12);
+}
+
+.form-input.is-error {
+    border-color: #d32f2f;
+    background: #fff8f8;
+}
+
+.form-input.is-error:focus {
+    box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.12);
+}
+
+/* ── Show/hide password toggle button ── */
+.input-toggle {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 0.25rem;
+    color: #9e9e9e;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s;
+}
+
+.input-toggle:hover {
+    color: #2e7d32;
+}
+
+/* Input with toggle: more right padding */
+.form-input.has-toggle {
+    padding-right: 2.5rem;
+}
+
+/* ── Field-level error message ── */
+.field-error {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.35rem;
+    font-size: 0.8125rem;
+    color: #d32f2f;
+    font-weight: 500;
+}
+
+/* ── Primary submit button ── */
+.btn-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    background: linear-gradient(135deg, #2e7d32, #388e3c);
+    border: none;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(46, 125, 50, 0.35);
+}
+
+.btn-submit:hover:not(:disabled) {
+    background: linear-gradient(135deg, #1b5e20, #2e7d32);
+    box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
+    transform: translateY(-1px);
+}
+
+.btn-submit:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Spinner icon inside button */
+.btn-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ── Divider ── */
+.auth-divider {
+    text-align: center;
+    margin: 1.25rem 0 0;
+    font-size: 0.875rem;
+    color: #757575;
+}
+
+.auth-divider a {
+    font-weight: 600;
+    color: #2e7d32;
+}
+
+.auth-divider a:hover {
+    color: #1b5e20;
+}
+
+/* ── Strength meter (RegisterPage) ── */
+.password-strength {
+    margin-top: 0.4rem;
+}
+
+.strength-bar-track {
+    height: 4px;
+    background: #eeeeee;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.25rem;
+}
+
+.strength-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s, background 0.3s;
+}
+
+.strength-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+}
