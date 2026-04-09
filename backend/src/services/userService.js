@@ -1,94 +1,99 @@
+﻿// ============================================================
+// FILE: backend/src/services/userService.js
+// Muc dich: Business logic lien quan den quan ly nguoi dung
+// ============================================================
+
+// Nhap mongoose de su dung isValidObjectId
 const mongoose = require('mongoose');
+
+// Nhap Model User de truy van DB
 const User = require('../models/User');
+
+// Nhap ham tao loi co status code
 const { createError } = require('../utils/responseHelper');
 
-/**
- * Lấy thông tin profile của user đang đăng nhập.
- * req.user đã được gán bởi protect middleware — trả thẳng về.
- * Dùng findById để đảm bảo dữ liệu mới nhất từ DB.
- *
- * @param {string} userId - ID của user từ req.user._id
- */
+// -- LAY THONG TIN CA NHAN --
+// Tham so: userId - ID cua nguoi dung dang dang nhap
 const getProfile = async (userId) => {
+    // Tim user trong DB theo ID, khong tra lai __v va password (da co select:false)
     const user = await User.findById(userId);
     if (!user) {
-        throw createError(404, 'Không tìm thấy người dùng');
+        throw createError(404, 'Khong tim thay nguoi dung');
     }
     return user;
 };
 
-/**
- * Cập nhật thông tin profile (họ tên, số điện thoại).
- * Email và role KHÔNG được phép thay đổi qua endpoint này.
- *
- * @param {string} userId  - ID của user từ req.user._id
- * @param {object} payload - { name, phone }
- */
-const updateProfile = async (userId, payload) => {
-    const { name, phone } = payload;
+// -- CAP NHAT THONG TIN CA NHAN --
+// Tham so: userId - ID nguoi dung; data - { name, phone }
+const updateProfile = async (userId, data) => {
+    // Chi cho phep cap nhat 2 truong: name va phone (khong the tu doi email, role)
+    const { name, phone } = data;
 
-    // Validation nghiệp vụ
-    if (!name || name.trim().length < 2) {
-        throw createError(400, 'Họ tên phải có ít nhất 2 ký tự');
-    }
-    if (name.trim().length > 50) {
-        throw createError(400, 'Họ tên không được vượt quá 50 ký tự');
-    }
-    if (phone && !/^(\+?\d{9,15})?$/.test(phone.trim())) {
-        throw createError(400, 'Số điện thoại không hợp lệ (9-15 chữ số)');
+    // Kiem tra phai co it nhat 1 truong de cap nhat
+    if (!name && !phone) {
+        throw createError(400, 'Vui long cung cap thong tin can cap nhat');
     }
 
-    // Chỉ cho phép cập nhật các field an toàn
-    const allowedUpdate = {
-        name: name.trim(),
-        phone: phone ? phone.trim() : '',
-    };
+    // Tao object chi chua du lieu hop le (loai bo undefined)
+    const updateData = {};
+    if (name) updateData.name = name.trim();
+    if (phone) updateData.phone = phone.trim();
 
+    // findByIdAndUpdate: tim theo ID va cap nhat
+    // { $set: updateData } — chi cap nhat cac truong trong updateData, khong xoa truong khac
+    // { new: true } — tra ve document SAU khi cap nhat (mac dinh la truoc khi cap nhat)
+    // { runValidators: true } — chay lai Mongoose validators khi update
     const updatedUser = await User.findByIdAndUpdate(
         userId,
-        { $set: allowedUpdate },
-        {
-            new: true,          // Trả về document sau khi update
-            runValidators: true, // Chạy validator của Mongoose schema
-        }
+        { $set: updateData },
+        { new: true, runValidators: true }
     );
 
     if (!updatedUser) {
-        throw createError(404, 'Không tìm thấy người dùng');
+        throw createError(404, 'Khong tim thay nguoi dung');
     }
-
     return updatedUser;
 };
 
-/**
- * Lấy danh sách tất cả users — chỉ Admin được gọi.
- * Hỗ trợ tìm kiếm theo tên/email, lọc theo role và phân trang.
- *
- * @param {object} options - { page, limit, search, role }
- */
-const getAllUsers = async ({ page = 1, limit = 20, search = '', role = '' } = {}) => {
+// -- LAY DANH SACH TẤT CA NGUOI DUNG (Admin only) --
+// Tham so: query object tu URL — { page, limit, search, role }
+const getAllUsers = async ({ page = 1, limit = 10, search, role } = {}) => {
+    // Xay dung dieu kien loc (filter)
     const query = {};
 
-    // Tìm kiếm theo tên hoặc email (case-insensitive)
-    if (search && search.trim()) {
-        query.$or = [
-            { name: { $regex: search.trim(), $options: 'i' } },
-            { email: { $regex: search.trim(), $options: 'i' } },
-        ];
-    }
-
-    // Lọc theo role
+    // Neu co tham so role (admin/user), loc theo role do
     if (role && ['user', 'admin'].includes(role)) {
         query.role = role;
     }
 
-    const pageNum = Math.max(1, parseInt(page, 10) || 1);
-    const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 20));
+    // Neu co tu khoa tim kiem, dung $or de tim trong ca 2 truong name va email
+    if (search) {
+        // $or: thoa man 1 trong cac dieu kien
+        // $regex: tim kiem theo bieu thuc chinh quy (regex)
+        // $options: 'i' — khong phan biet hoa thuong (case insensitive)
+        query['$or'] = [
+            { name: { $regex: search, $options: 'i' } },
+            { email: { $regex: search, $options: 'i' } }
+        ];
+    }
+
+    // Chuyen page va limit thanh so nguyen (URL params la string)
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+
+    // Tinh so documents can bo qua (skip) de phan trang
+    // Vi du: page=2, limit=10 → skip=10 (bo qua 10 docs dau tien)
     const skip = (pageNum - 1) * limitNum;
 
+    // Chay 2 query song song (Promise.all) de toi uu toc do:
+    // 1. Lay danh sach users theo trang
+    // 2. Dem tong so users phuc vu viec hien thi so trang
     const [users, total] = await Promise.all([
-        User.find(query).sort({ createdAt: -1 }).skip(skip).limit(limitNum),
-        User.countDocuments(query),
+        User.find(query)
+            .sort({ createdAt: -1 })  // Sap xep moi nhat len dau
+            .skip(skip)               // Bo qua so luong theo phan trang
+            .limit(limitNum),         // Gioi han so luong tra ve
+        User.countDocuments(query)    // Dem tong so ket qua
     ]);
 
     return {
@@ -97,66 +102,53 @@ const getAllUsers = async ({ page = 1, limit = 20, search = '', role = '' } = {}
             page: pageNum,
             limit: limitNum,
             total,
-            totalPages: Math.ceil(total / limitNum) || 1,
-        },
+            // Math.ceil: lam tron len — vi du 21 users / 10 = 2.1 → 3 trang
+            totalPages: Math.ceil(total / limitNum)
+        }
     };
 };
 
-/**
- * Thay đổi role của một user — chỉ Admin được gọi.
- *
- * Business rules:
- *  1. Admin KHÔNG thể thay đổi role của chính mình.
- *  2. Admin KHÔNG thể thay đổi role của Admin khác (cùng cấp bậc).
- *  3. Admin chỉ được thay đổi role của User thông thường.
- *  4. Role mới phải là 'user' hoặc 'admin'.
- *  5. Không đổi sang role đã có sẵn.
- *
- * @param {string} adminId      - ID của admin đang thực hiện (req.user._id)
- * @param {string} targetUserId - ID của user cần thay đổi role
- * @param {string} newRole      - Role mới: 'user' | 'admin'
- */
+// -- CAP NHAT ROLE NGUOI DUNG (Admin only) --
+// Tham so: adminId - ID admin dang thuc hien; targetUserId - ID user bi doi; newRole - role moi
 const updateUserRole = async (adminId, targetUserId, newRole) => {
-    // Validate ObjectId format
+    // Kiem tra targetUserId co dung dinh dang MongoDB ObjectId khong
     if (!mongoose.Types.ObjectId.isValid(targetUserId)) {
-        throw createError(400, 'ID người dùng không hợp lệ');
+        throw createError(400, 'ID nguoi dung khong hop le');
     }
 
-    // Validate role value
-    const validRoles = ['user', 'admin'];
-    if (!newRole || !validRoles.includes(newRole)) {
-        throw createError(400, `Role không hợp lệ. Chỉ chấp nhận: ${validRoles.join(', ')}`);
+    // Kiem tra role moi co nam trong danh sach hop le khong
+    if (!newRole || !['user', 'admin'].includes(newRole)) {
+        throw createError(400, 'Role khong hop le. Chi chap nhan: user, admin');
     }
 
-    // Rule 1: Admin không được thay đổi role của chính mình
+    // Quy tac 1: Admin khong the tu doi role cua chinh minh
     if (adminId.toString() === targetUserId.toString()) {
-        throw createError(403, 'Bạn không thể thay đổi role của chính mình');
+        throw createError(403, 'Ban khong the thay doi role cua chinh minh');
     }
 
-    // Tìm user target
+    // Tim user can cap nhat
     const targetUser = await User.findById(targetUserId);
     if (!targetUser) {
-        throw createError(404, 'Không tìm thấy người dùng');
+        throw createError(404, 'Khong tim thay nguoi dung can cap nhat');
     }
 
-    // Rule 2: Admin không thể thay đổi role của Admin khác (cùng cấp bậc)
-    if (targetUser.role === 'admin') {
-        throw createError(
-            403,
-            'Không thể thay đổi role của Admin khác. Chỉ được phép thay đổi role của User thông thường'
-        );
+    // Quy tac 2: Khong the ha cap admin khac xuong user (bao ve admin)
+    if (targetUser.role === 'admin' && newRole === 'user') {
+        throw createError(403, 'Khong the ha cap quyen cua admin khac');
     }
 
-    // Rule 5: Không đổi sang role đã có
+    // Quy tac 3: Tranh cap nhat neu role khong thay doi
     if (targetUser.role === newRole) {
-        throw createError(400, `Người dùng này đã có role "${newRole}" rồi`);
+        throw createError(400, `Nguoi dung da co role "${newRole}"`);
     }
 
-    // Cập nhật role
+    // Thay doi role va luu vao DB (dung .save() thay vi findByIdAndUpdate
+    // de kich hoat Mongoose validators va middleware neu co)
     targetUser.role = newRole;
     await targetUser.save();
 
     return targetUser;
 };
 
+// Xuat 4 ham de userController su dung
 module.exports = { getProfile, updateProfile, getAllUsers, updateUserRole };

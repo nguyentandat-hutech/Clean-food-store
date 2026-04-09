@@ -1,16 +1,39 @@
+﻿// ============================================================
+// FILE: backend/src/routes/authRoutes.js
+// Muc dich: Dinh nghia cac endpoint (URL) cho chuc nang xac thuc
+// Tat ca routes trong file nay bat dau bang /api/auth/...
+// ============================================================
+
+// Nhap express va tao Router — doi tuong quan ly route
 const express = require('express');
 const router = express.Router();
 
+// Nhap authController — xu ly logic cho tung request
 const authController = require('../controllers/authController');
+
+// Nhap middleware protect de bao ve route can dang nhap
 const { protect } = require('../middlewares/authMiddleware');
 
-// POST /api/auth/register → Đăng ký tài khoản mới (public)
+// ── ROUTE DANG KY ────────────────────────────────────────────────────────────
+// POST /api/auth/register
+// Cong khai: khong can token
+// Request body: { "name": "...", "email": "...", "password": "..." }
+// Response: { success, message, data: { user, token } }
 router.post('/register', authController.register);
 
-// POST /api/auth/login → Đăng nhập, nhận JWT (public)
+// ── ROUTE DANG NHAP ──────────────────────────────────────────────────────────
+// POST /api/auth/login
+// Cong khai: khong can token
+// Request body: { "email": "...", "password": "..." }
+// Response: { success, message, data: { user, token } }
 router.post('/login', authController.login);
 
-// GET /api/auth/me → Lấy thông tin user đang đăng nhập (protected)
+// ── ROUTE LAY THONG TIN NGUOI DUNG DANG NHAP ─────────────────────────────────
+// GET /api/auth/me
+// Bao ve bang protect: phai gui kem header "Authorization: Bearer <token>"
+// Middleware protect kiem tra token → gan req.user → goi controller
+// Response: { success, message, data: { user } }
 router.get('/me', protect, authController.getMe);
 
+// Xuat router de file index.js cua routes tich hop vao app
 module.exports = router;
